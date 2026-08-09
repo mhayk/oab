@@ -1,0 +1,367 @@
+{
+  "oab_version": "0.1.0",
+  "generated": "2026-08-09",
+  "system": {
+    "name": "Project management SaaS",
+    "description": "Multi-tenant B2B project management"
+  },
+  "stage": "3",
+  "requirements": {
+    "functional": [
+      "Publish and edit recipes",
+      "Browse and search recipes",
+      "Comment on recipes",
+      "Upload and serve photos"
+    ],
+    "non_functional": [
+      {
+        "name": "monthly active users",
+        "value": 100000,
+        "unit": "users",
+        "quantified": true
+      },
+      {
+        "name": "tenants",
+        "value": 1200,
+        "unit": "tenants",
+        "quantified": true
+      },
+      {
+        "name": "engineering team",
+        "value": 8,
+        "unit": "engineers",
+        "quantified": true
+      },
+      {
+        "name": "availability target",
+        "value": "99.9%",
+        "quantified": true
+      }
+    ]
+  },
+  "assumptions": [
+    {
+      "text": "25% of monthly active users are daily active",
+      "confidence": "medium",
+      "impact": "proportional on RPS"
+    },
+    {
+      "text": "3 sessions per active user per day",
+      "confidence": "medium",
+      "impact": "proportional"
+    },
+    {
+      "text": "60 requests per session",
+      "confidence": "medium",
+      "impact": "proportional"
+    },
+    {
+      "text": "90:10 read to write ratio",
+      "confidence": "medium",
+      "impact": "shifts database load"
+    },
+    {
+      "text": "4x peak factor from EU business-hours concentration",
+      "confidence": "medium",
+      "impact": "proportional on peak"
+    }
+  ],
+  "capacity": {
+    "avg_rps": 52,
+    "peak_rps": 208,
+    "peak_reads_per_second": 187,
+    "peak_writes_per_second": 21,
+    "storage_gb_per_year": 123,
+    "egress_gb_per_month": 3400,
+    "concurrency": 17
+  },
+  "complexity": {
+    "available": 13,
+    "spent": 9
+  },
+  "components": [
+    {
+      "name": "Application instances",
+      "kind": "application-runtime",
+      "managed": true,
+      "self_hosted": false,
+      "complexity_cost": 1,
+      "count": 6,
+      "justification": "208 peak RPS at 80 ms is 17 in-flight requests; 6 instances at 60% utilisation."
+    },
+    {
+      "name": "Background workers",
+      "kind": "worker",
+      "managed": true,
+      "self_hosted": false,
+      "complexity_cost": 1,
+      "count": 4,
+      "justification": "200,000 jobs/day at 0.8 s mean is 2.3 jobs/second; 4 workers at 70% utilisation."
+    },
+    {
+      "name": "PostgreSQL primary",
+      "kind": "relational-database",
+      "managed": true,
+      "self_hosted": false,
+      "complexity_cost": 1,
+      "count": 1,
+      "justification": "21 writes/second is three orders of magnitude inside a single primary's capacity."
+    },
+    {
+      "name": "Read replica",
+      "kind": "read-replica",
+      "managed": true,
+      "self_hosted": false,
+      "complexity_cost": 1,
+      "count": 1,
+      "justification": "Isolates reporting queries from the transactional path; 187 peak reads/second."
+    },
+    {
+      "name": "Redis",
+      "kind": "cache",
+      "managed": true,
+      "self_hosted": false,
+      "complexity_cost": 2,
+      "count": 1,
+      "justification": "Justified by shared state across 6 instances \u2014 sessions, per-tenant rate limits, idempotency keys \u2014 not by load relief, which would be marginal."
+    },
+    {
+      "name": "Object storage",
+      "kind": "object-storage",
+      "managed": true,
+      "self_hosted": false,
+      "complexity_cost": 1,
+      "count": 1,
+      "justification": "Attachment storage decoupled from compute."
+    },
+    {
+      "name": "CDN",
+      "kind": "cdn",
+      "managed": true,
+      "self_hosted": false,
+      "complexity_cost": 1,
+      "count": 1,
+      "justification": "3.4 TB/month egress; 70% offload."
+    },
+    {
+      "name": "Observability",
+      "kind": "observability",
+      "managed": true,
+      "self_hosted": false,
+      "complexity_cost": 1,
+      "count": 1,
+      "justification": "99.9% target requires diagnosing incidents within the 43-minute monthly budget."
+    }
+  ],
+  "rejected_components": [
+    {
+      "kind": "event-stream",
+      "reason": "21 writes/second and 2.3 jobs/second. A broker solves a throughput problem two orders of magnitude beyond measured demand, and the database-backed queue gives atomicity with the business write for free.",
+      "revisit_when": "Sustained above 500 events/second, or 3+ independent consumer groups confirmed to need replay of the same stream."
+    },
+    {
+      "kind": "connection-pooler",
+      "reason": "6 instances at a pool of 5 is 30 connections against a limit of 100 \u2014 30%. Measured mean concurrency is 1.25 queries.",
+      "revisit_when": "Total connections exceed 80% of max_connections for 1 hour, recurring."
+    },
+    {
+      "kind": "orchestration-platform",
+      "reason": "Two deployable types with no dedicated operations capacity. 4 complexity points against a budget with 4 remaining.",
+      "revisit_when": "More than 4 independently deployable services, and a dedicated platform engineer on the team."
+    },
+    {
+      "kind": "search-engine",
+      "reason": "Database full-text search meets the current project and task search requirement.",
+      "revisit_when": "Search p95 exceeds 300 ms, or ranking requirements exceed what the database provides."
+    }
+  ],
+  "options": [
+    {
+      "id": "modular-monolith-with-workers",
+      "description": "Single deployable plus workers, managed datastores",
+      "components": [
+        "application-runtime",
+        "worker",
+        "relational-database",
+        "read-replica",
+        "cache",
+        "object-storage",
+        "cdn",
+        "observability"
+      ],
+      "complexity_cost": 9,
+      "monthly_cost": {
+        "currency": "GBP",
+        "low": 1200,
+        "high": 1500
+      },
+      "reversibility": "easy",
+      "verdict": "selected",
+      "trade_offs": [
+        "Deploys couple the web and worker code paths",
+        "Redis is a new datastore technology the team must learn",
+        "4 points of headroom, not unlimited"
+      ]
+    },
+    {
+      "id": "monolith-only-no-replica",
+      "description": "As selected but without the read replica",
+      "components": [
+        "application-runtime",
+        "worker",
+        "relational-database",
+        "cache",
+        "object-storage",
+        "cdn",
+        "observability"
+      ],
+      "complexity_cost": 8,
+      "monthly_cost": {
+        "currency": "GBP",
+        "low": 950,
+        "high": 1200
+      },
+      "reversibility": "easy",
+      "verdict": "rejected",
+      "reason": "Reporting queries would contend with transactional work on the primary. Revisit if reporting moves to a scheduled export.",
+      "trade_offs": [
+        "One less component to operate"
+      ]
+    },
+    {
+      "id": "microservices-with-streaming",
+      "description": "Service-per-domain with an event backbone",
+      "components": [
+        "application-runtime",
+        "worker",
+        "relational-database",
+        "event-stream",
+        "cache",
+        "orchestration-platform",
+        "observability"
+      ],
+      "complexity_cost": 18,
+      "monthly_cost": {
+        "currency": "GBP",
+        "low": 3500,
+        "high": 5000
+      },
+      "reversibility": "hard",
+      "verdict": "rejected",
+      "reason": "18 points against a budget of 13, with no dedicated operations capacity. Neither the throughput nor the team structure justifies it.",
+      "trade_offs": [
+        "Independent scaling and deployment per domain"
+      ]
+    }
+  ],
+  "cost": {
+    "currency": "GBP",
+    "monthly_infrastructure": {
+      "low": 1200,
+      "high": 1500
+    },
+    "monthly_operational": {
+      "low": 1900,
+      "high": 2400
+    },
+    "monthly_total": {
+      "low": 3100,
+      "high": 3900
+    },
+    "price_table_date": "2026-08-09"
+  },
+  "availability": {
+    "target": "99.9%",
+    "achievable": "99.9%",
+    "consistent": true,
+    "explanation": "43 minutes per month. Multi-AZ database with automated failover, multiple instances behind health checks, rolling deploys, and tested restores reach this. 99.99% would not be achievable: recovery still has manual steps."
+  },
+  "triggers": [
+    {
+      "id": "db-cpu-sustained",
+      "metric": "database.cpu.utilisation",
+      "source": "platform metrics dashboard",
+      "comparator": ">",
+      "threshold": 70,
+      "unit": "percent",
+      "window": "sustained over 3 consecutive days",
+      "action": "Optimise queries before scaling; re-run capacity analysis",
+      "owner": "platform team",
+      "status": "armed",
+      "created": "2026-08-09",
+      "fired_at": null
+    },
+    {
+      "id": "connection-utilisation",
+      "metric": "database.connections.used_ratio",
+      "source": "platform metrics dashboard",
+      "comparator": ">",
+      "threshold": 80,
+      "unit": "percent",
+      "window": "sustained 1 hour, recurring",
+      "action": "Evaluate a connection pooler against measured concurrency",
+      "owner": "platform team",
+      "status": "armed",
+      "created": "2026-08-09",
+      "fired_at": null
+    },
+    {
+      "id": "queue-throughput",
+      "metric": "queue.throughput_jobs_per_second",
+      "source": "platform metrics dashboard",
+      "comparator": ">",
+      "threshold": 500,
+      "unit": "jobs/second",
+      "window": "sustained at peak over 1 week",
+      "action": "Re-run capacity analysis for the async subsystem; evaluate broker options",
+      "owner": "platform team",
+      "status": "armed",
+      "created": "2026-08-09",
+      "fired_at": null
+    },
+    {
+      "id": "tenant-concentration",
+      "metric": "largest tenant share of total load",
+      "source": "platform metrics dashboard",
+      "comparator": ">",
+      "threshold": 15,
+      "unit": "percent",
+      "window": "sustained over 1 month",
+      "action": "Evaluate moving the largest tenant to a dedicated database",
+      "owner": "platform team",
+      "status": "armed",
+      "created": "2026-08-09",
+      "fired_at": null
+    },
+    {
+      "id": "replication-lag",
+      "metric": "database.replication_lag",
+      "source": "platform metrics dashboard",
+      "comparator": ">",
+      "threshold": 5,
+      "unit": "seconds",
+      "window": "sustained over 15 minutes",
+      "action": "Review which read paths tolerate this lag",
+      "owner": "platform team",
+      "status": "armed",
+      "created": "2026-08-09",
+      "fired_at": null
+    }
+  ],
+  "knowledge_used": [
+    "proportional-architecture",
+    "complexity-cost",
+    "when-not-to-cache",
+    "database-backed-queues",
+    "when-you-need-streaming",
+    "connection-pooling",
+    "read-replicas",
+    "availability-targets",
+    "operational-cost-model"
+  ],
+  "confidence": "medium",
+  "open_questions": [
+    "Does EU data residency extend to backups and observability data?",
+    "Is any single tenant expected to exceed 15% of total load?"
+  ]
+}

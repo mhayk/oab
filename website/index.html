@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>OAB — Open Architecture Brain</title>
+<meta name="description" content="Open-source architecture intelligence for AI coding agents. Capacity planning, proportional system design, architecture review, and ADRs with measurable revisit triggers.">
+<meta property="og:title" content="OAB — Open Architecture Brain">
+<meta property="og:description" content="Architecture intelligence for AI coding agents.">
+<meta property="og:image" content="https://oab.run/oab-social-card.png">
+<meta property="og:url" content="https://oab.run">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="oab-icon.png">
+<style>
+  /* Single-page site, no build step, no external requests. Fonts are the system stack until
+     Sora and Inter are self-hosted as WOFF2 — the site must not call an external service. */
+  :root{--bg:#0B0F14;--raised:#141A22;--fg:#E6E6E6;--bright:#FFF;--accent:#00D1FF;--muted:#7d8894;--line:#232c38}
+  @media (prefers-color-scheme: light){:root:not([data-theme=dark]){--bg:#fff;--raised:#f5f6f8;--fg:#1b2430;--bright:#0B0F14;--accent:#00758F;--muted:#5a6674;--line:#e2e6ea}}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.65 ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:820px;margin:0 auto;padding:0 24px}
+  header{padding:88px 0 56px;text-align:center}
+  header img{width:min(380px,88%);height:auto}
+  h1{font-size:clamp(1.5rem,4vw,2rem);color:var(--bright);margin:32px 0 8px;font-weight:600;letter-spacing:-.01em}
+  .manifesto{color:var(--muted);font-size:.95rem;margin:0 0 32px}
+  .accent{color:var(--accent)}
+  .cta{display:inline-flex;gap:12px;flex-wrap:wrap;justify-content:center}
+  .btn{display:inline-block;padding:11px 22px;border-radius:8px;text-decoration:none;font-weight:600;font-size:.95rem;border:1px solid var(--accent);color:var(--accent);transition:.15s}
+  .btn:hover{background:var(--accent);color:var(--bg)}
+  .btn.solid{background:var(--accent);color:var(--bg)}
+  .btn.solid:hover{filter:brightness(1.12)}
+  section{padding:44px 0;border-top:1px solid var(--line)}
+  h2{font-size:1.3rem;color:var(--bright);margin:0 0 16px;font-weight:600}
+  p{margin:0 0 16px}
+  pre{background:var(--raised);border:1px solid var(--line);border-radius:10px;padding:16px 18px;overflow-x:auto;font-size:.84rem;line-height:1.6;margin:0 0 16px}
+  code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
+  .lead{font-size:1.05rem}
+  .big{color:var(--bright);font-weight:600}
+  table{width:100%;border-collapse:collapse;font-size:.92rem;margin:0 0 16px}
+  th,td{text-align:left;padding:9px 10px;border-bottom:1px solid var(--line)}
+  th{color:var(--muted);font-weight:600;font-size:.82rem;text-transform:uppercase;letter-spacing:.04em}
+  td.n{text-align:right;color:var(--accent);font-weight:600;font-variant-numeric:tabular-nums}
+  blockquote{margin:0 0 16px;padding:12px 18px;border-left:3px solid var(--accent);background:var(--raised);border-radius:0 8px 8px 0;font-size:.93rem}
+  .note{background:var(--raised);border:1px solid var(--line);border-radius:10px;padding:14px 18px;font-size:.9rem;color:var(--muted)}
+  footer{padding:44px 0 72px;border-top:1px solid var(--line);color:var(--muted);font-size:.88rem;text-align:center}
+  a{color:var(--accent)}
+  footer a{margin:0 10px;display:inline-block}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <picture>
+    <source media="(prefers-color-scheme: light)" srcset="oab-logo-on-light.png">
+    <img src="oab-logo-on-dark.png" alt="OAB — Open Architecture Brain">
+  </picture>
+  <h1>Architecture intelligence for AI coding agents</h1>
+  <p class="manifesto">Open knowledge. Open reasoning. Open architecture.</p>
+  <div class="cta">
+    <a class="btn solid" href="https://github.com/mhayk/oab">GitHub</a>
+    <a class="btn" href="https://github.com/mhayk/oab/tree/main/examples">See the output</a>
+  </div>
+</header>
+
+<section>
+  <h2>The problem</h2>
+  <p class="lead">Ask a coding agent to “design a scalable API” and you will usually get Kubernetes,
+  Kafka, Redis and three microservices — for a product with 100&nbsp;users and one developer.</p>
+  <p>The agent learned the <em>aesthetics</em> of system design from material drawn almost entirely
+  from the largest 0.1% of systems. It did not learn the <em>economics</em>.</p>
+  <p class="big">100 users at 40 requests per session is 0.28 requests per second.</p>
+  <p>A single instance has four orders of magnitude of headroom. OAB computes that, says so, and
+  names the exact measurement that would change the answer.</p>
+</section>
+
+<section>
+  <h2>What was rejected, and when to revisit</h2>
+  <p>The part a generic assistant never produces. From the tiny-startup example:</p>
+  <blockquote><strong><code>cache</code></strong> — At 0.24 peak reads/second there is no measured
+  read pressure to relieve.<br><em>Revisit when: a single query exceeds 10 requests/second at over
+  50&nbsp;ms, or database CPU is sustained above 60% for 3 days.</em></blockquote>
+  <blockquote><strong><code>orchestration-platform</code></strong> — Three times the complexity
+  budget and four times the money budget.<br><em>Revisit when: more than 4 independently deployable
+  services exist and a dedicated operations engineer is on the team.</em></blockquote>
+  <p>A “no” with a threshold is a plan. A “no” without one is an opinion.</p>
+</section>
+
+<section>
+  <h2>Complexity is arithmetic, not advice</h2>
+  <pre><code>available = 4 + 1.5 × (engineers − 2) + 4 × dedicated_ops</code></pre>
+  <p>Two developers get 4 points. A managed database costs 1; a self-managed orchestration platform
+  costs 4. Over budget is rejected by default, and an override must name what is being dropped or
+  who will operate the excess.</p>
+  <p>At roughly <span class="accent">£240 per point per month</span> in engineering attention,
+  self-hosting a database to save £250/month costs about £720/month. The managed service is
+  cheaper — said with arithmetic rather than preference.</p>
+</section>
+
+<section>
+  <h2>Proof, not claims</h2>
+  <p>Behaviour claims without tests are marketing.</p>
+  <table>
+    <tr><th>Measure</th><th style="text-align:right">Value</th></tr>
+    <tr><td>Scenarios passing</td><td class="n">5 / 5</td></tr>
+    <tr><td>— overengineering guards</td><td class="n">3 / 3</td></tr>
+    <tr><td>— underengineering guards</td><td class="n">2 / 2</td></tr>
+    <tr><td>Calculator tests</td><td class="n">43</td></tr>
+    <tr><td>Schema fixtures, both directions</td><td class="n">33</td></tr>
+    <tr><td>Knowledge units</td><td class="n">37</td></tr>
+  </table>
+  <p>Assertions run against artifact fields, never prose. Scenarios are perturbed 100× and 0.01× to
+  prove they respond to magnitude rather than recognising specific numbers.</p>
+  <p>Scenario 07 is <em>“nothing needs to change”</em>. Scenario 08 is <em>“these requirements are
+  inconsistent”</em>. Those are the answers an eager assistant never gives.</p>
+</section>
+
+<section>
+  <h2>Install</h2>
+  <pre><code>/plugin marketplace add mhayk/oab
+/plugin install oab@oab</code></pre>
+  <p class="note"><strong>Pre-release.</strong> Everything is built and the plugin manifest
+  validates, but a clean-machine install has not been verified yet. Follow
+  <a href="https://github.com/mhayk/oab/milestone/1">the M1 milestone</a>.</p>
+</section>
+
+<footer>
+  <p>Apache-2.0 · 100% open source · no hosted service, no accounts, no telemetry</p>
+  <p>
+    <a href="https://github.com/mhayk/oab">GitHub</a>
+    <a href="https://github.com/mhayk/oab/tree/main/docs">Docs</a>
+    <a href="https://github.com/mhayk/oab/tree/main/knowledge">Knowledge</a>
+    <a href="https://github.com/mhayk/oab/tree/main/examples">Examples</a>
+    <a href="https://github.com/mhayk/oab/blob/main/CONTRIBUTING.md">Contribute</a>
+  </p>
+</footer>
+
+</div>
+</body>
+</html>
