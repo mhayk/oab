@@ -30,6 +30,27 @@ name specific units we want.
 Note the hard rule: integrations contain no knowledge and no reasoning. If you find yourself
 writing architecture guidance inside `integrations/`, it belongs in `frameworks/` or `knowledge/`.
 
+### I want to add an evaluation scenario
+
+Scenarios are how OAB's behaviour is defended against regression, and they are a genuinely useful
+contribution — especially ones that guard against **under**-building, which are the harder half.
+
+→ Read **[evaluations/README.md](evaluations/README.md)**
+
+A scenario is four files: the input, the assertions, a schema-valid baseline artifact, and a
+`notes.md` saying what failure it protects against and how it could be gamed.
+
+### I want to improve the site or the translations
+
+The site is three static pages sharing one stylesheet — no build step, no framework.
+
+→ Read **[website/README.md](website/README.md)**
+
+**English is canonical, and translations are updated in the same change as the original.** That
+applies to `README.md` → `README.pt-BR.md` / `README.es.md`, and to `website/index.html` →
+`website/pt/` / `website/es/`. Each translated file carries a sync-date comment at the top. Three
+copies that drift silently are worse than one honest language.
+
 ### I found a bug or want to propose a change
 
 Open an issue first for anything larger than a typo. A short discussion before the pull request
@@ -37,12 +58,21 @@ saves everyone time.
 
 ## Rules that apply to every contribution
 
-### 1. Vendor neutrality
+### 1. Vendor neutrality in the core
 
-No AI vendor or model name (Claude, Anthropic, OpenAI, GPT, Codex, Cursor, Copilot, Gemini, …)
-may appear outside `integrations/`. CI enforces this.
+No AI vendor or model name (Claude, Anthropic, OpenAI, GPT, Codex, Cursor, Copilot, Gemini, …) may
+appear in the **client-agnostic core**: `knowledge/`, `frameworks/`, `calculators/`, `schemas/`,
+`templates/`, `evaluations/`. `tools/check_neutrality.py` enforces it.
 
-The test: **deleting `integrations/` must leave a complete, coherent, useful project.**
+The test behind the rule: **deleting `integrations/` must leave a complete, coherent, useful
+project.**
+
+It deliberately does **not** police project documentation. A README that cannot say which agents
+OAB works with is not neutral, it is unhelpful — so `README.md`, `docs/`, `ROADMAP.md` and
+`website/` may name clients freely.
+
+A line containing `neutrality-ok` is exempt from the check. Use it with a stated reason, so every
+exemption is visible in review.
 
 Naming a cloud provider or database product as *factual comparative data* inside a knowledge unit
 is fine. Recommending one as a default is not.
@@ -109,14 +139,50 @@ Explain **why** in the body when the change is not self-evident. Do not add co-a
 
 ## Running checks locally
 
-```bash
-pip install -r requirements-dev.txt      # once
+CI runs all of these. Running them before you push is faster than a round trip.
 
-python3 tools/validate_knowledge.py      # frontmatter + referential integrity
-python3 tools/check_neutrality.py        # no vendor names outside integrations/
-python3 tools/check_stdlib_only.py       # no third-party imports in calculators/
-python3 -m pytest calculators/tests      # calculator unit and property tests
+```bash
+pip install -r requirements-dev.txt          # once
+
+# contracts and content
+python3 tools/validate_knowledge.py          # frontmatter, links between units, body structure
+python3 tools/validate_artifacts.py          # schema fixtures, both directions
+python3 tools/build_index.py --check         # generated knowledge indexes are current
+python3 tools/check_price_staleness.py       # price tables are not stale
+
+# structural guarantees
+python3 tools/check_neutrality.py            # core is client-agnostic
+python3 tools/check_stdlib_only.py           # calculators import stdlib only
+python3 tools/check_links.py                 # every relative link and heading anchor resolves
+
+# behaviour
+python3 evaluations/runner/run_scenarios.py --perturb
+python3 -m pytest calculators/tests -q
+python3 -m pytest tools/tests -q
 ```
+
+Regenerate the knowledge indexes after adding or editing a unit — CI fails if they are stale:
+
+```bash
+python3 tools/build_index.py
+```
+
+### Trying the plugin from your checkout
+
+```bash
+claude --plugin-dir ./     # loads this working tree, not the installed copy
+/reload-plugins            # after editing a skill
+```
+
+Use `--plugin-dir` rather than the marketplace-installed copy while developing: it tests what you
+have actually changed, and it is also the only path where the artifact-validation hook currently
+runs ([#45](https://github.com/mhayk/oab/issues/45)).
+
+### Demos
+
+`demo/` holds VHS tapes; the GIFs are generated artifacts. **Nothing in them is staged** — the
+install tape genuinely removes and reinstalls the plugin. Re-render with `./demo/render.sh` when
+the demoed behaviour changes, and look at every GIF before committing.
 
 ## Code of conduct
 
