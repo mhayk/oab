@@ -128,6 +128,18 @@ operates the excess, or which engineer is being hired.
 State the decision, the rationale **referencing the numbers**, the trade-offs accepted, and an
 honest confidence.
 
+**Check the decision against every stated hard constraint, and record the result as a field.**
+
+Where a budget was stated, compare the **high** end of the cost estimate against it and set
+`cost.stated_budget` and `cost.within_budget`. When the range top exceeds the budget, set
+`cost.within_budget: false` and write `cost.budget_note` — by how much, why, and what would bring
+it inside.
+
+A constraint the design might breach must be surfaced, not left for the reader to notice by
+comparing two numbers. This is the same rule `availability.consistent` applies to an unreachable
+availability target, and it exists because the first live run reasoned about the budget correctly
+in prose while recording nothing an assertion could check.
+
 Low confidence must recommend **measurement before commitment** rather than hedged prose.
 
 Also record `rejected_components[]`: what was considered and refused, each with the measurement
