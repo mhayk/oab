@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="256" height="256" role="img" aria-label="OAB icon">
+  <title>OAB</title>
+  <desc>App and favicon tile. Optically simplified from oab-mark.svg: the floating planes are
+        dropped, the dotted axis becomes solid, and the frame is thickened, because dots and
+        fine strokes disappear below about 48px.</desc>
+  <rect width="256" height="256" rx="56" fill="#0B0F14"/>
+  <path d="M128 46 L128 210" fill="none" stroke="#00D1FF" stroke-width="9" stroke-linecap="round"/>
+  <g fill="none" stroke="#FFFFFF" stroke-width="19" stroke-linejoin="round" stroke-linecap="round">
+    <path d="M128 46 L199 87 L199 169 L128 210 L57 169 L57 87 Z"/>
+    <path d="M128 128 L57 87 M128 128 L199 87"/>
+  </g>
+  <g fill="#00D1FF">
+    <path d="M128 33 L141 46 L128 59 L115 46 Z"/>
+    <path d="M128 197 L141 210 L128 223 L115 210 Z"/>
+  </g>
+</svg>

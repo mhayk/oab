@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="256" height="256" role="img" aria-label="OAB mark">
+  <title>OAB</title>
+  <desc>Exploded isometric cube on a vertical axis — the OAB mark.</desc>
+  <!-- Frame uses currentColor so the mark adapts to light and dark themes.
+       Accent is fixed at the brand cyan #00D1FF.
+       True isometric geometry: hexagon radius 56, width = sqrt(3) * R.
+       The floating planes are slightly wider than the cube (half-width 62 vs the
+       cube's 48.5, a ratio of 1.28) so they read as planes the cube sits between,
+       without overpowering it. -->
+  <g fill="none" stroke="currentColor" stroke-width="10" stroke-linejoin="round" stroke-linecap="round">
+    <!-- floating top plane -->
+    <path d="M128 26 L190 44 L128 62 L66 44 Z"/>
+    <!-- cube body: isometric hexagon -->
+    <path d="M128 72 L176.5 100 L176.5 156 L128 184 L79.5 156 L79.5 100 Z"/>
+    <!-- the two upper internal edges; the third is the cyan axis below -->
+    <path d="M128 128 L79.5 100 M128 128 L176.5 100"/>
+    <!-- floating bottom plane -->
+    <path d="M128 194 L190 212 L128 230 L66 212 Z"/>
+  </g>
+  <!-- vertical axis: the cube's third internal edge, extended through both planes -->
+  <path d="M128 44 L128 212" fill="none" stroke="#00D1FF" stroke-width="7"
+        stroke-linecap="round" stroke-dasharray="0.5 14"/>
+  <!-- accent nodes at the centre of each floating plane -->
+  <g fill="#00D1FF">
+    <path d="M128 37 L139 44 L128 51 L117 44 Z"/>
+    <path d="M128 205 L139 212 L128 219 L117 212 Z"/>
+  </g>
+</svg>
