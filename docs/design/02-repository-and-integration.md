@@ -103,8 +103,18 @@ The full tree is in [§37 Repository Tree](09-specifications.md#37-repository-tr
 | Validation | `claude plugin validate ./ --strict` | A CI job |
 | Local dev | `claude --plugin-dir ./`, `/reload-plugins` | Contributor workflow |
 
-Deliberately **not** used in M1: hooks, MCP servers, LSP servers, monitors, output styles,
-`userConfig`, plugin `settings.json`. None solves an M1 problem.
+Deliberately **not** used in M1: MCP servers, LSP servers, monitors, output styles, `userConfig`,
+plugin `settings.json`.
+
+> **Correction (2026-08-09).** This list originally included **hooks**, on the reasoning that none
+> of these solved an M1 problem. That was wrong, and four live runs proved it: `/oab:design` omitted
+> a schema-required field every time, under escalating instruction in the framework, in the skill,
+> ahead of the prose, with the schema rejecting the artifact. Prompt-level instruction does not
+> reliably guarantee a field appears in an artifact — risk T9, measured rather than hypothesised.
+>
+> A `PostToolUse` hook validating `.oab/*.json` on write is a **mechanism** rather than more words,
+> and it is the only approach tried that could close the gap. See issue #44 and
+> `hooks/hooks.json`.
 
 ### 10.2 The packaging decision (the one that constrains everything)
 

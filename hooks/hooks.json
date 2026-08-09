@@ -1,0 +1,18 @@
+{
+  "description": "Validates OAB output artifacts the moment they are written, returning the specific missing fields to the agent. The mechanism behind the output contract — see issue #44.",
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Write|Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"${CLAUDE_PLUGIN_ROOT}/tools/hook_validate_artifact.py\"",
+            "timeout": 15,
+            "statusMessage": "Validating OAB artifact…"
+          }
+        ]
+      }
+    ]
+  }
+}

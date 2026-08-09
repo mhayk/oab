@@ -11,7 +11,7 @@
       "name": "oab",
       "source": "./",
       "description": "Architecture intelligence: sizing, design, review, and ADRs \u2014 proportional to your actual scale",
-      "version": "0.1.4",
+      "version": "0.1.5",
       "license": "Apache-2.0",
       "homepage": "https://oab.run",
       "repository": "https://github.com/mhayk/oab",
@@ -28,7 +28,8 @@
       ],
       "agents": [
         "./integrations/claude-code/agents/repo-scanner.md"
-      ]
+      ],
+      "hooks": "./hooks/hooks.json"
     }
   ]
 }
