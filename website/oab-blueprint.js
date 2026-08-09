@@ -1,129 +1,118 @@
-/* The blueprint that assembles itself.
+/* The same brief, two answers.
  *
- * A scroll-scrubbed scene showing what OAB does when it helps design a system: a vague brief
- * resolves into measured numbers, a complexity budget locks, a proportional architecture draws
- * itself as an isometric cube — and the components the numbers do NOT justify stay ghosted beside
- * it, each labelled with the measurement that would summon it. You watch it refuse to over-build.
+ * A scroll-scrubbed contrast, because the value of OAB is invisible until you see the two answers
+ * side by side — that is risk P1 in docs/design/07-roadmap-and-risks.md, and this section is its
+ * prescribed fix. The left panel is the developer's dread made visible: a stack that piles up fast
+ * while counters climb past a budget nobody checked. The right is the measured answer, with the
+ * refusals and the number that would reverse each one.
  *
- * GSAP + ScrollTrigger are vendored in vendor/ (no external request at runtime — the site's own
- * principle). Pinning is CSS position:sticky; ScrollTrigger only scrubs the timeline, which is the
- * robust pattern that avoids pin-induced layout jumps.
+ * The pain has to land before the resolution, so the timeline holds on the left panel before
+ * answering it.
  *
- * Quality floor, honoured even in the kinetic direction:
- *   - prefers-reduced-motion: no scrub, no scrub-jacking — the final composed state is rendered
- *     statically and the tall scroll track collapses.
- *   - The scene is fully legible without JS: markup ships in its end state, and this script sets
- *     the initial (pre-animation) state itself, so a script failure leaves everything visible.
+ * GSAP + ScrollTrigger are vendored in vendor/ (no external request at runtime). The stage pins
+ * with CSS sticky; ScrollTrigger only scrubs, which avoids pin-induced layout jumps.
+ *
+ * Quality floor: the markup ships in its composed end state and this script winds it back, so no
+ * JS or prefers-reduced-motion leaves the whole comparison readable and compact.
  */
 (function () {
   "use strict";
 
   var root = document.querySelector("[data-blueprint]");
-  if (!root || !window.gsap || !window.ScrollTrigger) return; // graceful: HTML stays in end state
+  if (!root || !window.gsap || !window.ScrollTrigger) return;
 
-  var reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-  if (reduce) return; // markup is already the composed end state; leave it
+  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
 
   gsap.registerPlugin(ScrollTrigger);
 
-  // reserve the tall scroll track only now that we know the scrubbed version will run
   var track = root.querySelector(".bp-track");
   if (track) track.classList.add("is-live");
 
   var q = function (s) { return root.querySelector(s); };
   var qa = function (s) { return Array.prototype.slice.call(root.querySelectorAll(s)); };
 
-  // --- set the pre-animation state (the HTML ships composed; we wind it back) ----------------
   var brief = q(".bp-brief");
-  var numbers = qa(".bp-metric");
-  var gate = q(".bp-gate-fill");
-  var gateLabel = q(".bp-gate .bp-gate-value");
-  var cubePaths = qa(".bp-cube [data-draw]");
-  var cubeAccents = qa(".bp-cube [data-accent]");
+  var bloat = q(".bp-panel-bloat");
+  var oab = q(".bp-panel-oab");
+  var stack = qa(".bp-stack li");
   var built = qa(".bp-built li");
+  var fact = q(".bp-fact");
   var rejects = qa(".bp-reject");
-  var steps = qa(".bp-step");
   var caption = q(".bp-caption");
+  var counts = qa(".bp-count");
 
-  gsap.set(brief, { opacity: 0.35, filter: "blur(6px)", letterSpacing: "0.12em" });
-  gsap.set(numbers, { opacity: 0, y: 12 });
-  gsap.set(gate, { scaleX: 0, transformOrigin: "left center" });
-  cubePaths.forEach(function (p) {
-    var len = p.getTotalLength();
-    gsap.set(p, { strokeDasharray: len, strokeDashoffset: len, opacity: 1 });
-  });
-  gsap.set(cubeAccents, { opacity: 0, scale: 0, transformOrigin: "center" });
-  gsap.set(built, { opacity: 0, x: -14 });
-  gsap.set(rejects, { opacity: 0, x: 14 });
-  gsap.set(caption, { opacity: 0, y: 10 });
+  var bloatMeters = q(".bp-panel-bloat .bp-meters");
+  var punch = q(".bp-punch");
+  var oabMeters = q(".bp-panel-oab .bp-meters");
+  var rejectBlock = q(".bp-rejects");
 
-  // Blocks that only arrive at the end must not reserve their height from the start, or the
-  // scene is a mostly-empty panel for two thirds of the scroll. Collapse them to zero height and
-  // let GSAP animate back to auto when the refuse phase begins.
-  var rejectsBlock = q(".bp-rejects");
-  var lateBlocks = [rejectsBlock, caption].filter(Boolean);
-  gsap.set(lateBlocks, { height: 0, marginTop: 0, paddingTop: 0, borderTopWidth: 0 });
+  // --- wind the composed markup back to its start ------------------------------------------
+  gsap.set(brief, { opacity: 0, y: 10 });
+  gsap.set([bloat, oab], { opacity: 0 });
+  gsap.set(stack, { opacity: 0, y: -8 });
+  gsap.set(built, { opacity: 0, x: -10 });
+  gsap.set(fact, { opacity: 0 });
+  gsap.set(rejects, { opacity: 0, x: 10 });
 
-  // Counters must be TWEENS IN THE TIMELINE, not tweens fired from a callback. A tween created
-  // inside .add(fn) runs on its own clock: it plays once, ignores the scrub, and never reverses
-  // when you scroll back — so the number simply appears at its final value. Returning the tween
-  // and adding it to the timeline is what makes it count with the scroll, both ways.
+  // Blocks that arrive late collapse to nothing, so each panel is sized by what is visible rather
+  // than by its final content — otherwise both are mostly empty box for half the scroll.
+  var late = [bloatMeters, punch, oabMeters, rejectBlock, caption].filter(Boolean);
+  gsap.set(late, { height: 0, marginTop: 0, paddingTop: 0, borderTopWidth: 0 });
+
+  // Counters are tweens IN the timeline. Created inside a callback they run on their own clock:
+  // they fire once, ignore the scrub and never reverse, so the number just appears at its end
+  // value. That bug shipped once already.
   function counterTween(el) {
     var end = parseFloat(el.getAttribute("data-to"));
     var dp = parseInt(el.getAttribute("data-dp") || "0", 10);
-    var suffix = el.getAttribute("data-suffix") || "";
+    var prefix = el.getAttribute("data-prefix") || "";
     var obj = { v: 0 };
     return gsap.to(obj, {
-      v: end, duration: 0.55, ease: "power1.out",
-      onUpdate: function () { el.textContent = obj.v.toFixed(dp) + suffix; }
+      v: end, duration: 0.5, ease: "power1.out",
+      onUpdate: function () {
+        var n = obj.v.toFixed(dp);
+        if (dp === 0) n = Number(n).toLocaleString("en-GB");
+        el.textContent = prefix + n;
+      }
     });
   }
+  counts.forEach(function (el) { el.textContent = (el.getAttribute("data-prefix") || "") + "0"; });
 
-  function activateStep(i) {
-    steps.forEach(function (s, j) { s.classList.toggle("is-active", j === i); });
-  }
-
-  // --- the timeline, scrubbed by scroll ------------------------------------------------------
-  // Trigger on the TRACK, not the whole section: the track is exactly the span over which the
-  // stage is stuck, so the timeline maps 1:1 to the pinned duration. Triggering on the section
-  // (which includes the intro block) burned the first ~17% of the timeline before the scene was
-  // ever pinned, so the brief resolved off-screen.
   var tl = gsap.timeline({
-    scrollTrigger: {
-      trigger: track || root,
-      start: "top top",
-      end: "bottom bottom",
-      scrub: 0.6
-    }
+    scrollTrigger: { trigger: track || root, start: "top top", end: "bottom bottom", scrub: 0.6 }
   });
 
-  // FRAME → QUANTIFY: the vague brief resolves, numbers appear and count up with the scroll
-  tl.add(function () { activateStep(0); })
-    .to(brief, { opacity: 1, filter: "blur(0px)", letterSpacing: "0em", duration: 0.5 })
-    .add(function () { activateStep(1); })
-    .to(numbers, { opacity: 1, y: 0, duration: 0.4, stagger: 0.12 }, "quant");
-  numbers.forEach(function (el, i) {
-    tl.add(counterTween(el), "quant+=" + (i * 0.12));
+  // 1 — the brief, stated once
+  tl.to(brief, { opacity: 1, y: 0, duration: 0.4 });
+
+  // 2 — THE PAIN. The stack piles up; the counters climb past a budget nobody checked.
+  tl.to(bloat, { opacity: 1, duration: 0.3 }, "pain")
+    .to(stack, { opacity: 1, y: 0, duration: 0.22, stagger: 0.11 }, "pain+=0.15")
+    .to(bloatMeters, { height: "auto", marginTop: "", duration: 0.3 }, "pain+=0.95");
+  qa(".bp-panel-bloat .bp-count").forEach(function (el, i) {
+    tl.add(counterTween(el), "pain+=" + (1.0 + i * 0.15));
+  });
+  tl.to(punch, { height: "auto", paddingTop: "", borderTopWidth: "", duration: 0.3 }, "pain+=1.5");
+
+  // hold on the pain before answering it — the dread needs a beat to land
+  tl.to({}, { duration: 0.5 });
+
+  // 3 — the measured answer
+  tl.to(oab, { opacity: 1, duration: 0.35 }, "answer")
+    .to(fact, { opacity: 1, duration: 0.3 }, "answer+=0.1");
+  qa(".bp-panel-oab .bp-fact .bp-count").forEach(function (el) {
+    tl.add(counterTween(el), "answer+=0.15");
+  });
+  tl.to(built, { opacity: 1, x: 0, duration: 0.25, stagger: 0.1 }, "answer+=0.4")
+    .to(oabMeters, { height: "auto", marginTop: "", duration: 0.3 }, "answer+=0.85");
+  qa(".bp-panel-oab .bp-meters .bp-count").forEach(function (el, i) {
+    tl.add(counterTween(el), "answer+=" + (0.9 + i * 0.15));
   });
 
-  // BUDGET: the gate fills and locks
-  tl.add(function () { activateStep(2); })
-    .to(gate, { scaleX: 1, duration: 0.5, ease: "power2.inOut" })
-    .add(function () { if (gateLabel) gateLabel.classList.add("is-locked"); });
+  // 4 — the refusals, each with the number that would reverse it
+  tl.to(rejectBlock, { height: "auto", paddingTop: "", borderTopWidth: "", duration: 0.3 }, "refuse")
+    .to(rejects, { opacity: 1, x: 0, duration: 0.25, stagger: 0.12 }, "refuse+=0.15")
+    .to(caption, { height: "auto", marginTop: "", duration: 0.4 }, "refuse+=0.6");
 
-  // BUILD: the isometric cube draws itself, components label in
-  tl.add(function () { activateStep(3); })
-    .to(cubePaths, { strokeDashoffset: 0, duration: 0.85, stagger: 0.1, ease: "power1.inOut" }, "build")
-    .to(cubeAccents, { opacity: 1, scale: 1, duration: 0.35, stagger: 0.12 }, "build+=0.75")
-    .to(built, { opacity: 1, x: 0, duration: 0.35, stagger: 0.12 }, "build+=0.55");
-
-  // REFUSE: the rejected components ghost in with their triggers; the caption lands
-  tl.add(function () { activateStep(4); })
-    .to(lateBlocks, { height: "auto", marginTop: "", paddingTop: "", borderTopWidth: "",
-                      duration: 0.45, ease: "power2.out" }, "refuse")
-    .to(rejects, { opacity: 1, x: 0, duration: 0.4, stagger: 0.12 }, "refuse+=0.15")
-    .to(caption, { opacity: 1, y: 0, duration: 0.5 }, "refuse+=0.5");
-
-  // keep ScrollTrigger honest if fonts/images shift layout after load
   window.addEventListener("load", function () { ScrollTrigger.refresh(); });
 })();

@@ -38,93 +38,86 @@
   </div>
 </header>
 
-<section>
-  <h2>O problema</h2>
-  <p class="lead">Peça a um agente de código para “projetar uma API escalável” e você geralmente
-  recebe Kubernetes, Kafka, Redis e três microsserviços — para um produto com 100&nbsp;usuários e
-  um desenvolvedor.</p>
-  <p>O agente aprendeu a <em>estética</em> de system design em material extraído quase inteiramente
-  do 0,1% maior dos sistemas. Ele não aprendeu a <em>economia</em>.</p>
-  <p class="big">100 usuários a 40 requisições por sessão são 0,28 requisições por segundo.</p>
-  <p>Uma única instância tem quatro ordens de grandeza de folga. O OAB calcula isso, diz isso, e
-  nomeia a medição exata que mudaria a resposta.</p>
-</section>
-
-<section class="blueprint" data-blueprint aria-label="Como o OAB transforma um pedido em um design proporcional">
+<section class="blueprint" data-blueprint aria-label="O mesmo pedido, duas respostas">
   <div class="bp-intro">
-    <p class="bp-eyebrow">Do pedido à arquitetura</p>
-    <h2>Ele desenha só o que os números justificam</h2>
-    <p>Um pedido vago vira números medidos, um orçamento de complexidade trava, e uma arquitetura proporcional se monta sozinha — enquanto os componentes que os números não justificam ficam desenhados, porém recusados, cada um com a medição que os convocaria. Role para ver a decisão acontecer.</p>
+    <p class="bp-eyebrow">O mesmo pedido, duas respostas</p>
+    <h2>Você pediu uma arquitetura. Recebeu o trabalho de um time de plataforma.</h2>
+    <p>Vocês são duas pessoas com £50 por mês. Veja o que um agente de código entrega — e o que ele nunca diz: se algo daquilo se justifica, ou o que faria justificar.</p>
   </div>
 
   <div class="bp-track">
     <div class="bp-stage">
 
-      <ol class="bp-steps" aria-hidden="true">
-        <li class="bp-step"><span class="bp-step-n">01</span> Enquadrar</li>
-        <li class="bp-step"><span class="bp-step-n">02</span> Quantificar</li>
-        <li class="bp-step"><span class="bp-step-n">03</span> Orçamento</li>
-        <li class="bp-step"><span class="bp-step-n">04</span> Construir</li>
-        <li class="bp-step"><span class="bp-step-n">05</span> Recusar</li>
-      </ol>
+      <p class="bp-brief"><span class="bp-brief-label">o pedido</span>
+      <b>“projete a arquitetura do meu app de compartilhar receitas”</b><br>
+      <span class="bp-brief-meta">100 usuários · 2 devs · £50/mês · sem meta de disponibilidade</span></p>
 
-      <div class="bp-scene">
-        <p class="bp-brief">pedido: <b>“um app web de compartilhar receitas”</b> — 100 usuários, 2 devs, £50/mês</p>
+      <div class="bp-split">
 
-        <div class="bp-metrics">
-          <div class="bp-metric-row">
-            <span class="bp-metric" data-to="0.28" data-dp="2" data-suffix="">0.28</span>
-            <span class="bp-metric-label">req. de pico / segundo</span>
-          </div>
-          <div class="bp-metric-row">
-            <span class="bp-metric" data-to="0.66" data-dp="2" data-suffix="">0.66</span>
-            <span class="bp-metric-label">GB / ano de storage</span>
-          </div>
-          <div class="bp-metric-row">
-            <span class="bp-metric" data-to="27" data-dp="0" data-suffix="">27</span>
-            <span class="bp-metric-label">£ / mês</span>
-          </div>
+        <div class="bp-panel bp-panel-bloat">
+          <p class="bp-panel-head">A resposta de sempre</p>
+          <ul class="bp-stack">
+            <li>cluster Kubernetes</li>
+            <li>Kafka</li>
+            <li>Redis</li>
+            <li>Elasticsearch</li>
+            <li>API gateway</li>
+            <li>3 microsserviços</li>
+            <li>service mesh</li>
+          </ul>
+          <dl class="bp-meters">
+            <div class="bp-meter">
+              <dt>complexidade</dt>
+              <dd><span class="bp-count bp-over" data-to="18" data-dp="0">18</span>
+                  <span class="bp-vs">/ 4 que seu time aguenta</span></dd>
+            </div>
+            <div class="bp-meter">
+              <dt>custo</dt>
+              <dd><span class="bp-count bp-over" data-to="2400" data-dp="0" data-prefix="£">£2,400</span>
+                  <span class="bp-vs">/ £50 de orçamento</span></dd>
+            </div>
+          </dl>
+          <p class="bp-punch">Operado por: <b>vocês dois</b>. Ninguém disse se você precisa de algo disso.</p>
         </div>
 
-        <div class="bp-gate">
-          <div class="bp-gate-head"><span>orçamento de complexidade</span><span class="bp-gate-value">4 / 4 — travado</span></div>
-          <div class="bp-gate-bar"><div class="bp-gate-fill"></div></div>
-        </div>
-
-        <div class="bp-build">
-          <svg class="bp-cube" viewBox="0 0 256 256" role="img" aria-label="A arquitetura proporcional, como um cubo isométrico">
-            <path data-axis d="M128 44 L128 212"/>
-            <g>
-              <path data-draw d="M128 26 L190 44 L128 62 L66 44 Z"/>
-              <path data-draw d="M128 72 L176.5 100 L176.5 156 L128 184 L79.5 156 L79.5 100 Z"/>
-              <path data-draw d="M128 128 L79.5 100"/>
-              <path data-draw d="M128 128 L176.5 100"/>
-              <path data-draw d="M128 194 L190 212 L128 230 L66 212 Z"/>
-            </g>
-            <path data-accent d="M128 37 L139 44 L128 51 L117 44 Z"/>
-            <path data-accent d="M128 205 L139 212 L128 219 L117 212 Z"/>
-          </svg>
+        <div class="bp-panel bp-panel-oab">
+          <p class="bp-panel-head">O que o OAB responde</p>
+          <p class="bp-fact"><span class="bp-count bp-key" data-to="0.28" data-dp="2">0.28</span>
+          <span class="bp-vs">requisições de pico por segundo — quatro ordens de grandeza de folga em uma instância</span></p>
           <ul class="bp-built">
             <li><span class="bp-tick">▸</span> runtime da aplicação</li>
             <li><span class="bp-tick">▸</span> banco gerenciado</li>
             <li><span class="bp-tick">▸</span> object storage</li>
             <li><span class="bp-tick">▸</span> CDN</li>
           </ul>
+          <dl class="bp-meters">
+            <div class="bp-meter">
+              <dt>complexidade</dt>
+              <dd><span class="bp-count bp-ok" data-to="4" data-dp="0">4</span>
+                  <span class="bp-vs">/ 4 — no limite, sem folga</span></dd>
+            </div>
+            <div class="bp-meter">
+              <dt>custo</dt>
+              <dd><span class="bp-count bp-ok" data-to="27" data-dp="0" data-prefix="£">£27</span>
+                  <span class="bp-vs">/ £50 de orçamento</span></dd>
+            </div>
+          </dl>
+          <div class="bp-rejects">
+            <p class="bp-rejects-head">recusados — e a medição que mudaria isso</p>
+            <ul>
+              <li class="bp-reject"><span class="bp-x">✕</span> <span class="bp-kind">Kubernetes</span>
+                <span class="bp-trigger">em <em>&gt;4 serviços + um engenheiro de ops dedicado</em></span></li>
+              <li class="bp-reject"><span class="bp-x">✕</span> <span class="bp-kind">Kafka</span>
+                <span class="bp-trigger">em <em>500 eventos/segundo</em></span></li>
+              <li class="bp-reject"><span class="bp-x">✕</span> <span class="bp-kind">Redis</span>
+                <span class="bp-trigger">em <em>10 req/s numa chave</em></span></li>
+            </ul>
+          </div>
         </div>
 
-        <div class="bp-rejects">
-          <p class="bp-rejects-head">recusados — e quando revisitar</p>
-          <ul class="bp-rejects">
-            <li class="bp-reject"><span class="bp-x">✕</span> <span class="bp-kind">cache</span>
-              <span class="bp-trigger">revisitar a <em>10 req/s numa chave</em></span></li>
-            <li class="bp-reject"><span class="bp-x">✕</span> <span class="bp-kind">event stream</span>
-              <span class="bp-trigger">revisitar a <em>500 eventos/s</em></span></li>
-            <li class="bp-reject"><span class="bp-x">✕</span> <span class="bp-kind">plataforma de orquestração</span>
-              <span class="bp-trigger">revisitar a <em>&gt;4 serviços + um engenheiro de ops dedicado</em></span></li>
-          </ul>
-        </div>
-        <p class="bp-caption"><b>Isto é arquitetura proporcional:</b> quatro componentes que os números justificam, três recusados com o limiar que mudaria a resposta — a parte que um assistente genérico nunca produz.</p>
       </div>
+
+      <p class="bp-caption"><b>É essa a diferença inteira.</b> Não uma lista menor — uma lista com um motivo para cada item, e um número que mudaria a resposta. Dá para discordar de um limiar. Não dá para discordar de um achismo.</p>
 
     </div>
   </div>

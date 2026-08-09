@@ -37,96 +37,89 @@
   </div>
 </header>
 
-<section>
-  <h2>The problem</h2>
-  <p class="lead">Ask a coding agent to “design a scalable API” and you will usually get Kubernetes,
-  Kafka, Redis and three microservices — for a product with 100&nbsp;users and one developer.</p>
-  <p>The agent learned the <em>aesthetics</em> of system design from material drawn almost entirely
-  from the largest 0.1% of systems. It did not learn the <em>economics</em>.</p>
-  <p class="big">100 users at 40 requests per session is 0.28 requests per second.</p>
-  <p>A single instance has four orders of magnitude of headroom. OAB computes that, says so, and
-  names the exact measurement that would change the answer.</p>
-</section>
-
-<section class="blueprint" data-blueprint aria-label="How OAB turns a brief into a proportional design">
+<section class="blueprint" data-blueprint aria-label="The same brief, two answers">
   <div class="bp-intro">
-    <p class="bp-eyebrow">From brief to architecture</p>
-    <h2>It draws only what the numbers justify</h2>
-    <p>A vague request becomes measured numbers, a complexity budget locks, and a proportional
-    architecture assembles itself — while the components the numbers do not justify stay drawn but
-    refused, each with the measurement that would summon it. Scroll to watch it decide.</p>
+    <p class="bp-eyebrow">The same brief, two answers</p>
+    <h2>You asked for an architecture. You got a platform team's job.</h2>
+    <p>You are two people with £50 a month. Watch what a coding agent hands you — and what it
+    never tells you: whether any of it is justified, or what would make it so.</p>
   </div>
 
   <div class="bp-track">
     <div class="bp-stage">
 
-      <ol class="bp-steps" aria-hidden="true">
-        <li class="bp-step"><span class="bp-step-n">01</span> Frame</li>
-        <li class="bp-step"><span class="bp-step-n">02</span> Quantify</li>
-        <li class="bp-step"><span class="bp-step-n">03</span> Budget</li>
-        <li class="bp-step"><span class="bp-step-n">04</span> Build</li>
-        <li class="bp-step"><span class="bp-step-n">05</span> Refuse</li>
-      </ol>
+      <p class="bp-brief"><span class="bp-brief-label">the brief</span>
+      <b>“design the architecture for my recipe-sharing app”</b><br>
+      <span class="bp-brief-meta">100 users · 2 developers · £50/month · no availability target</span></p>
 
-      <div class="bp-scene">
-        <p class="bp-brief">brief: <b>“a recipe-sharing web app”</b> — 100 users, 2 developers, £50/mo</p>
+      <div class="bp-split">
 
-        <div class="bp-metrics">
-          <div class="bp-metric-row">
-            <span class="bp-metric" data-to="0.28" data-dp="2" data-suffix="">0.28</span>
-            <span class="bp-metric-label">peak requests / second</span>
-          </div>
-          <div class="bp-metric-row">
-            <span class="bp-metric" data-to="0.66" data-dp="2" data-suffix="">0.66</span>
-            <span class="bp-metric-label">GB / year storage</span>
-          </div>
-          <div class="bp-metric-row">
-            <span class="bp-metric" data-to="27" data-dp="0" data-suffix="">27</span>
-            <span class="bp-metric-label">£ / month</span>
-          </div>
+        <div class="bp-panel bp-panel-bloat">
+          <p class="bp-panel-head">The usual answer</p>
+          <ul class="bp-stack">
+            <li>Kubernetes cluster</li>
+            <li>Kafka</li>
+            <li>Redis</li>
+            <li>Elasticsearch</li>
+            <li>API gateway</li>
+            <li>3 microservices</li>
+            <li>service mesh</li>
+          </ul>
+          <dl class="bp-meters">
+            <div class="bp-meter">
+              <dt>complexity</dt>
+              <dd><span class="bp-count bp-over" data-to="18" data-dp="0">18</span>
+                  <span class="bp-vs">/ 4 your team can carry</span></dd>
+            </div>
+            <div class="bp-meter">
+              <dt>cost</dt>
+              <dd><span class="bp-count bp-over" data-to="2400" data-dp="0" data-prefix="£">£2,400</span>
+                  <span class="bp-vs">/ £50 budget</span></dd>
+            </div>
+          </dl>
+          <p class="bp-punch">Operated by: <b>you two</b>. Nobody said whether you need any of it.</p>
         </div>
 
-        <div class="bp-gate">
-          <div class="bp-gate-head"><span>complexity budget</span><span class="bp-gate-value">4 / 4 — locked</span></div>
-          <div class="bp-gate-bar"><div class="bp-gate-fill"></div></div>
-        </div>
-
-        <div class="bp-build">
-          <svg class="bp-cube" viewBox="0 0 256 256" role="img" aria-label="The proportional architecture, as an isometric cube">
-            <path data-axis d="M128 44 L128 212"/>
-            <g>
-              <path data-draw d="M128 26 L190 44 L128 62 L66 44 Z"/>
-              <path data-draw d="M128 72 L176.5 100 L176.5 156 L128 184 L79.5 156 L79.5 100 Z"/>
-              <path data-draw d="M128 128 L79.5 100"/>
-              <path data-draw d="M128 128 L176.5 100"/>
-              <path data-draw d="M128 194 L190 212 L128 230 L66 212 Z"/>
-            </g>
-            <path data-accent d="M128 37 L139 44 L128 51 L117 44 Z"/>
-            <path data-accent d="M128 205 L139 212 L128 219 L117 212 Z"/>
-          </svg>
+        <div class="bp-panel bp-panel-oab">
+          <p class="bp-panel-head">What OAB answers</p>
+          <p class="bp-fact"><span class="bp-count bp-key" data-to="0.28" data-dp="2">0.28</span>
+          <span class="bp-vs">peak requests per second — four orders of magnitude of headroom on one instance</span></p>
           <ul class="bp-built">
             <li><span class="bp-tick">▸</span> application runtime</li>
             <li><span class="bp-tick">▸</span> managed database</li>
             <li><span class="bp-tick">▸</span> object storage</li>
             <li><span class="bp-tick">▸</span> CDN</li>
           </ul>
+          <dl class="bp-meters">
+            <div class="bp-meter">
+              <dt>complexity</dt>
+              <dd><span class="bp-count bp-ok" data-to="4" data-dp="0">4</span>
+                  <span class="bp-vs">/ 4 — at budget, no headroom</span></dd>
+            </div>
+            <div class="bp-meter">
+              <dt>cost</dt>
+              <dd><span class="bp-count bp-ok" data-to="27" data-dp="0" data-prefix="£">£27</span>
+                  <span class="bp-vs">/ £50 budget</span></dd>
+            </div>
+          </dl>
+          <div class="bp-rejects">
+            <p class="bp-rejects-head">refused — and the measurement that would change it</p>
+            <ul>
+              <li class="bp-reject"><span class="bp-x">✕</span> <span class="bp-kind">Kubernetes</span>
+                <span class="bp-trigger">at <em>&gt;4 services + a dedicated ops engineer</em></span></li>
+              <li class="bp-reject"><span class="bp-x">✕</span> <span class="bp-kind">Kafka</span>
+                <span class="bp-trigger">at <em>500 events/second</em></span></li>
+              <li class="bp-reject"><span class="bp-x">✕</span> <span class="bp-kind">Redis</span>
+                <span class="bp-trigger">at <em>10 req/s on one key</em></span></li>
+            </ul>
+          </div>
         </div>
 
-        <div class="bp-rejects">
-          <p class="bp-rejects-head">refused — and when to revisit</p>
-          <ul class="bp-rejects">
-            <li class="bp-reject"><span class="bp-x">✕</span> <span class="bp-kind">cache</span>
-              <span class="bp-trigger">revisit at <em>10 req/s on one key</em></span></li>
-            <li class="bp-reject"><span class="bp-x">✕</span> <span class="bp-kind">event stream</span>
-              <span class="bp-trigger">revisit at <em>500 events/s</em></span></li>
-            <li class="bp-reject"><span class="bp-x">✕</span> <span class="bp-kind">orchestration platform</span>
-              <span class="bp-trigger">revisit at <em>&gt;4 services + a dedicated ops engineer</em></span></li>
-          </ul>
-        </div>
-        <p class="bp-caption"><b>This is proportional architecture:</b> four components the numbers
-        justify, three refused with the threshold that would change the answer — the part a generic
-        assistant never produces.</p>
       </div>
+
+      <p class="bp-caption"><b>That is the whole difference.</b> Not a shorter list — a list with a
+      reason for every item, and a number that would change the answer. You can disagree with a
+      threshold. You cannot disagree with a vibe.</p>
 
     </div>
   </div>
