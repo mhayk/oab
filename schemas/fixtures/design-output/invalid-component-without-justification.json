@@ -242,7 +242,9 @@
       "low": 822,
       "high": 1135
     },
-    "price_table_date": "2026-08-09"
+    "price_table_date": "2026-08-09",
+    "stated_budget": 50,
+    "within_budget": true
   },
   "availability": {
     "target": null,

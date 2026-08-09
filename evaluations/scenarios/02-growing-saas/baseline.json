@@ -268,7 +268,9 @@
       "low": 3100,
       "high": 3900
     },
-    "price_table_date": "2026-08-09"
+    "price_table_date": "2026-08-09",
+    "stated_budget": null,
+    "within_budget": true
   },
   "availability": {
     "target": "99.9%",

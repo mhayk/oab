@@ -14,19 +14,62 @@
       "Upload and serve photos"
     ],
     "non_functional": [
-      { "name": "registered users", "value": 100, "unit": "users", "quantified": true },
-      { "name": "monthly infrastructure budget", "value": 50, "unit": "GBP", "quantified": true },
-      { "name": "engineering team", "value": 2, "unit": "engineers", "quantified": true },
-      { "name": "availability target", "value": null, "quantified": false }
+      {
+        "name": "registered users",
+        "value": 100,
+        "unit": "users",
+        "quantified": true
+      },
+      {
+        "name": "monthly infrastructure budget",
+        "value": 50,
+        "unit": "GBP",
+        "quantified": true
+      },
+      {
+        "name": "engineering team",
+        "value": 2,
+        "unit": "engineers",
+        "quantified": true
+      },
+      {
+        "name": "availability target",
+        "value": null,
+        "quantified": false
+      }
     ]
   },
   "assumptions": [
-    { "text": "30% of registered users are daily active", "confidence": "low", "impact": "±3x on RPS" },
-    { "text": "2 sessions per active user per day", "confidence": "low", "impact": "±2x on RPS" },
-    { "text": "40 requests per session", "confidence": "medium", "impact": "±1.5x on RPS" },
-    { "text": "85:15 read to write ratio", "confidence": "medium", "impact": "shifts database load" },
-    { "text": "2 KB average record size", "confidence": "medium", "impact": "±2x on storage" },
-    { "text": "10x peak factor from single-timezone evening concentration", "confidence": "medium", "impact": "±2x on peak" }
+    {
+      "text": "30% of registered users are daily active",
+      "confidence": "low",
+      "impact": "\u00b13x on RPS"
+    },
+    {
+      "text": "2 sessions per active user per day",
+      "confidence": "low",
+      "impact": "\u00b12x on RPS"
+    },
+    {
+      "text": "40 requests per session",
+      "confidence": "medium",
+      "impact": "\u00b11.5x on RPS"
+    },
+    {
+      "text": "85:15 read to write ratio",
+      "confidence": "medium",
+      "impact": "shifts database load"
+    },
+    {
+      "text": "2 KB average record size",
+      "confidence": "medium",
+      "impact": "\u00b12x on storage"
+    },
+    {
+      "text": "10x peak factor from single-timezone evening concentration",
+      "confidence": "medium",
+      "impact": "\u00b12x on peak"
+    }
   ],
   "capacity": {
     "avg_rps": 0.028,
@@ -37,7 +80,10 @@
     "egress_gb_per_month": 2.2,
     "concurrency": 0.04
   },
-  "complexity": { "available": 4, "spent": 4 },
+  "complexity": {
+    "available": 4,
+    "spent": 4
+  },
   "components": [
     {
       "name": "Application instance",
@@ -107,9 +153,18 @@
     {
       "id": "managed-single-instance",
       "description": "One application instance, managed database, object storage, CDN",
-      "components": ["application-runtime", "relational-database", "object-storage", "cdn"],
+      "components": [
+        "application-runtime",
+        "relational-database",
+        "object-storage",
+        "cdn"
+      ],
       "complexity_cost": 4,
-      "monthly_cost": { "currency": "GBP", "low": 22, "high": 35 },
+      "monthly_cost": {
+        "currency": "GBP",
+        "low": 22,
+        "high": 35
+      },
       "reversibility": "easy",
       "verdict": "selected",
       "trade_offs": [
@@ -121,32 +176,67 @@
     {
       "id": "embedded-database-on-volume",
       "description": "One instance with a file-based database on a persistent volume",
-      "components": ["application-runtime", "embedded-database", "cdn"],
+      "components": [
+        "application-runtime",
+        "embedded-database",
+        "cdn"
+      ],
       "complexity_cost": 3,
-      "monthly_cost": { "currency": "GBP", "low": 8, "high": 12 },
+      "monthly_cost": {
+        "currency": "GBP",
+        "low": 8,
+        "high": 12
+      },
       "reversibility": "moderate",
       "verdict": "rejected",
       "reason": "No managed point-in-time recovery. Restore is manual and untested, and a two-person team will not exercise it. GBP 15/month buys a tested recovery path.",
-      "trade_offs": ["Cheapest option", "One fewer service to operate"]
+      "trade_offs": [
+        "Cheapest option",
+        "One fewer service to operate"
+      ]
     },
     {
       "id": "cache-and-replica",
       "description": "The selected option plus a cache and a read replica",
-      "components": ["application-runtime", "relational-database", "read-replica", "cache", "object-storage", "cdn"],
+      "components": [
+        "application-runtime",
+        "relational-database",
+        "read-replica",
+        "cache",
+        "object-storage",
+        "cdn"
+      ],
       "complexity_cost": 6,
-      "monthly_cost": { "currency": "GBP", "low": 60, "high": 80 },
+      "monthly_cost": {
+        "currency": "GBP",
+        "low": 60,
+        "high": 80
+      },
       "reversibility": "easy",
       "verdict": "rejected",
       "reason": "Over the complexity budget (6 > 4) and over the money budget. At 0.28 peak RPS neither component has a problem to solve.",
-      "trade_offs": ["Would absorb a sudden traffic increase without redesign"]
+      "trade_offs": [
+        "Would absorb a sudden traffic increase without redesign"
+      ]
     }
   ],
   "cost": {
     "currency": "GBP",
-    "monthly_infrastructure": { "low": 22, "high": 35 },
-    "monthly_operational": { "low": 800, "high": 1100 },
-    "monthly_total": { "low": 822, "high": 1135 },
-    "price_table_date": "2026-08-09"
+    "monthly_infrastructure": {
+      "low": 22,
+      "high": 35
+    },
+    "monthly_operational": {
+      "low": 800,
+      "high": 1100
+    },
+    "monthly_total": {
+      "low": 822,
+      "high": 1135
+    },
+    "price_table_date": "2026-08-09",
+    "stated_budget": 50,
+    "within_budget": true
   },
   "availability": {
     "target": null,

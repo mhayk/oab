@@ -9,7 +9,9 @@ must_reject_components: [orchestration-platform, cache, event-stream]
 
 numeric:
   - { field: "capacity.peak_rps", max: 5 }
-  - { field: "cost.monthly_infrastructure.high", max: 50 }
+  # The EXPECTED case must fit the stated budget. The high end of a price range may exceed it —
+  # prices are ranges — but only if the design says so; see the structural assertions below.
+  - { field: "cost.monthly_infrastructure.low", max: 50 }
   - { field: "complexity.spent", max: 4 }
   - { field: "complexity.spent", lte_field: "complexity.available" }
 
@@ -22,3 +24,6 @@ structural:
   - { field: "stage", in: ["0", "1"] }
   - { field: "confidence", in: ["high", "medium", "low"] }
   - { field: "complexity.override", exists: false }
+  # A stated budget is a hard constraint. Whether the design fits it must be a field, not an
+  # inference the reader draws by comparing two numbers.
+  - { field: "cost.within_budget", exists: true }

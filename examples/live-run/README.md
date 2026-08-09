@@ -1,0 +1,47 @@
+# Live run — 2026-08-09
+
+**The first real `/oab:design` output**, produced by the installed plugin (v0.1.0) running headless
+against the tiny-startup brief. Unedited.
+
+```bash
+claude plugin marketplace add mhayk/oab
+claude plugin install oab@oab
+claude -p "/oab:design Recipe-sharing web app: ... 100 registered users, 2 developers,
+           £50/month infrastructure budget ..." --permission-mode acceptEdits
+```
+
+## What it got right
+
+- **0.28 peak requests/second**, matching the design documents exactly.
+- **4 / 4 complexity**, at budget with no headroom, stated plainly.
+- **12 components rejected**, each with the measurement that reverses it — against 5 in the
+  hand-authored baseline.
+- **13 triggers, 14 assumptions.**
+- It **rejected the CDN** on arithmetic: 3.9 GB/month of egress against a threshold of a few
+  hundred, "0.4% of the ~1 TB/month threshold", noting that *"a photo-sharing brief makes a CDN
+  feel mandatory"*. The hand-authored baseline **included** a CDN. The live run was less
+  overengineered than the reference artifact.
+- Its open questions are sharper than the baseline's — the connection-limit one identifies the
+  resource most likely to force a plan upgrade, ahead of CPU or storage.
+
+## What it got wrong, and what changed because of it
+
+It recorded £50/month as a quantified requirement and produced an infrastructure estimate of
+**£16–56** — a worst case £6 over a hard constraint — with **no field saying so**.
+
+The schema had `availability.consistent` precisely so an unreachable availability target cannot be
+stated silently. Cost had no equivalent, so a budget the design might breach was left for the
+reader to notice by comparing two numbers.
+
+Fixed in the same commit as this file:
+
+- `design-output.schema.json` gains `cost.stated_budget`, `cost.within_budget`, and
+  `cost.budget_note`, with `budget_note` conditionally required when `within_budget` is false.
+- `frameworks/architecture-design/procedure.md` step 9 now requires the comparison.
+- Scenario 01 asserts `cost.within_budget` exists, and checks the **low** end against the budget
+  rather than the high end — the expected case must fit, and a price range whose top exceeds the
+  budget is acceptable only if the design says so.
+
+This artifact therefore **fails** the current scenario, on exactly one assertion:
+`cost.within_budget is missing`. It is kept as-is rather than patched, because a corrected
+sample would hide the finding that produced the fix.
