@@ -48,7 +48,7 @@ DOMAIN_BLURBS = {
 def read_units():
     units = []
     for path in sorted(KNOWLEDGE.rglob("*.md")):
-        if path.name in ("README.md", "INDEX.md"):
+        if path.name in ("README.md", "INDEX.md") or path.name.startswith("_"):
             continue
         text = path.read_text(encoding="utf-8")
         if not text.startswith("---"):

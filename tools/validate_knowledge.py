@@ -78,8 +78,9 @@ def collect(knowledge_dir):
         return units, errors
 
     for md in sorted(knowledge_dir.rglob("*.md")):
-        # README.md files are generated domain indexes, not knowledge units.
-        if md.name == "README.md":
+        # Not knowledge units: generated indexes, and reference material such as price
+        # tables, which is marked with a leading underscore.
+        if md.name in ("README.md", "INDEX.md") or md.name.startswith("_"):
             continue
         rel = md.relative_to(knowledge_dir.parent)
         meta, body = split_frontmatter(md.read_text(encoding="utf-8"), rel, errors)

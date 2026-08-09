@@ -1,3 +1,1076 @@
 {
-  "units": []
+  "units": [
+    {
+      "id": "availability-targets",
+      "title": "Availability Targets",
+      "description": "Translating an availability target into permitted downtime and then into the mechanisms it requires, and refusing targets the architecture cannot deliver.",
+      "category": "reliability",
+      "path": "knowledge/reliability/availability-targets.md",
+      "applies_at_stage": [
+        "1",
+        "2",
+        "3",
+        "4",
+        "5"
+      ],
+      "complexity_cost": 0,
+      "maturity": "stable",
+      "confidence": "high",
+      "tags": [
+        "availability",
+        "slo",
+        "redundancy"
+      ],
+      "related": [
+        "failure-mode-analysis",
+        "graceful-degradation",
+        "tail-latency"
+      ],
+      "prerequisites": []
+    },
+    {
+      "id": "backup-restore-and-pitr",
+      "title": "Backup, Restore and Point-in-Time Recovery",
+      "description": "An untested restore is not a backup; recovery objectives, not backup frequency, are what determine whether the strategy is adequate.",
+      "category": "databases",
+      "path": "knowledge/databases/backup-restore-and-pitr.md",
+      "applies_at_stage": [
+        "0",
+        "1",
+        "2",
+        "3",
+        "4",
+        "5"
+      ],
+      "complexity_cost": 0,
+      "maturity": "stable",
+      "confidence": "high",
+      "tags": [
+        "backup",
+        "restore",
+        "disaster-recovery",
+        "rpo",
+        "rto"
+      ],
+      "related": [
+        "managed-vs-self-hosted",
+        "availability-targets",
+        "schema-migration-safety"
+      ],
+      "prerequisites": []
+    },
+    {
+      "id": "bulkheads",
+      "title": "Bulkheads",
+      "description": "Isolating resource pools per dependency so that one slow dependency cannot consume the capacity every other request path needs.",
+      "category": "reliability",
+      "path": "knowledge/reliability/bulkheads.md",
+      "applies_at_stage": [
+        "2",
+        "3",
+        "4",
+        "5"
+      ],
+      "complexity_cost": 0,
+      "maturity": "stable",
+      "confidence": "high",
+      "tags": [
+        "bulkhead",
+        "isolation",
+        "resource-pools"
+      ],
+      "related": [
+        "circuit-breakers",
+        "graceful-degradation",
+        "failure-mode-analysis"
+      ],
+      "prerequisites": [
+        "timeouts"
+      ]
+    },
+    {
+      "id": "cache-aside",
+      "title": "Cache-Aside",
+      "description": "The default caching pattern: the application checks the cache, falls back to the origin on a miss, and populates the cache itself.",
+      "category": "caching",
+      "path": "knowledge/caching/cache-aside.md",
+      "applies_at_stage": [
+        "2",
+        "3",
+        "4",
+        "5"
+      ],
+      "complexity_cost": 1,
+      "maturity": "stable",
+      "confidence": "high",
+      "tags": [
+        "caching",
+        "patterns"
+      ],
+      "related": [
+        "ttl-and-invalidation",
+        "cache-stampede",
+        "cache-sizing"
+      ],
+      "prerequisites": [
+        "when-not-to-cache"
+      ]
+    },
+    {
+      "id": "cache-sizing",
+      "title": "Cache Sizing",
+      "description": "Sizing a cache from its working set rather than from the total data volume, and computing what the cache actually relieves.",
+      "category": "caching",
+      "path": "knowledge/caching/cache-sizing.md",
+      "applies_at_stage": [
+        "2",
+        "3",
+        "4",
+        "5"
+      ],
+      "complexity_cost": 0,
+      "maturity": "reviewed",
+      "confidence": "medium",
+      "tags": [
+        "caching",
+        "capacity",
+        "working-set"
+      ],
+      "related": [
+        "when-not-to-cache",
+        "ttl-and-invalidation",
+        "cache-stampede"
+      ],
+      "prerequisites": [
+        "cache-aside"
+      ]
+    },
+    {
+      "id": "cache-stampede",
+      "title": "Cache Stampede",
+      "description": "When a popular cache entry expires, concurrent requests all miss simultaneously and overwhelm the origin with duplicate work.",
+      "category": "caching",
+      "path": "knowledge/caching/cache-stampede.md",
+      "applies_at_stage": [
+        "2",
+        "3",
+        "4",
+        "5"
+      ],
+      "complexity_cost": 1,
+      "maturity": "stable",
+      "confidence": "high",
+      "tags": [
+        "cache",
+        "thundering-herd",
+        "concurrency",
+        "resilience"
+      ],
+      "related": [
+        "cache-sizing",
+        "retries-backoff-jitter"
+      ],
+      "prerequisites": [
+        "cache-aside",
+        "ttl-and-invalidation"
+      ]
+    },
+    {
+      "id": "circuit-breakers",
+      "title": "Circuit Breakers",
+      "description": "Failing fast against a dependency that is already failing, so that a sustained outage does not consume the caller's capacity and does not prolong the dependency's recovery.",
+      "category": "reliability",
+      "path": "knowledge/reliability/circuit-breakers.md",
+      "applies_at_stage": [
+        "2",
+        "3",
+        "4",
+        "5"
+      ],
+      "complexity_cost": 1,
+      "maturity": "stable",
+      "confidence": "high",
+      "tags": [
+        "circuit-breaker",
+        "resilience",
+        "failure-isolation"
+      ],
+      "related": [
+        "bulkheads",
+        "graceful-degradation"
+      ],
+      "prerequisites": [
+        "timeouts",
+        "retries-backoff-jitter"
+      ]
+    },
+    {
+      "id": "complexity-cost",
+      "title": "Operational Complexity as a First-Class Cost",
+      "description": "A component's real price is its invoice plus its on-call surface, upgrade burden, and the engineer-hours needed to understand it when it breaks.",
+      "category": "fundamentals",
+      "path": "knowledge/fundamentals/complexity-cost.md",
+      "applies_at_stage": [
+        "0",
+        "1",
+        "2",
+        "3",
+        "4",
+        "5"
+      ],
+      "complexity_cost": 0,
+      "maturity": "stable",
+      "confidence": "high",
+      "tags": [
+        "cost",
+        "operations",
+        "decision-making"
+      ],
+      "related": [
+        "managed-vs-self-hosted",
+        "operational-cost-model",
+        "maturity-stages"
+      ],
+      "prerequisites": [
+        "proportional-architecture"
+      ]
+    },
+    {
+      "id": "connection-pooling",
+      "title": "Connection Pooling",
+      "description": "Reusing database connections across requests, and the arithmetic that decides whether a separate connection pooler is justified yet.",
+      "category": "databases",
+      "path": "knowledge/databases/connection-pooling.md",
+      "applies_at_stage": [
+        "1",
+        "2",
+        "3",
+        "4",
+        "5"
+      ],
+      "complexity_cost": 1,
+      "maturity": "stable",
+      "confidence": "high",
+      "tags": [
+        "connections",
+        "pooling",
+        "capacity"
+      ],
+      "related": [
+        "read-replicas",
+        "utilisation-and-queueing"
+      ],
+      "prerequisites": [
+        "little-law"
+      ]
+    },
+    {
+      "id": "database-backed-queues",
+      "title": "Database-Backed Queues",
+      "description": "Using the database you already run as a job queue, which removes the dual-write problem by construction and costs no additional component.",
+      "category": "messaging",
+      "path": "knowledge/messaging/database-backed-queues.md",
+      "applies_at_stage": [
+        "1",
+        "2",
+        "3"
+      ],
+      "complexity_cost": 0,
+      "maturity": "stable",
+      "confidence": "high",
+      "tags": [
+        "queues",
+        "jobs",
+        "async"
+      ],
+      "related": [
+        "transactional-outbox",
+        "dead-letter-queues",
+        "when-you-need-streaming",
+        "transactions-and-mvcc"
+      ],
+      "prerequisites": [
+        "sync-vs-async-decision"
+      ]
+    },
+    {
+      "id": "dead-letter-queues",
+      "title": "Dead-Letter Queues",
+      "description": "A destination for messages that cannot be processed, which is only useful if someone is alerted and a replay procedure exists.",
+      "category": "messaging",
+      "path": "knowledge/messaging/dead-letter-queues.md",
+      "applies_at_stage": [
+        "2",
+        "3",
+        "4",
+        "5"
+      ],
+      "complexity_cost": 0,
+      "maturity": "stable",
+      "confidence": "high",
+      "tags": [
+        "dlq",
+        "failure-handling",
+        "operations"
+      ],
+      "related": [
+        "database-backed-queues",
+        "retries-backoff-jitter",
+        "idempotency"
+      ],
+      "prerequisites": [
+        "delivery-guarantees"
+      ]
+    },
+    {
+      "id": "delivery-guarantees",
+      "title": "Delivery Guarantees",
+      "description": "At-most-once, at-least-once, and effectively-once \u2014 and why at-least-once plus idempotency is almost always the right choice.",
+      "category": "messaging",
+      "path": "knowledge/messaging/delivery-guarantees.md",
+      "applies_at_stage": [
+        "2",
+        "3",
+        "4",
+        "5"
+      ],
+      "complexity_cost": 0,
+      "maturity": "stable",
+      "confidence": "high",
+      "tags": [
+        "delivery",
+        "semantics",
+        "correctness"
+      ],
+      "related": [
+        "transactional-outbox",
+        "dead-letter-queues",
+        "database-backed-queues"
+      ],
+      "prerequisites": [
+        "idempotency"
+      ]
+    },
+    {
+      "id": "egress-cost",
+      "title": "Egress Cost",
+      "description": "Data transfer out of a provider is routinely the largest and most surprising line on an infrastructure invoice, and edge offload is usually the biggest single saving available.",
+      "category": "cost",
+      "path": "knowledge/cost/egress-cost.md",
+      "applies_at_stage": [
+        "2",
+        "3",
+        "4",
+        "5"
+      ],
+      "complexity_cost": 1,
+      "maturity": "reviewed",
+      "confidence": "high",
+      "tags": [
+        "cost",
+        "bandwidth",
+        "cdn",
+        "egress"
+      ],
+      "related": [
+        "operational-cost-model",
+        "observability-cost"
+      ],
+      "prerequisites": []
+    },
+    {
+      "id": "failure-mode-analysis",
+      "title": "Failure Mode Analysis",
+      "description": "Nine structured questions asked of every component and dependency edge, so that failure reasoning is exhaustive rather than dependent on what the reviewer happens to think of.",
+      "category": "reliability",
+      "path": "knowledge/reliability/failure-mode-analysis.md",
+      "applies_at_stage": [
+        "1",
+        "2",
+        "3",
+        "4",
+        "5"
+      ],
+      "complexity_cost": 0,
+      "maturity": "stable",
+      "confidence": "high",
+      "tags": [
+        "failure-analysis",
+        "review",
+        "resilience"
+      ],
+      "related": [
+        "timeouts",
+        "circuit-breakers",
+        "bulkheads",
+        "graceful-degradation",
+        "availability-targets"
+      ],
+      "prerequisites": []
+    },
+    {
+      "id": "graceful-degradation",
+      "title": "Graceful Degradation",
+      "description": "Deciding in advance which features degrade and to what, so that a partial failure produces a reduced service rather than an error page.",
+      "category": "reliability",
+      "path": "knowledge/reliability/graceful-degradation.md",
+      "applies_at_stage": [
+        "2",
+        "3",
+        "4",
+        "5"
+      ],
+      "complexity_cost": 0,
+      "maturity": "stable",
+      "confidence": "high",
+      "tags": [
+        "degradation",
+        "fallback",
+        "resilience"
+      ],
+      "related": [
+        "circuit-breakers",
+        "bulkheads",
+        "availability-targets"
+      ],
+      "prerequisites": [
+        "timeouts"
+      ]
+    },
+    {
+      "id": "idempotency",
+      "title": "Idempotency",
+      "description": "Making an operation safe to apply more than once, which is what makes retries and at-least-once delivery usable rather than dangerous.",
+      "category": "messaging",
+      "path": "knowledge/messaging/idempotency.md",
+      "applies_at_stage": [
+        "1",
+        "2",
+        "3",
+        "4",
+        "5"
+      ],
+      "complexity_cost": 0,
+      "maturity": "stable",
+      "confidence": "high",
+      "tags": [
+        "idempotency",
+        "retries",
+        "deduplication",
+        "correctness"
+      ],
+      "related": [
+        "delivery-guarantees",
+        "transactional-outbox",
+        "retries-backoff-jitter",
+        "transactions-and-mvcc"
+      ],
+      "prerequisites": []
+    },
+    {
+      "id": "indexing-fundamentals",
+      "title": "Indexing Fundamentals",
+      "description": "Indexes trade write cost and storage for read speed; column order in a composite index determines which queries it can serve.",
+      "category": "databases",
+      "path": "knowledge/databases/indexing-fundamentals.md",
+      "applies_at_stage": [
+        "1",
+        "2",
+        "3",
+        "4",
+        "5"
+      ],
+      "complexity_cost": 0,
+      "maturity": "stable",
+      "confidence": "high",
+      "tags": [
+        "indexes",
+        "query-performance"
+      ],
+      "related": [
+        "relational-vs-document",
+        "connection-pooling",
+        "read-replicas"
+      ],
+      "prerequisites": []
+    },
+    {
+      "id": "little-law",
+      "title": "Little's Law",
+      "description": "The relationship L = lambda x W between concurrency, arrival rate, and time in system, which sizes in-flight requests, worker pools, and connection pools without simulation.",
+      "category": "fundamentals",
+      "path": "knowledge/fundamentals/little-law.md",
+      "applies_at_stage": [
+        "1",
+        "2",
+        "3",
+        "4",
+        "5"
+      ],
+      "complexity_cost": 0,
+      "maturity": "stable",
+      "confidence": "high",
+      "tags": [
+        "queueing",
+        "concurrency",
+        "capacity"
+      ],
+      "related": [
+        "utilisation-and-queueing",
+        "connection-pooling",
+        "tail-latency"
+      ],
+      "prerequisites": []
+    },
+    {
+      "id": "managed-vs-self-hosted",
+      "title": "Managed versus Self-Hosted",
+      "description": "Comparing total cost rather than invoice, and the specific conditions under which self-hosting a stateful service becomes the cheaper option.",
+      "category": "cost",
+      "path": "knowledge/cost/managed-vs-self-hosted.md",
+      "applies_at_stage": [
+        "1",
+        "2",
+        "3",
+        "4",
+        "5"
+      ],
+      "complexity_cost": 0,
+      "maturity": "reviewed",
+      "confidence": "high",
+      "tags": [
+        "cost",
+        "operations",
+        "managed-services"
+      ],
+      "related": [
+        "complexity-cost",
+        "backup-restore-and-pitr"
+      ],
+      "prerequisites": [
+        "operational-cost-model"
+      ]
+    },
+    {
+      "id": "maturity-stages",
+      "title": "Architecture Maturity Stages",
+      "description": "A six-stage model of system evolution used as a retrieval filter, so that concepts from a larger system than yours are never offered as advice.",
+      "category": "fundamentals",
+      "path": "knowledge/fundamentals/maturity-stages.md",
+      "applies_at_stage": [
+        "0",
+        "1",
+        "2",
+        "3",
+        "4",
+        "5"
+      ],
+      "complexity_cost": 0,
+      "maturity": "stable",
+      "confidence": "medium",
+      "tags": [
+        "stages",
+        "evolution",
+        "filtering"
+      ],
+      "related": [
+        "proportional-architecture",
+        "complexity-cost"
+      ],
+      "prerequisites": []
+    },
+    {
+      "id": "observability-cost",
+      "title": "Observability Cost",
+      "description": "Log ingestion is priced per GB and log volume grows superlinearly with traffic, which makes observability the classic unbudgeted infrastructure cost.",
+      "category": "cost",
+      "path": "knowledge/cost/observability-cost.md",
+      "applies_at_stage": [
+        "2",
+        "3",
+        "4",
+        "5"
+      ],
+      "complexity_cost": 1,
+      "maturity": "reviewed",
+      "confidence": "high",
+      "tags": [
+        "cost",
+        "observability",
+        "logging",
+        "metrics"
+      ],
+      "related": [
+        "operational-cost-model",
+        "egress-cost"
+      ],
+      "prerequisites": []
+    },
+    {
+      "id": "operational-cost-model",
+      "title": "Operational Cost Model",
+      "description": "Converting complexity points into money, so that the engineering attention a component consumes appears in the same comparison as its invoice.",
+      "category": "cost",
+      "path": "knowledge/cost/operational-cost-model.md",
+      "applies_at_stage": [
+        "1",
+        "2",
+        "3",
+        "4",
+        "5"
+      ],
+      "complexity_cost": 0,
+      "maturity": "reviewed",
+      "confidence": "medium",
+      "tags": [
+        "cost",
+        "operations",
+        "tco"
+      ],
+      "related": [
+        "managed-vs-self-hosted",
+        "observability-cost"
+      ],
+      "prerequisites": [
+        "complexity-cost"
+      ]
+    },
+    {
+      "id": "partitioning-and-sharding",
+      "title": "Partitioning and Sharding",
+      "description": "Splitting data across partitions or instances when one instance can no longer hold the write throughput or the volume \u2014 and the thresholds below which it is unjustified.",
+      "category": "databases",
+      "path": "knowledge/databases/partitioning-and-sharding.md",
+      "applies_at_stage": [
+        "4",
+        "5"
+      ],
+      "complexity_cost": 3,
+      "maturity": "reviewed",
+      "confidence": "medium",
+      "tags": [
+        "partitioning",
+        "sharding",
+        "scaling",
+        "write-throughput"
+      ],
+      "related": [
+        "transactions-and-mvcc",
+        "relational-vs-document"
+      ],
+      "prerequisites": [
+        "read-replicas",
+        "indexing-fundamentals"
+      ]
+    },
+    {
+      "id": "proportional-architecture",
+      "title": "Proportional Architecture",
+      "description": "Architecture must be proportional to the measured problem; every component carries the burden of proving it is needed by current numbers, not a hypothetical future.",
+      "category": "fundamentals",
+      "path": "knowledge/fundamentals/proportional-architecture.md",
+      "applies_at_stage": [
+        "0",
+        "1",
+        "2",
+        "3",
+        "4",
+        "5"
+      ],
+      "complexity_cost": 0,
+      "maturity": "stable",
+      "confidence": "high",
+      "tags": [
+        "principles",
+        "overengineering",
+        "decision-making"
+      ],
+      "related": [
+        "complexity-cost",
+        "maturity-stages",
+        "utilisation-and-queueing"
+      ],
+      "prerequisites": []
+    },
+    {
+      "id": "read-replicas",
+      "title": "Read Replicas",
+      "description": "Offloading reads to a replica, and the replication lag that makes it a correctness decision rather than only a performance one.",
+      "category": "databases",
+      "path": "knowledge/databases/read-replicas.md",
+      "applies_at_stage": [
+        "3",
+        "4",
+        "5"
+      ],
+      "complexity_cost": 1,
+      "maturity": "stable",
+      "confidence": "high",
+      "tags": [
+        "replication",
+        "scaling",
+        "consistency"
+      ],
+      "related": [
+        "indexing-fundamentals",
+        "partitioning-and-sharding",
+        "backup-restore-and-pitr"
+      ],
+      "prerequisites": [
+        "connection-pooling"
+      ]
+    },
+    {
+      "id": "relational-vs-document",
+      "title": "Relational versus Document Databases",
+      "description": "Choosing a datastore from workload characteristics \u2014 access patterns, relationships, and consistency needs \u2014 rather than from preference or familiarity.",
+      "category": "databases",
+      "path": "knowledge/databases/relational-vs-document.md",
+      "applies_at_stage": [
+        "0",
+        "1",
+        "2",
+        "3",
+        "4",
+        "5"
+      ],
+      "complexity_cost": 0,
+      "maturity": "stable",
+      "confidence": "high",
+      "tags": [
+        "datastore-selection",
+        "relational",
+        "document"
+      ],
+      "related": [
+        "indexing-fundamentals",
+        "transactions-and-mvcc",
+        "partitioning-and-sharding"
+      ],
+      "prerequisites": []
+    },
+    {
+      "id": "retries-backoff-jitter",
+      "title": "Retries, Backoff and Jitter",
+      "description": "Retrying only idempotent operations, with exponential backoff and randomised jitter, so that recovery attempts do not amplify the outage they are responding to.",
+      "category": "reliability",
+      "path": "knowledge/reliability/retries-backoff-jitter.md",
+      "applies_at_stage": [
+        "1",
+        "2",
+        "3",
+        "4",
+        "5"
+      ],
+      "complexity_cost": 0,
+      "maturity": "stable",
+      "confidence": "high",
+      "tags": [
+        "retries",
+        "backoff",
+        "jitter",
+        "resilience"
+      ],
+      "related": [
+        "idempotency",
+        "circuit-breakers",
+        "cache-stampede"
+      ],
+      "prerequisites": [
+        "timeouts"
+      ]
+    },
+    {
+      "id": "schema-migration-safety",
+      "title": "Schema Migration Safety",
+      "description": "Expand-contract migrations that keep old and new code working simultaneously, so a schema change never requires downtime or a synchronised deploy.",
+      "category": "databases",
+      "path": "knowledge/databases/schema-migration-safety.md",
+      "applies_at_stage": [
+        "1",
+        "2",
+        "3",
+        "4",
+        "5"
+      ],
+      "complexity_cost": 0,
+      "maturity": "stable",
+      "confidence": "high",
+      "tags": [
+        "migrations",
+        "deployment",
+        "schema"
+      ],
+      "related": [
+        "transactions-and-mvcc",
+        "backup-restore-and-pitr"
+      ],
+      "prerequisites": []
+    },
+    {
+      "id": "sync-vs-async-decision",
+      "title": "Synchronous versus Asynchronous",
+      "description": "Deciding whether work belongs in the request path, based on whether the caller needs the result and whether the work can fail independently.",
+      "category": "messaging",
+      "path": "knowledge/messaging/sync-vs-async-decision.md",
+      "applies_at_stage": [
+        "1",
+        "2",
+        "3",
+        "4",
+        "5"
+      ],
+      "complexity_cost": 0,
+      "maturity": "stable",
+      "confidence": "high",
+      "tags": [
+        "async",
+        "queues",
+        "latency",
+        "decision-making"
+      ],
+      "related": [
+        "database-backed-queues",
+        "delivery-guarantees",
+        "when-you-need-streaming",
+        "timeouts"
+      ],
+      "prerequisites": []
+    },
+    {
+      "id": "tail-latency",
+      "title": "Tail Latency",
+      "description": "Why average latency is misleading, and why at fan-out the p99 becomes the median user experience rather than a rare edge case.",
+      "category": "fundamentals",
+      "path": "knowledge/fundamentals/tail-latency.md",
+      "applies_at_stage": [
+        "2",
+        "3",
+        "4",
+        "5"
+      ],
+      "complexity_cost": 0,
+      "maturity": "stable",
+      "confidence": "high",
+      "tags": [
+        "latency",
+        "percentiles",
+        "performance",
+        "slo"
+      ],
+      "related": [
+        "little-law",
+        "availability-targets"
+      ],
+      "prerequisites": [
+        "utilisation-and-queueing"
+      ]
+    },
+    {
+      "id": "timeouts",
+      "title": "Timeouts",
+      "description": "Every outbound call needs an explicit connect and read timeout derived from the caller's own latency budget; a dependency that becomes slow without failing is the usual cause of a total outage.",
+      "category": "reliability",
+      "path": "knowledge/reliability/timeouts.md",
+      "applies_at_stage": [
+        "0",
+        "1",
+        "2",
+        "3",
+        "4",
+        "5"
+      ],
+      "complexity_cost": 0,
+      "maturity": "stable",
+      "confidence": "high",
+      "tags": [
+        "timeouts",
+        "resilience",
+        "latency"
+      ],
+      "related": [
+        "retries-backoff-jitter",
+        "circuit-breakers",
+        "bulkheads",
+        "failure-mode-analysis"
+      ],
+      "prerequisites": []
+    },
+    {
+      "id": "transactional-outbox",
+      "title": "Transactional Outbox",
+      "description": "Writing a message into the same transaction as the business change, then relaying it, so that a database write and a published message cannot diverge.",
+      "category": "messaging",
+      "path": "knowledge/messaging/transactional-outbox.md",
+      "applies_at_stage": [
+        "2",
+        "3",
+        "4",
+        "5"
+      ],
+      "complexity_cost": 1,
+      "maturity": "stable",
+      "confidence": "high",
+      "tags": [
+        "outbox",
+        "dual-write",
+        "consistency"
+      ],
+      "related": [
+        "database-backed-queues",
+        "transactions-and-mvcc"
+      ],
+      "prerequisites": [
+        "delivery-guarantees",
+        "idempotency"
+      ]
+    },
+    {
+      "id": "transactions-and-mvcc",
+      "title": "Transactions and MVCC",
+      "description": "Atomicity and isolation, how multi-version concurrency control lets readers avoid blocking writers, and why long-running transactions are operationally expensive.",
+      "category": "databases",
+      "path": "knowledge/databases/transactions-and-mvcc.md",
+      "applies_at_stage": [
+        "1",
+        "2",
+        "3",
+        "4",
+        "5"
+      ],
+      "complexity_cost": 0,
+      "maturity": "stable",
+      "confidence": "high",
+      "tags": [
+        "transactions",
+        "isolation",
+        "mvcc",
+        "concurrency"
+      ],
+      "related": [
+        "relational-vs-document",
+        "schema-migration-safety",
+        "idempotency"
+      ],
+      "prerequisites": []
+    },
+    {
+      "id": "ttl-and-invalidation",
+      "title": "TTL and Invalidation",
+      "description": "Choosing expiry from tolerable staleness, and treating the TTL as the backstop for the invalidation that was missed.",
+      "category": "caching",
+      "path": "knowledge/caching/ttl-and-invalidation.md",
+      "applies_at_stage": [
+        "2",
+        "3",
+        "4",
+        "5"
+      ],
+      "complexity_cost": 0,
+      "maturity": "stable",
+      "confidence": "high",
+      "tags": [
+        "caching",
+        "ttl",
+        "invalidation",
+        "staleness"
+      ],
+      "related": [
+        "cache-stampede",
+        "cache-sizing"
+      ],
+      "prerequisites": [
+        "cache-aside"
+      ]
+    },
+    {
+      "id": "utilisation-and-queueing",
+      "title": "Utilisation and Queueing",
+      "description": "Waiting time grows non-linearly as utilisation approaches 1, which is why systems are sized for 60-70% rather than for the capacity they nominally have.",
+      "category": "fundamentals",
+      "path": "knowledge/fundamentals/utilisation-and-queueing.md",
+      "applies_at_stage": [
+        "1",
+        "2",
+        "3",
+        "4",
+        "5"
+      ],
+      "complexity_cost": 0,
+      "maturity": "stable",
+      "confidence": "high",
+      "tags": [
+        "queueing",
+        "latency",
+        "capacity",
+        "saturation"
+      ],
+      "related": [
+        "tail-latency",
+        "proportional-architecture"
+      ],
+      "prerequisites": [
+        "little-law"
+      ]
+    },
+    {
+      "id": "when-not-to-cache",
+      "title": "When Not to Cache",
+      "description": "The thresholds below which a cache adds a component, a failure mode, and a class of staleness bug in exchange for no measurable benefit.",
+      "category": "caching",
+      "path": "knowledge/caching/when-not-to-cache.md",
+      "applies_at_stage": [
+        "0",
+        "1",
+        "2",
+        "3",
+        "4",
+        "5"
+      ],
+      "complexity_cost": 0,
+      "maturity": "stable",
+      "confidence": "high",
+      "tags": [
+        "caching",
+        "overengineering",
+        "decision-making"
+      ],
+      "related": [
+        "cache-aside",
+        "cache-sizing",
+        "cache-stampede",
+        "proportional-architecture"
+      ],
+      "prerequisites": []
+    },
+    {
+      "id": "when-you-need-streaming",
+      "title": "When You Need Event Streaming",
+      "description": "The measured thresholds at which a durable, replayable event log earns its considerable operational cost \u2014 and the far more common case where it does not.",
+      "category": "messaging",
+      "path": "knowledge/messaging/when-you-need-streaming.md",
+      "applies_at_stage": [
+        "4",
+        "5"
+      ],
+      "complexity_cost": 3,
+      "maturity": "reviewed",
+      "confidence": "high",
+      "tags": [
+        "streaming",
+        "kafka",
+        "event-log",
+        "overengineering"
+      ],
+      "related": [
+        "sync-vs-async-decision",
+        "transactional-outbox",
+        "partitioning-and-sharding"
+      ],
+      "prerequisites": [
+        "database-backed-queues",
+        "delivery-guarantees"
+      ]
+    }
+  ]
 }

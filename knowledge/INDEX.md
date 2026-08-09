@@ -2,6 +2,73 @@
 
 # OAB Knowledge Index
 
-No knowledge units yet. See [docs/contributing/knowledge.md](../docs/contributing/knowledge.md) to add the first.
+37 unit(s) across 6 domain(s).
 
 Each unit is one concept: what it is, when it applies, **when it does not**, its trade-offs, its failure modes, and how to measure whether it is working.
+
+## caching
+
+When a cache earns its place, and — more often — when it does not.
+
+- **[Cache-Aside](caching/cache-aside.md)** — The default caching pattern: the application checks the cache, falls back to the origin on a miss, and populates the cache itself. *(stages 2,3,4,5)*
+- **[Cache Sizing](caching/cache-sizing.md)** — Sizing a cache from its working set rather than from the total data volume, and computing what the cache actually relieves. *(stages 2,3,4,5)*
+- **[Cache Stampede](caching/cache-stampede.md)** — When a popular cache entry expires, concurrent requests all miss simultaneously and overwhelm the origin with duplicate work. *(stages 2,3,4,5)*
+- **[TTL and Invalidation](caching/ttl-and-invalidation.md)** — Choosing expiry from tolerable staleness, and treating the TTL as the backstop for the invalidation that was missed. *(stages 2,3,4,5)*
+- **[When Not to Cache](caching/when-not-to-cache.md)** — The thresholds below which a cache adds a component, a failure mode, and a class of staleness bug in exchange for no measurable benefit. *(stages 0,1,2,3,4,5)*
+
+## cost
+
+Infrastructure cost, and the operational cost no cloud calculator models.
+
+- **[Egress Cost](cost/egress-cost.md)** — Data transfer out of a provider is routinely the largest and most surprising line on an infrastructure invoice, and edge offload is usually the biggest single saving available. *(stages 2,3,4,5)*
+- **[Managed versus Self-Hosted](cost/managed-vs-self-hosted.md)** — Comparing total cost rather than invoice, and the specific conditions under which self-hosting a stateful service becomes the cheaper option. *(stages 1,2,3,4,5)*
+- **[Observability Cost](cost/observability-cost.md)** — Log ingestion is priced per GB and log volume grows superlinearly with traffic, which makes observability the classic unbudgeted infrastructure cost. *(stages 2,3,4,5)*
+- **[Operational Cost Model](cost/operational-cost-model.md)** — Converting complexity points into money, so that the engineering attention a component consumes appears in the same comparison as its invoice. *(stages 1,2,3,4,5)*
+
+## databases
+
+Choosing and operating datastores by workload characteristics rather than preference.
+
+- **[Backup, Restore and Point-in-Time Recovery](databases/backup-restore-and-pitr.md)** — An untested restore is not a backup; recovery objectives, not backup frequency, are what determine whether the strategy is adequate. *(stages 0,1,2,3,4,5)*
+- **[Connection Pooling](databases/connection-pooling.md)** — Reusing database connections across requests, and the arithmetic that decides whether a separate connection pooler is justified yet. *(stages 1,2,3,4,5)*
+- **[Indexing Fundamentals](databases/indexing-fundamentals.md)** — Indexes trade write cost and storage for read speed; column order in a composite index determines which queries it can serve. *(stages 1,2,3,4,5)*
+- **[Partitioning and Sharding](databases/partitioning-and-sharding.md)** — Splitting data across partitions or instances when one instance can no longer hold the write throughput or the volume — and the thresholds below which it is unjustified. *(stages 4,5)*
+- **[Read Replicas](databases/read-replicas.md)** — Offloading reads to a replica, and the replication lag that makes it a correctness decision rather than only a performance one. *(stages 3,4,5)*
+- **[Relational versus Document Databases](databases/relational-vs-document.md)** — Choosing a datastore from workload characteristics — access patterns, relationships, and consistency needs — rather than from preference or familiarity. *(stages 0,1,2,3,4,5)*
+- **[Schema Migration Safety](databases/schema-migration-safety.md)** — Expand-contract migrations that keep old and new code working simultaneously, so a schema change never requires downtime or a synchronised deploy. *(stages 1,2,3,4,5)*
+- **[Transactions and MVCC](databases/transactions-and-mvcc.md)** — Atomicity and isolation, how multi-version concurrency control lets readers avoid blocking writers, and why long-running transactions are operationally expensive. *(stages 1,2,3,4,5)*
+
+## fundamentals
+
+The concepts every other domain leans on, including how OAB decides that an architecture is proportional to its problem.
+
+- **[Operational Complexity as a First-Class Cost](fundamentals/complexity-cost.md)** — A component's real price is its invoice plus its on-call surface, upgrade burden, and the engineer-hours needed to understand it when it breaks. *(stages 0,1,2,3,4,5)*
+- **[Little's Law](fundamentals/little-law.md)** — The relationship L = lambda x W between concurrency, arrival rate, and time in system, which sizes in-flight requests, worker pools, and connection pools without simulation. *(stages 1,2,3,4,5)*
+- **[Architecture Maturity Stages](fundamentals/maturity-stages.md)** — A six-stage model of system evolution used as a retrieval filter, so that concepts from a larger system than yours are never offered as advice. *(stages 0,1,2,3,4,5)*
+- **[Proportional Architecture](fundamentals/proportional-architecture.md)** — Architecture must be proportional to the measured problem; every component carries the burden of proving it is needed by current numbers, not a hypothetical future. *(stages 0,1,2,3,4,5)*
+- **[Tail Latency](fundamentals/tail-latency.md)** — Why average latency is misleading, and why at fan-out the p99 becomes the median user experience rather than a rare edge case. *(stages 2,3,4,5)*
+- **[Utilisation and Queueing](fundamentals/utilisation-and-queueing.md)** — Waiting time grows non-linearly as utilisation approaches 1, which is why systems are sized for 60-70% rather than for the capacity they nominally have. *(stages 1,2,3,4,5)*
+
+## messaging
+
+Asynchronous processing, weighted toward the simple options that are almost always sufficient.
+
+- **[Database-Backed Queues](messaging/database-backed-queues.md)** — Using the database you already run as a job queue, which removes the dual-write problem by construction and costs no additional component. *(stages 1,2,3)*
+- **[Dead-Letter Queues](messaging/dead-letter-queues.md)** — A destination for messages that cannot be processed, which is only useful if someone is alerted and a replay procedure exists. *(stages 2,3,4,5)*
+- **[Delivery Guarantees](messaging/delivery-guarantees.md)** — At-most-once, at-least-once, and effectively-once — and why at-least-once plus idempotency is almost always the right choice. *(stages 2,3,4,5)*
+- **[Idempotency](messaging/idempotency.md)** — Making an operation safe to apply more than once, which is what makes retries and at-least-once delivery usable rather than dangerous. *(stages 1,2,3,4,5)*
+- **[Synchronous versus Asynchronous](messaging/sync-vs-async-decision.md)** — Deciding whether work belongs in the request path, based on whether the caller needs the result and whether the work can fail independently. *(stages 1,2,3,4,5)*
+- **[Transactional Outbox](messaging/transactional-outbox.md)** — Writing a message into the same transaction as the business change, then relaying it, so that a database write and a published message cannot diverge. *(stages 2,3,4,5)*
+- **[When You Need Event Streaming](messaging/when-you-need-streaming.md)** — The measured thresholds at which a durable, replayable event log earns its considerable operational cost — and the far more common case where it does not. *(stages 4,5)*
+
+## reliability
+
+Failure modes, and the mechanisms that address them with their parameters.
+
+- **[Availability Targets](reliability/availability-targets.md)** — Translating an availability target into permitted downtime and then into the mechanisms it requires, and refusing targets the architecture cannot deliver. *(stages 1,2,3,4,5)*
+- **[Bulkheads](reliability/bulkheads.md)** — Isolating resource pools per dependency so that one slow dependency cannot consume the capacity every other request path needs. *(stages 2,3,4,5)*
+- **[Circuit Breakers](reliability/circuit-breakers.md)** — Failing fast against a dependency that is already failing, so that a sustained outage does not consume the caller's capacity and does not prolong the dependency's recovery. *(stages 2,3,4,5)*
+- **[Failure Mode Analysis](reliability/failure-mode-analysis.md)** — Nine structured questions asked of every component and dependency edge, so that failure reasoning is exhaustive rather than dependent on what the reviewer happens to think of. *(stages 1,2,3,4,5)*
+- **[Graceful Degradation](reliability/graceful-degradation.md)** — Deciding in advance which features degrade and to what, so that a partial failure produces a reduced service rather than an error page. *(stages 2,3,4,5)*
+- **[Retries, Backoff and Jitter](reliability/retries-backoff-jitter.md)** — Retrying only idempotent operations, with exponential backoff and randomised jitter, so that recovery attempts do not amplify the outage they are responding to. *(stages 1,2,3,4,5)*
+- **[Timeouts](reliability/timeouts.md)** — Every outbound call needs an explicit connect and read timeout derived from the caller's own latency budget; a dependency that becomes slow without failing is the usual cause of a total outage. *(stages 0,1,2,3,4,5)*
