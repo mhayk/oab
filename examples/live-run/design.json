@@ -2,642 +2,293 @@
   "oab_version": "0.1.0",
   "generated": "2026-08-09",
   "system": {
-    "name": "Recipe-sharing web app",
-    "description": "Users publish recipes, browse them, comment, and upload photos. 100 registered users, 2 developers, GBP 50/month infrastructure budget, no stated availability target, no stated compliance requirements."
+    "name": "recipe-share",
+    "description": "Recipe-sharing web app: users publish recipes, browse, comment, and upload photos. 100 registered users, 2 developers, GBP 50/month infrastructure budget."
   },
   "stage": "1",
   "requirements": {
     "functional": [
-      "Register, sign in, and manage an account",
-      "Publish a recipe: title, description, ingredients, steps, tags",
-      "Upload one or more photos per recipe and have web-sized derivatives generated",
-      "Browse and search recipes by title, ingredient, and tag",
-      "Comment on a recipe",
-      "View another user's published recipes"
+      "Users publish recipes (text, structured ingredients/steps)",
+      "Users browse and search recipes",
+      "Users comment on recipes",
+      "Users upload photos attached to recipes",
+      "User registration and authentication"
     ],
     "non_functional": [
-      { "name": "registered users", "value": 100, "unit": "users", "quantified": true },
-      { "name": "engineers operating the system", "value": 2, "unit": "engineers", "quantified": true },
-      { "name": "monthly infrastructure budget", "value": 50, "unit": "GBP/month", "quantified": true },
-      { "name": "availability target", "value": null, "unit": "percent", "quantified": false },
-      { "name": "recovery point objective", "value": null, "unit": "hours", "quantified": false },
-      { "name": "recovery time objective", "value": null, "unit": "hours", "quantified": false },
-      { "name": "page latency target", "value": null, "unit": "milliseconds", "quantified": false },
-      { "name": "compliance or data residency constraints", "value": "none stated", "unit": "constraints", "quantified": false }
+      {
+        "name": "monthly infrastructure budget",
+        "value": 50,
+        "unit": "GBP/month",
+        "quantified": true
+      },
+      {
+        "name": "availability target",
+        "value": null,
+        "unit": "percent",
+        "quantified": false
+      },
+      {
+        "name": "page latency",
+        "value": null,
+        "unit": "ms",
+        "quantified": false
+      }
     ]
   },
   "assumptions": [
     {
-      "text": "30% of registered users are daily active",
+      "text": "30% of the 100 registered users are active on a given day (30 DAU), with 2 sessions/day and 40 requests/session.",
       "confidence": "low",
-      "impact": "Linear on RPS and egress. At 100% DAU every figure is 3.3x larger and the recommendation is unchanged."
+      "impact": "Even at the extreme (100% DAU, 20x peak factor) peak load is 1.9 requests/second; the architecture decision does not change anywhere in the plausible range."
     },
     {
-      "text": "2 sessions per active user per day, 40 requests per session (pages, JSON, static assets)",
+      "text": "Peak factor 10: single-timezone consumer app with evening concentration.",
+      "confidence": "medium",
+      "impact": "A lower factor only strengthens the conclusion; a higher one is covered by the sensitivity bound above."
+    },
+    {
+      "text": "Content volume: ~3 recipes, ~10 comments, ~6 photos uploaded per day; photos average 3 MB as uploaded, ~4 MB stored including resized derivatives.",
       "confidence": "low",
-      "impact": "Linear on RPS. At 3 sessions x 60 requests the peak is 4.2 RPS, still one instance."
+      "impact": "5x more photo volume raises object storage to ~45 GB/year, roughly GBP 1-3/month extra. No architectural change."
     },
     {
-      "text": "Consumer traffic shape with evening concentration, peak factor 10 (calculators/README.md table)",
+      "text": "Audience is single-region (UK/EU implied by GBP budget); no geographic latency requirement.",
       "confidence": "medium",
-      "impact": "Linear on peak RPS. At 20x the peak is 0.56 RPS and no provisioning decision changes."
+      "impact": "If a large distant audience appears, image delivery latency becomes the first complaint; the CDN rejection has a trigger for this."
     },
     {
-      "text": "Recipes are published at 0.5 per user per month, so about 1.7 recipes/day at 100 users",
-      "confidence": "low",
-      "impact": "Linear on database and object-storage growth. 10x is 87 GB of photos/year, about GBP 1.30-2.20/month. No decision changes."
+      "text": "Team of 2 developers, no dedicated ops; both will operate what they build.",
+      "confidence": "high",
+      "impact": "Sets the complexity budget at 4 points."
     },
     {
-      "text": "4 photos per recipe, 2.5 MB per original upload, plus derivatives at +40% -> 3.5 MB stored per photo",
-      "confidence": "low",
-      "impact": "Dominant term in object storage and egress. This is the input to measure first."
-    },
-    {
-      "text": "About 20 comments/day across the site, 500 bytes per comment row",
-      "confidence": "low",
-      "impact": "Negligible: comments contribute about 4 MB/year of database growth."
-    },
-    {
-      "text": "Average served payload 100 KB per request, dominated by web-sized images (about 4 MB per session)",
-      "confidence": "low",
-      "impact": "Linear on egress, which is the cost line that eventually breaks the GBP 50 budget."
-    },
-    {
-      "text": "5 database queries per request, 5 ms mean query time",
+      "text": "No availability target stated; minutes of downtime during deploys or platform incidents are acceptable.",
       "confidence": "medium",
-      "impact": "Linear on connection demand. Even at 20 queries/request the pool is at the floor of 5."
+      "impact": "If wrong and a target near 99.9%+ is actually required, a second instance and a load balancer become justified; see the load-balancer rejection."
     },
     {
-      "text": "Image resize takes about 3 seconds of CPU per photo",
-      "confidence": "medium",
-      "impact": "Determines whether resizing can stay in the request path. At 6.8 photos/day it can."
-    },
-    {
-      "text": "No compliance, residency or data-sensitivity constraints, as stated by the requester",
-      "confidence": "medium",
-      "impact": "Would change data residency, deletion, and audit requirements entirely. Note that UK/EU consumer accounts plus user-uploaded photos still carry baseline data-protection duties (deletion on request, a stated retention policy) regardless of whether a compliance programme exists."
-    },
-    {
-      "text": "Both developers are product engineers with no dedicated operations capacity, and the team has operated a managed relational database and managed object storage before",
-      "confidence": "medium",
-      "impact": "Sets the complexity budget at 4. If either technology is unfamiliar the modifier adds 1 point and the selected architecture goes to 5/4, requiring a written override."
-    },
-    {
-      "text": "No availability target exists because none was stated; the business tolerates hours of downtime",
-      "confidence": "medium",
-      "impact": "If 99.9% or better is actually required, database failover is needed and the infrastructure budget must rise well above GBP 50."
-    },
-    {
-      "text": "Deployment is a single application codebase deployed as one unit on a managed platform",
-      "confidence": "medium",
-      "impact": "Each additional independently deployed service costs 1 complexity point against a budget of 4."
+      "text": "Capacity figures computed by hand from the documented formulas in calculators/README.md; the calculator could not be executed in this environment.",
+      "confidence": "high",
+      "impact": "Arithmetic is shown with substituted values in the design document so every line can be checked by hand."
     }
   ],
   "capacity": {
     "peak_rps": 0.28,
     "avg_rps": 0.028,
-    "peak_writes_per_second": 0.056,
-    "peak_reads_per_second": 1.3,
-    "storage_gb_per_year": 8.7,
-    "egress_gb_per_month": 7.3,
-    "concurrency": 0.048,
-    "results": [
-      {
-        "calculator": "rps",
-        "assumptions": [
-          { "name": "users", "value": 100, "unit": "users", "source": "stated", "confidence": "high" },
-          { "name": "dau_share", "value": 0.3, "unit": "share", "source": "assumed", "confidence": "low", "impact_if_wrong": "+-3.3x on RPS" },
-          { "name": "sessions_per_day", "value": 2, "unit": "sessions/user/day", "source": "assumed", "confidence": "low", "impact_if_wrong": "+-1.5x on RPS" },
-          { "name": "requests_per_session", "value": 40, "unit": "requests", "source": "assumed", "confidence": "low", "impact_if_wrong": "+-1.5x on RPS" },
-          { "name": "peak_factor", "value": 10, "unit": "ratio", "source": "assumed", "confidence": "medium", "impact_if_wrong": "+-2x on peak RPS" }
-        ],
-        "formula": "requests_per_day = users x dau_share x sessions_per_day x requests_per_session; avg_rps = requests_per_day / 86400; peak_rps = avg_rps x peak_factor",
-        "calculation": "requests_per_day = 100 x 0.30 x 2 x 40 = 2400; avg_rps = 2400 / 86400 = 0.028; peak_rps = 0.028 x 10 = 0.28",
-        "result": { "value": 0.28, "unit": "requests/second (peak)", "range": { "low": 0.28, "high": 4.2 }, "significant_figures": 2 },
-        "safety_margin": { "factor": 2.0, "rationale": "2x headroom on the peak factor, because an assumed traffic shape is the least reliable input in this estimate. Even the 2x figure of 0.56 RPS is three orders of magnitude below a single small instance." },
-        "confidence": "low",
-        "sensitivity": {
-          "dominant_input": "dau_share",
-          "explanation": "At 100% daily active, 3 sessions/day, 60 requests/session and a 20x peak factor the result is 4.2 requests/second. A single small managed instance handles that with roughly an order of magnitude of headroom, so the provisioning decision is identical at every point in the plausible range.",
-          "decision_is_insensitive": true
-        },
-        "notes": [
-          "Computed from the documented formulas in calculators/README.md; the Python calculator could not be executed in this environment."
-        ]
-      },
-      {
-        "calculator": "concurrency",
-        "assumptions": [
-          { "name": "arrival_rate", "value": 0.28, "unit": "requests/second", "source": "calculated", "confidence": "low" },
-          { "name": "service_time", "value": 120, "unit": "milliseconds", "source": "assumed", "confidence": "medium", "impact_if_wrong": "linear on L" },
-          { "name": "target_utilisation", "value": 0.7, "unit": "share", "source": "assumed", "confidence": "high" }
-        ],
-        "formula": "L = arrival_rate x service_time_seconds; provisioned = L / target_utilisation",
-        "calculation": "L = 0.28 x 0.12 = 0.034; provisioned = 0.034 / 0.7 = 0.048",
-        "result": { "value": 0.048, "unit": "concurrent requests", "range": { "low": 0.048, "high": 0.72 }, "significant_figures": 2 },
-        "safety_margin": { "factor": 1.43, "rationale": "Sized for 70% utilisation rather than 100%, because waiting time grows non-linearly as utilisation approaches 1 (utilisation-and-queueing)." },
-        "confidence": "low",
-        "sensitivity": {
-          "dominant_input": "arrival_rate",
-          "explanation": "Even at the top of the plausible range (4.2 RPS peak, 120 ms service time) concurrency is 0.72, so a single process with a default pool of 4-8 workers is roughly 10x over-provisioned. Little's Law gives the mean; the worker floor absorbs the tail.",
-          "decision_is_insensitive": true
-        },
-        "notes": ["Computed from the documented formulas; calculator not executable in this environment."]
-      },
-      {
-        "calculator": "connections",
-        "assumptions": [
-          { "name": "query_rate", "value": 1.4, "unit": "queries/second", "source": "calculated", "confidence": "low", "impact_if_wrong": "linear on concurrent" },
-          { "name": "queries_per_request", "value": 5, "unit": "queries", "source": "assumed", "confidence": "medium" },
-          { "name": "query_time", "value": 5, "unit": "milliseconds", "source": "assumed", "confidence": "medium" },
-          { "name": "instances", "value": 1, "unit": "instances", "source": "assumed", "confidence": "high" },
-          { "name": "safety", "value": 4, "unit": "ratio", "source": "assumed", "confidence": "high" },
-          { "name": "min_pool", "value": 5, "unit": "connections", "source": "assumed", "confidence": "high" },
-          { "name": "max_connections", "value": 25, "unit": "connections", "source": "assumed", "confidence": "medium", "impact_if_wrong": "sets the pooler threshold" }
-        ],
-        "formula": "concurrent = query_rate x query_time_seconds; pool_per_instance = max(min_pool, ceil(concurrent / instances x safety)); total = instances x pool_per_instance; pooler_justified = total > 0.8 x max_connections",
-        "calculation": "concurrent = 1.4 x 0.005 = 0.0070; pool_per_instance = max(5, ceil(0.0070 x 4)) = 5; total = 1 x 5 = 5; 5 / 25 = 20% of max_connections, below the 80% threshold",
-        "result": { "value": 5, "unit": "connections", "significant_figures": 1 },
-        "safety_margin": { "factor": 4.0, "rationale": "4x mean concurrency, because Little's Law gives the mean and a pool sized to the mean queues on connection acquisition during any burst. The floor of 5 dominates here anyway." },
-        "confidence": "low",
-        "sensitivity": {
-          "dominant_input": "queries_per_request",
-          "explanation": "At 20 queries per request and 20 ms query time the demand is 0.11 concurrent connections, so the pool is still at the floor of 5 and still at 20% of max_connections. A connection pooler is not justified anywhere in the plausible range.",
-          "decision_is_insensitive": true
-        },
-        "notes": ["Computed from the documented formulas; calculator not executable in this environment."]
-      },
-      {
-        "calculator": "storage",
-        "assumptions": [
-          { "name": "recipe_writes_per_day", "value": 1.7, "unit": "rows/day", "source": "assumed", "confidence": "low" },
-          { "name": "recipe_row_bytes", "value": 4000, "unit": "bytes", "source": "assumed", "confidence": "medium" },
-          { "name": "comment_writes_per_day", "value": 20, "unit": "rows/day", "source": "assumed", "confidence": "low" },
-          { "name": "comment_row_bytes", "value": 500, "unit": "bytes", "source": "assumed", "confidence": "medium" },
-          { "name": "index_overhead", "value": 2.5, "unit": "ratio", "source": "assumed", "confidence": "medium" }
-        ],
-        "formula": "bytes_per_day = writes_per_day x avg_record_bytes x index_overhead; bytes_per_year = bytes_per_day x 365",
-        "calculation": "bytes_per_day = (1.7 x 4000 + 20 x 500) x 2.5 = (6800 + 10000) x 2.5 = 42000 B/day; bytes_per_year = 42000 x 365 = 1.53e10 / 1e9 ... = 0.015 GB/year",
-        "result": { "value": 0.015, "unit": "GB/year (relational database)", "range": { "low": 0.015, "high": 0.15 }, "significant_figures": 2 },
-        "safety_margin": { "factor": 2.5, "rationale": "index_overhead of 2.5 converts row size into stored size: indexes, tuple headers, page fill factor, and dead-tuple slack before vacuum." },
-        "confidence": "low",
-        "sensitivity": {
-          "dominant_input": "comment_writes_per_day",
-          "explanation": "Comments dominate row count but the total is 15 MB/year. Even 10x every write assumption gives 0.15 GB/year against a 10 GB starter plan, which is 67 years of runway. Database size is not a design constraint for this system.",
-          "decision_is_insensitive": true
-        },
-        "notes": ["Computed from the documented formulas; calculator not executable in this environment."]
-      },
-      {
-        "calculator": "storage",
-        "assumptions": [
-          { "name": "photos_per_day", "value": 6.8, "unit": "photos/day", "source": "calculated", "confidence": "low", "impact_if_wrong": "linear on object storage growth" },
-          { "name": "photos_per_recipe", "value": 4, "unit": "photos", "source": "assumed", "confidence": "low" },
-          { "name": "stored_bytes_per_photo", "value": 3500000, "unit": "bytes", "source": "assumed", "confidence": "low", "impact_if_wrong": "linear; the input to measure first" },
-          { "name": "index_overhead", "value": 1.0, "unit": "ratio", "source": "stated", "confidence": "high", "impact_if_wrong": "none; object storage has no index or page overhead, so the 2.5 default does not apply" }
-        ],
-        "formula": "bytes_per_day = writes_per_day x avg_record_bytes x index_overhead; bytes_per_year = bytes_per_day x 365",
-        "calculation": "bytes_per_day = 6.8 x 3,500,000 x 1.0 = 2.38e7 = 24 MB/day; bytes_per_year = 24 MB x 365 = 8700 MB = 8.7 GB/year",
-        "result": { "value": 8.7, "unit": "GB/year (object storage)", "range": { "low": 2.2, "high": 87 }, "significant_figures": 2 },
-        "safety_margin": { "factor": 1.4, "rationale": "The +40% derivative allowance already in stored_bytes_per_photo covers thumbnail and web-sized renditions. No further margin is applied because object storage is billed on actual bytes and grows without a plan limit." },
-        "confidence": "low",
-        "sensitivity": {
-          "dominant_input": "stored_bytes_per_photo",
-          "explanation": "Photo volume is the only storage figure worth measuring. Even at 10x (87 GB/year) the object-storage line is about GBP 1.30-2.20/month, so the architecture does not change; what changes is the egress bill, which is handled separately.",
-          "decision_is_insensitive": true
-        },
-        "notes": [
-          "Computed from the documented formulas; calculator not executable in this environment.",
-          "index_overhead deliberately set to 1.0: the 2.5 default is a relational-database concept and applying it to object storage would overstate the figure by 2.5x."
-        ]
-      },
-      {
-        "calculator": "bandwidth",
-        "assumptions": [
-          { "name": "avg_rps", "value": 0.028, "unit": "requests/second", "source": "calculated", "confidence": "low" },
-          { "name": "avg_payload_bytes", "value": 100000, "unit": "bytes", "source": "assumed", "confidence": "low", "impact_if_wrong": "linear on egress and on the cost ceiling" },
-          { "name": "origin_price_per_gb", "value": 0.065, "unit": "GBP/GB", "source": "stated", "confidence": "medium", "impact_if_wrong": "range GBP 0.04-0.09 per knowledge/cost/_pricing.md, checked 2026-08-09" }
-        ],
-        "formula": "bytes_per_second = rps x avg_payload_bytes; egress_per_month = bytes_per_second x 2592000; cost = origin_gb x price_per_gb",
-        "calculation": "bytes_per_second = 0.028 x 100000 = 2800 B/s; egress_per_month = 2800 x 2592000 = 7.26e9 B = 7.3 GB/month; cost = 7.3 x 0.065 = GBP 0.47/month",
-        "result": { "value": 7.3, "unit": "GB/month", "range": { "low": 2.4, "high": 55 }, "significant_figures": 2 },
-        "safety_margin": { "factor": 1.0, "rationale": "No margin applied: egress is billed on volume, so average RPS is the correct input and adding a peak margin would overstate the invoice by the peak factor." },
-        "confidence": "low",
-        "sensitivity": {
-          "dominant_input": "avg_payload_bytes",
-          "explanation": "7.3 GB/month is two orders of magnitude below the ~1 TB/month threshold at which edge offload repays its complexity point (egress-cost). Even at the top of the range (55 GB/month) a CDN is not justified. Egress does, however, scale linearly with users and is the line that breaks the GBP 50 budget first: at about 3,800 users the total invoice reaches GBP 50 at mid-range prices.",
-          "decision_is_insensitive": true
-        },
-        "notes": ["Computed from the documented formulas; calculator not executable in this environment."]
-      },
-      {
-        "calculator": "queue",
-        "assumptions": [
-          { "name": "arrival_rate", "value": 0.000079, "unit": "jobs/second", "source": "calculated", "confidence": "low", "impact_if_wrong": "linear on worker count" },
-          { "name": "service_time", "value": 3, "unit": "seconds", "source": "assumed", "confidence": "medium" },
-          { "name": "target_utilisation", "value": 0.7, "unit": "share", "source": "assumed", "confidence": "high" }
-        ],
-        "formula": "workers = ceil(arrival_rate x service_time_seconds / target_utilisation); capacity = workers / service_time_seconds",
-        "calculation": "workers = ceil(0.000079 x 3 / 0.7) = ceil(0.00034) = 1; capacity = 1 / 3 = 0.33 jobs/second against an arrival rate of 0.000079 jobs/second, a margin of 4200x",
-        "result": { "value": 1, "unit": "workers", "significant_figures": 1 },
-        "safety_margin": { "factor": 1.43, "rationale": "Sized for 70% utilisation because queue depth grows without bound as utilisation approaches 1. The margin is irrelevant here: demand is 6.8 jobs/day." },
-        "confidence": "low",
-        "sensitivity": {
-          "dominant_input": "photos_per_day",
-          "explanation": "At 1000x the assumed rate (6800 photos/day, 0.079 jobs/second) a single worker at 24% utilisation still keeps up. There is no queueing problem to solve, which is why image resizing stays in the request path rather than becoming a separate worker component.",
-          "decision_is_insensitive": true
-        },
-        "notes": ["Computed from the documented formulas; calculator not executable in this environment."]
-      },
-      {
-        "calculator": "cost",
-        "assumptions": [
-          { "name": "small_managed_app_instance", "value": "5-15", "unit": "GBP/month", "source": "stated", "confidence": "medium", "impact_if_wrong": "knowledge/cost/_pricing.md, checked 2026-08-09" },
-          { "name": "smallest_managed_relational", "value": "10-20", "unit": "GBP/month", "source": "stated", "confidence": "medium" },
-          { "name": "object_storage", "value": "0.015-0.025", "unit": "GBP/GB/month", "source": "stated", "confidence": "medium" },
-          { "name": "origin_egress", "value": "0.04-0.09", "unit": "GBP/GB", "source": "stated", "confidence": "medium" },
-          { "name": "complexity_points", "value": 4, "unit": "points", "source": "calculated", "confidence": "medium" },
-          { "name": "hours_per_point", "value": 4, "unit": "hours/point/month", "source": "assumed", "confidence": "low", "impact_if_wrong": "linear on the operational line; judgement, not measurement" },
-          { "name": "loaded_hourly_rate", "value": 60, "unit": "GBP/hour", "source": "assumed", "confidence": "low" }
-        ],
-        "formula": "infrastructure = sum(quantity x unit_price); operational = complexity_points x hours_per_point x loaded_hourly_rate; total = infrastructure + operational",
-        "calculation": "infrastructure_low = 5 + 10 + (8.7 x 0.015 = 0.13) + (7.3 x 0.04 = 0.29) + 0.02 backup + 0 error tracking (free tier) = GBP 15.44; infrastructure_high = 15 + 20 + (8.7 x 0.025 = 0.22) + (7.3 x 0.09 = 0.66) + 0.05 + 0 = GBP 35.93; operational = 4 x 4 x 60 = GBP 960; total = GBP 975 to GBP 996",
-        "result": { "value": 26, "unit": "GBP/month infrastructure (midpoint)", "range": { "low": 15, "high": 36 }, "significant_figures": 2 },
-        "safety_margin": { "factor": 1.0, "rationale": "No margin applied to the invoice: the price table already gives ranges, and the high end of the range is the conservative figure. The GBP 50 constraint is met with roughly GBP 14-35 of headroom." },
-        "confidence": "low",
-        "sensitivity": {
-          "dominant_input": "hours_per_point",
-          "explanation": "The infrastructure line is GBP 15-36 and the operational line is GBP 480-1440 (at 2-6 hours/point). The operational term dominates by a factor of about 30, which is why the complexity budget rather than the GBP 50 budget is the binding constraint on this design. The GBP 50 budget only binds on growth: it is exceeded at roughly 1,700-8,300 registered users depending on where prices fall in their ranges, centre about 3,800.",
-          "decision_is_insensitive": false
-        },
-        "notes": [
-          "Computed from the documented formulas; calculator not executable in this environment.",
-          "Prices from knowledge/cost/_pricing.md, checked 2026-08-09. Indicative, provider-neutral, not quotes.",
-          "hours_per_point = 4 and loaded_hourly_rate = 60 are judgement constants, not measurements (operational-cost-model)."
-        ]
-      }
-    ]
+    "peak_writes_per_second": 0.01,
+    "peak_reads_per_second": 0.28,
+    "storage_gb_per_year": 8.8,
+    "egress_gb_per_month": 11,
+    "concurrency": 0.06
   },
   "complexity": {
     "available": 4,
-    "spent": 4
+    "spent": 3
   },
   "components": [
     {
-      "name": "Application runtime (single deployed unit, managed platform)",
+      "name": "Monolithic web application on a managed platform",
       "kind": "application-runtime",
       "managed": true,
       "self_hosted": false,
       "complexity_cost": 1,
       "count": 1,
-      "justification": "Peak 0.28 requests/second and mean concurrency 0.048 (Little's Law). One small managed instance is roughly three orders of magnitude over-provisioned, so horizontal scaling and a load balancer have no measured problem to solve. Image resizing runs in-request in this same process at 6.8 photos/day."
+      "justification": "Peak load is 0.28 requests/second (1.9 at the most extreme plausible inputs) against single-instance comfort of ~10+; one small managed instance has ~2-3 orders of magnitude of headroom. Image resizing runs in-process at upload (~6 photos/day)."
     },
     {
-      "name": "Relational database (managed, smallest class)",
+      "name": "Managed PostgreSQL",
       "kind": "relational-database",
       "managed": true,
       "self_hosted": false,
       "complexity_cost": 1,
       "count": 1,
-      "justification": "The workload is relational: recipes belong to authors, comments belong to recipes and authors, tags are many-to-many. Growth is 0.015 GB/year against a 10 GB starter plan, and peak query rate is 1.4/second at 5 connections against a limit of 25. Full-text search over roughly 600 recipes/year is served by a GIN index on the same instance."
+      "justification": "~20 writes/day and ~0.02 GB/year of relational data - any relational database handles this with no tuning. Postgres full-text search covers recipe search at this corpus size, and a jobs table covers any future async work at zero additional components. Provider handles backups and point-in-time recovery."
     },
     {
-      "name": "Object storage (managed)",
+      "name": "Managed object storage for photos",
       "kind": "object-storage",
       "managed": true,
       "self_hosted": false,
       "complexity_cost": 1,
       "count": 1,
-      "justification": "Photos are 8.7 GB/year against 0.015 GB/year of relational data, a ratio of about 580:1. Serving 3.5 MB/photo from application instances or a database would put the largest byte volume in the least durable and most expensive place; object storage costs about GBP 0.13-0.22/month at this volume and gives durability the team does not have to operate."
-    },
-    {
-      "name": "Managed error tracking (free tier)",
-      "kind": "observability",
-      "managed": true,
-      "self_hosted": false,
-      "complexity_cost": 1,
-      "count": 1,
-      "justification": "Two developers with no operations capacity and no availability target need to learn about a broken deploy from a tool rather than from a user. At about 2,400 requests/day the event volume sits inside every free tier, so the infrastructure cost is GBP 0 and the cost is entirely the fourth complexity point. This is the one stage-2 element deliberately pulled forward; dropping it returns the design to 3/4."
+      "justification": "~8.8 GB/year of photos at ~11 GB/month egress. Keeping binaries out of the database keeps backups small and restores fast; photos are served directly from storage at these volumes."
     }
   ],
   "rejected_components": [
     {
-      "kind": "cache (managed key-value store)",
-      "reason": "Peak read rate is 1.3 queries/second against a database that is comfortable, and no single key approaches the ~10 requests/second threshold in when-not-to-cache. A cache here would add a component, a staleness class and an invalidation question on every write path in exchange for relieving load the origin does not notice. In-process caching of rendered fragments is available at 0 points if needed.",
-      "revisit_when": "One identified query exceeds 100 requests/minute at over 50 ms, measured before anything is added; or database CPU exceeds 70% sustained over 3 days and query optimisation has already been attempted."
+      "kind": "cache",
+      "reason": "Total peak traffic is 0.28 requests/second; no single key comes near the ~10 requests/second threshold at which relieved load becomes measurable, and the origin database is idle. A cache here adds a component and a staleness bug class for no measurable benefit.",
+      "revisit_when": "Any single query exceeds 10 requests/second sustained over a week, or database CPU exceeds 50% sustained - then compute what a cache would actually relieve before adding it."
     },
     {
-      "kind": "cdn / edge cache",
-      "reason": "Origin egress is 7.3 GB/month. egress-cost puts the break-even for a CDN's complexity point at roughly 1 TB/month, and states that below a few hundred GB/month the saving does not repay the component. The saving at present is under GBP 0.70/month against 1 complexity point worth about GBP 240/month of engineering attention. If the object store or application platform includes edge delivery at no extra operational surface, take it: it costs 0 points and the arithmetic above does not apply.",
-      "revisit_when": "Origin egress exceeds 250 GB/month for 2 consecutive months, read from the provider billing dashboard. This is the trigger most likely to fire first, because egress scales linearly with users and is what breaks the GBP 50 budget at roughly 3,800 users."
+      "kind": "cdn",
+      "reason": "Egress is ~11 GB/month against the few-hundred-GB threshold below which edge offload does not repay the component. Most managed platforms include this volume in the base price.",
+      "revisit_when": "Egress exceeds 200 GB/month for 2 consecutive months, or users in a distant geography report image load latency."
     },
     {
-      "kind": "queue / message broker",
-      "reason": "Image processing demand is 6.8 jobs/day (0.000079 jobs/second) against a single worker's capacity of 0.33 jobs/second, a margin of 4200x. when-you-need-streaming applies only at stages 4-5 and is not remotely in range. When asynchrony is eventually needed the first move is a database-backed job queue on the database already running, which costs 0 complexity points, not a broker.",
-      "revisit_when": "Image uploads exceed 200/day, or p95 upload latency exceeds 5 seconds twice in a week. The action is a database-backed queue in the existing database, not a broker; a broker needs sustained throughput that the database-backed queue cannot carry, which is orders of magnitude above this."
+      "kind": "search-engine",
+      "reason": "The corpus grows at ~1,000 recipes/year; Postgres full-text search with a GIN index handles this at sub-10ms with zero additional components. A dedicated search engine is 3 points (self-hosted) or 1 point plus a datastore technology (managed) for no measured gap.",
+      "revisit_when": "Recipe count exceeds 100,000, or search p95 exceeds 500 ms with the query already indexed."
     },
     {
-      "kind": "separate worker service / independently deployed service",
-      "reason": "Each additional independently deployed service costs 1 point against a budget already at 4/4, and buys nothing at 6.8 background jobs/day. Resizing in the request path costs 0 points and 3 seconds of a request that happens seven times a day.",
-      "revisit_when": "Background work exceeds a single process's capacity at 70% utilisation, or in-request work pushes p95 upload latency over 5 seconds."
+      "kind": "queue",
+      "reason": "Async workload is ~6 image-resize jobs/day; resizing runs synchronously at upload in ~1-2 seconds. Even the zero-cost fallback (a jobs table in Postgres) is comfortable to roughly 500 jobs/second - a dedicated broker is unjustified by around 7 orders of magnitude.",
+      "revisit_when": "Job volume exceeds 500 jobs/second sustained at peak over a week - and reach for the database-backed jobs table first when async is needed at all."
     },
     {
-      "kind": "read replica",
-      "reason": "read-replicas applies at stages 3-5. The primary is serving 1.4 queries/second and a replica would introduce replication lag, which makes read-after-write a correctness problem on the comment and publish paths in exchange for offloading load the primary does not feel.",
-      "revisit_when": "Database CPU exceeds 70% sustained over 3 days AND the workload is measured to be read-dominated AND query optimisation and indexing have already been exhausted."
+      "kind": "event-stream",
+      "reason": "Streaming earns its 3-4 points above ~500 events/second sustained or with 3+ independent consumer groups requiring replay. This system has one consumer (itself) and ~20 writes/day.",
+      "revisit_when": "3 or more independent consumers need to replay the same activity stream as a confirmed requirement, or sustained event throughput exceeds 500/second."
     },
     {
-      "kind": "search engine (dedicated full-text index)",
-      "reason": "Recipe search is the plausible reason to reach for one, but the corpus is about 600 recipes/year. PostgreSQL full-text search with a GIN index over tens of thousands of rows returns in single-digit milliseconds. A search cluster is a second datastore technology (+1 point on top of its own cost) against a budget with no headroom.",
-      "revisit_when": "The corpus exceeds 100,000 recipes, or p95 search latency exceeds 300 ms with a GIN index confirmed to be in use by EXPLAIN."
+      "kind": "worker",
+      "reason": "A separately deployed worker service adds a deploy pipeline and a version boundary (+2 points total) to process ~6 short jobs/day that fit in the request path.",
+      "revisit_when": "Any job exceeds 5 seconds at p95, or job volume exceeds 1/minute sustained - then move to an in-app background thread or jobs table before a separate service."
     },
     {
-      "kind": "connection pooler",
-      "reason": "Demand is 5 connections (the pool floor) against an assumed limit of 25, which is 20% and well below the 80% threshold at which connection-pooling says a pooler is justified. Below that threshold it adds a hop and a process for nothing.",
-      "revisit_when": "Connection utilisation exceeds 80% of max_connections for 1 hour, recurring. This is also the reason serverless compute was rejected: it inverts this arithmetic and forces the pooler."
+      "kind": "load-balancer",
+      "reason": "One instance serves peak load with ~2-3 orders of magnitude of headroom; there is no second instance to balance across. No availability target was stated that would justify redundancy.",
+      "revisit_when": "Peak RPS exceeds ~50, or an availability target of 99.9% or above is stated - either justifies a second instance and therefore a balancer."
     },
     {
-      "kind": "orchestration platform (self-managed cluster)",
-      "reason": "4 complexity points, which is the entire budget for this team, to schedule one container serving 0.28 requests/second. Rule R-F also blocks it: this is a stage-1 system and self-managed orchestration is stage-4 machinery.",
-      "revisit_when": "Not at this scale. Re-evaluate only above roughly 10 independently deployed services with genuine per-service scaling requirements, and only with dedicated operations headcount, which raises the budget by 4 points per person."
+      "kind": "read-replica",
+      "reason": "Peak reads are 0.28/second against the ~1,000/second threshold where offloading reads becomes worth the replication-lag correctness questions.",
+      "revisit_when": "Reads exceed 1,000/second with a hot working set, measured at the database."
     },
     {
-      "kind": "document database",
-      "reason": "relational-vs-document selects on workload, not preference. Recipes have stable structure and heavy relationships: author, comments, tags, likes, all of which are joins. There is no heterogeneous-schema or embedded-aggregate pressure here.",
-      "revisit_when": "Recipe documents become genuinely heterogeneous per user AND queries stop joining across entities. Neither is on the roadmap described."
-    },
-    {
-      "kind": "multi-AZ database failover / multi-region",
-      "reason": "No availability target was stated, and availability-targets says not to invent one. A multi-AZ replicated database is GBP 400-600/month against a GBP 50 budget, so it is 8-12x the entire infrastructure allowance to buy availability nobody has asked for.",
-      "revisit_when": "The business states an availability target of 99.95% or better and raises the infrastructure budget accordingly. This is a requirements change, not a metric."
-    },
-    {
-      "kind": "log aggregation / metrics platform",
-      "reason": "Log ingestion is priced at GBP 0.40-2.00 per GB and observability-cost identifies it as the classic unbudgeted line. The managed platform's own logs and metrics dashboards cover every trigger in this design at 0 additional points, and error tracking covers the exception path.",
-      "revisit_when": "A production incident cannot be diagnosed from platform logs and error-tracker events within the team's tolerance, twice in a quarter."
+      "kind": "orchestration-platform",
+      "reason": "One deployed service and two developers with no dedicated ops. An orchestration platform is 4 points - the team's entire budget - to schedule one container.",
+      "revisit_when": "3 or more independently deployed services exist and a dedicated ops engineer is hired."
     }
   ],
   "options": [
     {
-      "id": "A-managed-monolith",
-      "description": "Single application codebase deployed as one unit on a managed platform, with a managed relational database, managed object storage for photos, in-request image resizing, and free-tier managed error tracking. Photos are uploaded through the app, resized in-process, written to object storage, and served to browsers directly from object-storage URLs.",
-      "components": ["application-runtime", "relational-database", "object-storage", "observability"],
-      "complexity_cost": 4,
-      "monthly_cost": { "currency": "GBP", "low": 15, "high": 36 },
+      "id": "managed-monolith",
+      "description": "Simplest viable option: one monolithic web app on a managed platform (Fly.io/Render/Railway class), managed PostgreSQL, managed object storage for photos. Server-rendered pages; image resize in-process at upload; Postgres full-text search; provider-managed backups with PITR.",
+      "components": ["application-runtime (managed)", "relational-database (managed)", "object-storage (managed)"],
+      "complexity_cost": 3,
+      "monthly_cost": { "currency": "GBP", "low": 10, "high": 35 },
       "reversibility": "easy",
       "verdict": "selected",
       "trade_offs": [
-        "Availability is roughly 99%: a single application instance and a single-AZ database mean planned deploys and database maintenance are visible to users, and recovery from database loss is a restore measured in tens of minutes.",
-        "Image resizing in the request path occupies an application worker for about 3 seconds per photo. Harmless at 6.8 photos/day; the first thing that breaks if uploads become popular.",
-        "The complexity budget is fully spent at 4/4, so the next component requires removing one of these four or adding an engineer.",
-        "The GBP 50 infrastructure budget is met with headroom now but scales out at roughly 3,800 registered users, driven by egress rather than compute.",
-        "Managed services cost more on the invoice than self-hosting the same things, which is the correct trade for a two-person team but is a real cash cost."
+        "Single instance: deploys and platform incidents mean minutes of downtime (~99.5% in practice, no stated target to breach)",
+        "Some platform lock-in in deploy config, though the app itself is a portable container",
+        "Postgres full-text search is weaker than a dedicated engine for typo-tolerance and relevance tuning",
+        "Synchronous image processing ties upload latency to photo size (~1-2 s per photo)"
       ]
     },
     {
-      "id": "A0-managed-monolith-without-error-tracking",
-      "description": "Identical to option A with the managed error tracker removed, leaving application runtime, relational database and object storage. This is the strictly simplest viable architecture for the stated requirements.",
-      "components": ["application-runtime", "relational-database", "object-storage"],
-      "complexity_cost": 3,
-      "monthly_cost": { "currency": "GBP", "low": 15, "high": 36 },
-      "reversibility": "easy",
-      "verdict": "deferred",
-      "reason": "Genuinely viable and it preserves a point of headroom, which has real value for a team with none. It is deferred rather than selected because two developers with no operations capacity and no availability target need a tool that tells them a deploy broke, and the alternative is finding out from a user. If the team would rather hold the fourth point in reserve for a future requirement, this option is the correct one and nothing else in the design changes. The measurement that decides it: whether platform logs alone surface production exceptions within the team's tolerance over one month of real traffic.",
-      "trade_offs": [
-        "One point of headroom preserved, which is the capacity to absorb one future requirement without a rethink.",
-        "Production exceptions are discovered by reading platform logs, which in practice means discovering them when a user reports them.",
-        "Same infrastructure cost as option A, since the error tracker is free at this volume: the trade is entirely operational surface against diagnostic speed."
-      ]
-    },
-    {
-      "id": "B-single-vm-self-hosted",
-      "description": "One small virtual machine running the application behind a self-managed reverse proxy, with PostgreSQL installed on the same box and photos on local block storage. The cheapest possible invoice.",
-      "components": ["application-runtime", "reverse-proxy", "relational-database", "block-storage"],
+      "id": "single-vps-self-hosted",
+      "description": "One VPS running the app, SQLite (or self-installed Postgres), and photos on local disk behind Caddy. Cheapest possible invoice.",
+      "components": ["application-runtime (self-hosted)", "embedded-database (self-operated state)", "local disk photo storage"],
       "complexity_cost": 5,
-      "monthly_cost": { "currency": "GBP", "low": 16, "high": 27 },
+      "monthly_cost": { "currency": "GBP", "low": 5, "high": 10 },
       "reversibility": "moderate",
       "verdict": "rejected",
-      "reason": "Rejected on the operational-cost-model arithmetic, not on taste. Self-hosted stateless (2) plus self-hosted stateful (3) is 5 points against a budget of 4, and 5 points is about GBP 1,200/month of engineering attention against option A's GBP 960, to save roughly GBP 5-10/month on the invoice. It also puts 8.7 GB/year of user photos on a single unreplicated disk whose backup is the team's problem. The measurement that changes the answer: if the team already operates PostgreSQL on virtual machines for another system, the marginal points fall to roughly 1-2 and this becomes the cheaper architecture on both lines; or if managed database pricing for this workload exceeded about GBP 300/month, at which point the invoice difference would outrun the operational difference.",
+      "reason": "Saves roughly GBP 15-25/month of invoice but moves all state (database files and photos) onto a box the two developers must patch, back up, restore-test, and resize - about 2 extra complexity points, or ~GBP 480/month of engineering attention at the ~GBP 240/point model. It also exceeds the 4-point budget at 5. The answer changes if the invoice gap grows past the operational gap: managed pricing above ~GBP 500/month for this stack, or a dedicated ops hire raising the budget to 8.",
       "trade_offs": [
-        "Cheapest invoice by GBP 5-10/month, and the free-tier and per-GB pricing traps of managed services do not apply.",
-        "Everything is in one place, which is genuinely simpler to reason about until it is not.",
-        "Backups, patching, PostgreSQL upgrades, disk growth and failover are all the team's responsibility, and an untested restore is not a backup.",
-        "Photos on local disk are a single point of permanent data loss, which is the one failure this product cannot recover from."
+        "Lowest possible invoice",
+        "Team owns backups, restore testing, disk-full, kernel patching, and TLS renewal",
+        "Single box is also the availability story: any incident is full downtime until a human intervenes"
       ]
     },
     {
-      "id": "C-serverless-plus-cdn",
-      "description": "Serverless functions for the application, a managed relational database behind a connection pooler, managed object storage with presigned direct upload, a CDN in front of images, and a queue for out-of-band resizing.",
-      "components": ["application-runtime", "connection-pooler", "relational-database", "object-storage", "cdn", "queue"],
-      "complexity_cost": 6,
-      "monthly_cost": { "currency": "GBP", "low": 12, "high": 30 },
-      "reversibility": "moderate",
+      "id": "standard-scalable-stack",
+      "description": "The conventional 'proper' stack: containers on an orchestration platform, load balancer, app replicas, managed Postgres, Redis cache, dedicated search engine, message broker for image jobs, CDN for photos.",
+      "components": ["orchestration-platform", "load-balancer", "application-runtime x2", "relational-database (managed)", "cache (managed)", "search-engine", "queue (managed)", "cdn"],
+      "complexity_cost": 13,
+      "monthly_cost": { "currency": "GBP", "low": 150, "high": 400 },
+      "reversibility": "hard",
       "verdict": "rejected",
-      "reason": "50% over a budget of 4, and the excess buys nothing measurable: the CDN offloads 7.3 GB/month against a 1 TB/month break-even, the queue handles 6.8 jobs/day, and the pooler exists only to repair a problem serverless itself creates. On invoice it is competitive — 72,000 invocations/month is about GBP 0.04 — so the rejection is on operational surface and on the fact that image resizing runs into function time and memory limits. The measurement that changes the answer: if the application instance line exceeded about GBP 25/month while median CPU utilisation stayed under 5%, idle compute would be the dominant waste and per-invocation pricing would win.",
+      "reason": "Every threshold that justifies these components is orders of magnitude away from the measured numbers: peak 0.28 RPS vs ~10+ single-instance comfort (replicas, balancer, orchestration); no key near 10 req/s and an idle origin (cache); ~1,000 recipes/year (search engine); ~6 jobs/day vs 500 jobs/s (broker); 11 GB/month egress vs a few hundred GB (CDN). It is 13 points against a budget of 4 and its high-end cost is 8x the stated GBP 50 budget. The measurements that would change the answer are exactly the revisit conditions on the rejected components.",
       "trade_offs": [
-        "Compute cost tracks usage almost exactly, which suits a workload that is idle 99.99% of the time.",
-        "No instance to patch or size.",
-        "Six components and three of them exist to compensate for the first one; cold starts on a low-traffic app are user-visible on the first request after an idle period.",
-        "Local development and debugging are materially harder for a two-person team, which is a velocity cost at stage 1."
+        "Horizontal headroom and zero-downtime deploys nobody has asked for",
+        "3x the budget in complexity, 8x in money, carried continuously by 2 developers"
       ]
     }
   ],
   "cost": {
     "currency": "GBP",
-    "monthly_infrastructure": { "low": 15, "high": 36 },
-    "monthly_operational": { "low": 480, "high": 1440 },
-    "monthly_total": { "low": 495, "high": 1476 },
+    "stated_budget": 50,
+    "within_budget": true,
+    "monthly_infrastructure": { "low": 10, "high": 35 },
+    "monthly_operational": { "low": 540, "high": 720 },
+    "monthly_total": { "low": 550, "high": 755 },
     "price_table_date": "2026-08-09"
   },
   "availability": {
     "target": null,
-    "achievable": "~99% (about 7.3 hours of permitted downtime per month)",
+    "achievable": "~99.5% (single instance on a managed platform; minutes of downtime during deploys and platform incidents)",
     "consistent": true,
-    "explanation": "No target was stated and availability-targets says not to invent one. What this architecture actually delivers is roughly 99%: a single application instance with platform-level process restart, a single-AZ managed database with automated daily backups and point-in-time recovery, and object storage whose durability is the provider's problem. The binding constraint is database recovery: restoring from backup is tens of minutes to hours with a human in the loop, so any target implying less than about an hour of monthly downtime is not deliverable here. 99.9% would require deploys without extended downtime, automated restart and a tested restore procedure, all of which are achievable at 0 additional complexity points and are recommended. 99.95% requires database failover, which means a multi-AZ replicated database at GBP 400-600/month against a GBP 50 budget, and is therefore a budget conversation rather than an architecture one."
+    "explanation": "No target was stated. A single managed instance with provider-managed database backups and PITR typically delivers around 99.5% observed. If a target of 99.9%+ is later stated, this design does not deliver it - see the load-balancer rejection trigger."
   },
   "triggers": [
     {
-      "id": "monthly-infrastructure-spend",
-      "metric": "total monthly infrastructure invoice",
-      "source": "cloud provider billing dashboard, reviewed at month end",
-      "comparator": ">",
-      "threshold": 60,
-      "unit": "GBP/month",
-      "window": "2 consecutive months",
-      "action": "Break the invoice down by line and re-run the bandwidth and storage calculations against measured volumes. Egress is the expected dominant line; evaluate edge offload against its current price before adding compute.",
-      "owner": "the two developers, at the monthly billing review",
-      "verification": "monthly",
-      "status": "armed",
-      "created": "2026-08-09",
-      "notes": "120% of the stated GBP 50 budget. Capacity analysis puts the crossover at roughly 1,700-8,300 registered users depending on where provider prices fall, centred on about 3,800."
-    },
-    {
-      "id": "origin-egress-volume",
-      "metric": "origin egress GB per month",
-      "source": "cloud provider billing dashboard, data transfer line",
-      "comparator": ">",
-      "threshold": 250,
-      "unit": "GB/month",
-      "window": "2 consecutive months",
-      "action": "Compute the cost of edge offload against current origin egress pricing and current measured image payload sizes. Reducing served image dimensions is often the larger win than adding a CDN and costs 0 complexity points.",
-      "owner": "the two developers, at the monthly billing review",
-      "verification": "monthly",
-      "status": "armed",
-      "created": "2026-08-09",
-      "notes": "Present volume is 7.3 GB/month. 250 GB is set well below the ~1 TB/month break-even in egress-cost so that the analysis starts with runway rather than after the invoice arrives."
-    },
-    {
-      "id": "registered-users-past-sensitivity-limit",
-      "metric": "registered user count",
-      "source": "application admin page, checked at the monthly product review",
-      "comparator": ">",
-      "threshold": 3000,
-      "unit": "users",
-      "window": "confirmed, not projected",
-      "action": "Re-run the full capacity analysis with measured daily-active share, requests per session and photo sizes rather than the assumed values in this design.",
-      "owner": "the two developers, at the monthly product review",
-      "verification": "quarterly",
-      "status": "armed",
-      "created": "2026-08-09",
-      "notes": "This is the sensitivity limit from the cost analysis, not a round number. Compute holds to roughly 10,000 users; the GBP 50 budget is what breaks first, at about 3,800."
-    },
-    {
-      "id": "app-instance-cpu-sustained",
-      "metric": "application instance CPU utilisation at peak",
-      "source": "managed platform metrics dashboard",
-      "comparator": ">",
-      "threshold": 70,
-      "unit": "percent",
-      "window": "sustained over 3 consecutive days",
-      "action": "Profile the dominant request path and confirm whether in-request image resizing is the cause before changing instance size or count. Latency is still linear at 70%, so there is time to analyse.",
-      "owner": "the two developers",
-      "verification": "monthly",
-      "status": "armed",
-      "created": "2026-08-09"
-    },
-    {
-      "id": "db-cpu-sustained",
-      "metric": "database CPU utilisation",
-      "source": "managed database metrics dashboard",
-      "comparator": ">",
-      "threshold": 70,
-      "unit": "percent",
-      "window": "sustained over 3 consecutive days",
-      "action": "Identify the dominant query from the database's own statistics view; evaluate indexing and query optimisation before considering a replica or a cache.",
-      "owner": "the two developers",
-      "verification": "monthly",
-      "status": "armed",
-      "created": "2026-08-09"
-    },
-    {
-      "id": "db-storage-used",
-      "metric": "database storage used as a share of the plan limit",
-      "source": "managed database metrics dashboard",
-      "comparator": ">",
-      "threshold": 60,
-      "unit": "percent",
-      "window": "sustained over 1 week",
-      "action": "Identify what is growing against the projected 0.015 GB/year and decide retention or plan size then, not at 95%.",
-      "owner": "the two developers",
-      "verification": "quarterly",
-      "status": "armed",
-      "created": "2026-08-09",
-      "notes": "60% of a 10 GB starter plan is 6 GB. At the projected growth rate this should not fire for decades, so if it fires the projection is wrong and that is the finding."
-    },
-    {
-      "id": "db-connection-utilisation",
-      "metric": "active database connections as a share of max_connections",
-      "source": "managed database metrics dashboard",
-      "comparator": ">",
-      "threshold": 80,
-      "unit": "percent",
-      "window": "sustained over 1 hour, recurring within a month",
-      "action": "Re-run the connections calculation against the measured query rate and query time; evaluate pool configuration before adding a connection pooler as a component.",
-      "owner": "the two developers",
-      "verification": "quarterly",
-      "status": "armed",
-      "created": "2026-08-09",
-      "notes": "80% of max_connections is the threshold at which connection-pooling says a pooler becomes justified. Present demand is 20%."
-    },
-    {
-      "id": "upload-p95-latency",
-      "metric": "p95 end-to-end latency of the photo upload endpoint",
-      "source": "application request timing, emitted to the managed platform metrics dashboard",
+      "id": "registered-users-5000",
+      "metric": "registered_users",
+      "source": "app admin dashboard, checked at the monthly product review",
       "comparator": ">",
       "threshold": 5000,
-      "unit": "milliseconds",
-      "window": "2 occurrences in a week",
-      "action": "Profile the resize step and evaluate moving it to a database-backed job queue on the existing database, which costs 0 complexity points, before considering a separate worker service or a broker.",
-      "owner": "the two developers",
-      "verification": "monthly",
+      "unit": "users",
+      "window": "sustained across 2 consecutive monthly reviews",
+      "action": "Re-run the capacity analysis end to end; at 50x current users, photo storage (~440 GB/year) and egress (~550 GB/month) become the material lines and the CDN and cost triggers below are likely to fire around the same time.",
+      "owner": "dev team (2 developers)",
       "status": "armed",
-      "created": "2026-08-09",
-      "notes": "This metric does not exist yet. Instrumenting per-endpoint request timing on the upload and search paths is a prerequisite of this decision, not a follow-up, because in-request resizing is the design choice this trigger guards."
+      "created": "2026-08-09"
     },
     {
-      "id": "search-p95-latency",
-      "metric": "p95 latency of the recipe search query",
-      "source": "application request timing on the search endpoint, plus the database statement statistics view",
+      "id": "p95-latency-500ms",
+      "metric": "p95_request_latency",
+      "source": "managed platform metrics dashboard",
       "comparator": ">",
-      "threshold": 300,
-      "unit": "milliseconds",
-      "window": "sustained over 1 day",
-      "action": "Confirm with EXPLAIN that the GIN full-text index is in use; if it is, re-run the analysis for search against measured corpus size before evaluating a dedicated search component.",
-      "owner": "the two developers",
-      "verification": "quarterly",
+      "threshold": 500,
+      "unit": "ms",
+      "window": "sustained over 1 week",
+      "action": "Profile the dominant queries and fix indexing first; re-evaluate a cache only with a measured statement of what load it would relieve.",
+      "owner": "dev team (2 developers)",
       "status": "armed",
-      "created": "2026-08-09",
-      "notes": "Requires the same request-timing instrumentation as upload-p95-latency."
+      "created": "2026-08-09"
     },
     {
-      "id": "restore-drill-overdue",
-      "metric": "days since the last successful restore of a production backup into a scratch database",
-      "source": "a dated line in the team's operations note, checked at the quarterly review",
+      "id": "egress-200gb-month",
+      "metric": "object_storage_egress",
+      "source": "cloud provider billing dashboard",
       "comparator": ">",
-      "threshold": 180,
-      "unit": "days",
-      "window": "confirmed at the quarterly review",
-      "action": "Perform a restore into a scratch database, time it, and record the measured recovery time. If it exceeds the tolerance the business turns out to have, that is a requirements conversation about the availability target.",
-      "owner": "the two developers, at the quarterly review",
-      "verification": "quarterly",
+      "threshold": 200,
+      "unit": "GB/month",
+      "window": "2 consecutive months",
+      "action": "Compute egress cost at the per-GB prices then in force and evaluate CDN/edge offload for photo delivery against it.",
+      "owner": "dev team (2 developers)",
       "status": "armed",
-      "created": "2026-08-09",
-      "notes": "An untested restore is not a backup (backup-restore-and-pitr). Database recovery time is the binding constraint on this design's availability, and it is currently unmeasured."
+      "created": "2026-08-09"
+    },
+    {
+      "id": "infra-cost-80pct-budget",
+      "metric": "monthly_infrastructure_cost",
+      "source": "cloud provider billing dashboard",
+      "comparator": ">",
+      "threshold": 40,
+      "unit": "GBP/month",
+      "window": "2 consecutive months",
+      "action": "Review invoice line items against the GBP 50 budget before it breaches; identify which line is growing and re-run the relevant capacity calculation.",
+      "owner": "dev team (2 developers)",
+      "status": "armed",
+      "created": "2026-08-09"
     }
   ],
   "knowledge_used": [
     "proportional-architecture",
-    "maturity-stages",
-    "complexity-cost",
-    "little-law",
-    "utilisation-and-queueing",
     "when-not-to-cache",
-    "relational-vs-document",
-    "connection-pooling",
-    "indexing-fundamentals",
-    "backup-restore-and-pitr",
-    "schema-migration-safety",
-    "read-replicas",
-    "partitioning-and-sharding",
     "database-backed-queues",
-    "sync-vs-async-decision",
     "when-you-need-streaming",
-    "idempotency",
-    "timeouts",
-    "retries-backoff-jitter",
-    "availability-targets",
-    "failure-mode-analysis",
-    "egress-cost",
-    "operational-cost-model",
     "managed-vs-self-hosted",
-    "observability-cost"
+    "egress-cost"
   ],
   "confidence": "high",
   "open_questions": [
-    "What is the actual average photo size and photos-per-recipe? This is the dominant uncertain input in the whole analysis: it drives object storage, egress, and therefore the point at which the GBP 50 budget is exceeded. One week of measurement resolves it.",
-    "Is there an availability expectation nobody has written down? The design delivers about 99% and recovers from database loss by restore. If a day of downtime would be a business problem, that is a requirements change with a cost attached.",
-    "Are the users in the UK or EU? No compliance requirements were stated, but consumer accounts plus user-uploaded photos carry baseline data-protection duties regardless: account deletion that actually removes photos from object storage, and a stated retention policy. Both are cheap to build now and expensive to retrofit.",
-    "Is user-uploaded content moderated? Public photo upload with no review is a product and legal exposure rather than an architectural one, but it changes whether an upload needs a pending state before publication.",
-    "Has either developer operated a managed relational database and managed object storage before? If not, the unfamiliar-technology modifier adds 1-2 points and this design goes over budget, which would make option A0 the correct selection instead."
+    "Actual DAU share, session depth, and photo upload volume once launched - instrument basic analytics in week one so the assumed inputs become observed ones.",
+    "Typical uploaded photo size in practice (phone originals can be 5-12 MB); affects the storage line ~3x either way but no decision.",
+    "UK/EU users mean GDPR basics apply despite 'no compliance requirements': privacy policy, data deletion on request, hashed passwords. Not an architecture driver at this scale, but not optional either.",
+    "Are email notifications (e.g. on comments) expected? They fit the zero-cost database-backed jobs pattern; no component change either way."
   ]
 }

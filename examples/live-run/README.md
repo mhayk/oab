@@ -70,21 +70,31 @@ one example.
 | 0.1.0 | none — the field did not exist | missing |
 | 0.1.2 | required by the framework procedure | missing |
 | 0.1.3 | added to the skill; schema made it required | missing — run exhausted its turns before validating |
-| 0.1.4 | validation moved **before** the prose; 80 turns | **missing**, with turns to spare |
+| 0.1.4 | validation moved **before** the prose; 80 turns | missing, with turns to spare |
+| 0.1.5 | PostToolUse hook added | missing — the hook does not fire for marketplace-installed plugins in headless sessions |
+| **0.1.6** | **hook active via `--plugin-dir`** | **✅ present — every scenario-01 assertion passes** |
 
 Run 5 wrote both files and was not truncated. The instruction was in the framework, in the skill,
 ahead of the prose, and the schema rejects the artifact without it. The agent still did not emit it.
 
-**Prompt-level instruction does not reliably guarantee a field appears in an artifact.** That is
-risk T9 from the design — "the agent ignores the procedure under context pressure" — now measured
-rather than hypothesised, and it is the single most important thing learned from installing this
-plugin.
+Run 7 — the first with the hook actually executing — produced `stated_budget: 50`,
+`within_budget: true`, an estimate of £10–35 inside the budget, and rejection kinds from the
+closed enum. `design.json` in this directory is that run, unedited; the failing runs 1–6 remain in
+git history. Whether the field appeared on first write or after hook feedback is not observable
+from outside the session — what is observable is that six runs without an executing hook all
+failed, and the first run with one passed. (This run spent its turns on the artifact and did not
+produce the prose document; `design.md` here is from run 6.)
 
-The design deliberately excluded hooks from M1: *"Deliberately not used in M1: hooks, MCP servers,
-LSP servers…  None solves an M1 problem."* That judgement was wrong. A `PostToolUse` hook that
-validates `.oab/design.json` on write and returns the schema error to the agent is a **mechanism**
-rather than more words, and it is the only approach tried or proposed that could close this. See
-[#44](https://github.com/mhayk/oab/issues/44).
+**Prompt-level instruction does not reliably guarantee a field appears in an artifact; a hook
+does.** That is risk T9 from the design — measured across six failing runs and closed by a
+mechanism rather than by more words. It is the single most important thing learned from installing
+this plugin.
 
-Until then, treat schema-required fields as **aspirational for agent output** and enforced only in
-CI. The artifacts here are committed unpatched so the gap stays visible.
+The design deliberately excluded hooks from M1; that judgement was wrong and is corrected in
+`docs/design/02-repository-and-integration.md` §10.1. The hook lives in `hooks/hooks.json` and
+`tools/hook_validate_artifact.py`.
+
+One caveat remains: hooks from **marketplace-installed** plugins did not execute in headless
+sessions, while the identical hook via `--plugin-dir` did — so the evaluation harness runs with
+`--plugin-dir`, and whether an interactive session prompts for hook approval on an installed
+plugin is tracked in [#45](https://github.com/mhayk/oab/issues/45).

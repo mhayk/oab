@@ -50,6 +50,11 @@ of a third-party repository.
 **Integration**
 - Plugin manifests, four commands, a background principles skill, and a repository-scanner
   subagent. `claude plugin validate ./ --strict` passes.
+- A `PostToolUse` hook that validates OAB artifacts the moment they are written and returns the
+  missing fields to the agent. Six live runs proved prompt-level instruction cannot guarantee a
+  field appears in an artifact; the first run with the hook executing passed every scenario
+  assertion. Caveat: fires via `--plugin-dir` but not for marketplace-installed plugins in
+  headless sessions (#45).
 
 **Project**
 - Founding design proposal (`docs/design/`), including a critique of its own founding brief.
