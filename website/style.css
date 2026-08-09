@@ -221,3 +221,12 @@ section h3 { font-size: 1rem; color: var(--bright); margin: 0 0 6px; font-weight
 a:focus-visible, .btn:focus-visible {
   outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 4px;
 }
+
+/* Persistent source link, mirroring the language switcher. An open-source project whose whole
+   argument is that everything is inspectable should not bury the source at line 321 of 350. */
+.repo{position:absolute;top:18px;left:24px;font-size:.85rem;z-index:2;
+      display:inline-flex;align-items:center;gap:7px;padding:6px 8px;min-height:24px;
+      color:var(--muted);text-decoration:none}
+.repo:hover{color:var(--accent)}
+.repo svg{flex:none}
+@media (max-width:520px){ .repo span{display:none} }
