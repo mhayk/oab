@@ -79,6 +79,7 @@ If that cannot run, check by hand that every one of these is present:
 | :-- | :-- |
 | `assumptions` | non-empty, each with a confidence |
 | `options` | at least 2, at least one `rejected` |
+| `rejected_components[*].kind` | from the same closed enum as `components[*].kind` — qualifiers go in `reason`, not the kind |
 | `rejected_components[*].revisit_when` | on every rejection |
 | `triggers` | at least 1, each with source, threshold, unit, window, action, owner |
 | `complexity.available` / `.spent` | both set; `override` written if spent exceeds available |

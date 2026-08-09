@@ -295,7 +295,35 @@
         ],
         "properties": {
           "kind": {
-            "type": "string"
+            "type": "string",
+            "enum": [
+              "application-runtime",
+              "worker",
+              "relational-database",
+              "document-database",
+              "key-value-store",
+              "wide-column-database",
+              "graph-database",
+              "time-series-database",
+              "search-engine",
+              "vector-database",
+              "cache",
+              "queue",
+              "event-stream",
+              "object-storage",
+              "cdn",
+              "load-balancer",
+              "api-gateway",
+              "reverse-proxy",
+              "orchestration-platform",
+              "service-mesh",
+              "observability",
+              "read-replica",
+              "connection-pooler",
+              "embedded-database",
+              "other"
+            ],
+            "description": "Same closed enum as components[*].kind. Free text here broke exact-match assertions on the sixth live run ('cache (managed key-value store)' vs 'cache') \u2014 both fields are compared against scenario expectations, so both must be constrained the same way. Qualifiers belong in `reason`."
           },
           "reason": {
             "type": "string",
