@@ -1,0 +1,17 @@
+{
+  "id": "queue-throughput-limit",
+  "decision": "ADR-0007",
+  "metric": "queue.throughput_jobs_per_second",
+  "source": "application metrics — queue dashboard",
+  "comparator": ">",
+  "threshold": 200,
+  "unit": "jobs/second",
+  "window": "sustained over 3 consecutive days at peak hour",
+  "action": "Re-run capacity analysis for the async subsystem; evaluate broker options against measured demand and consumer-group requirements",
+  "owner": "platform-team",
+  "verification": "monthly — confirm the metric is still emitted and the threshold still meaningful",
+  "status": "armed",
+  "created": "2026-08-09",
+  "fired_at": null,
+  "notes": "Threshold set at roughly 20x current peak (9 jobs/s) and well below the measured database queue ceiling, so it fires with time to act rather than during an incident."
+}

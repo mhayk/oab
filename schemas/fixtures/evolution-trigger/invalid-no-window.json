@@ -1,0 +1,11 @@
+{
+  "id": "db-cpu",
+  "metric": "database.cpu.utilisation",
+  "source": "dashboard",
+  "comparator": ">",
+  "threshold": 70,
+  "unit": "percent",
+  "action": "Re-run capacity analysis",
+  "owner": "backend",
+  "status": "armed"
+}

@@ -1,0 +1,9 @@
+{
+  "id": "ADR-0002",
+  "title": "Original datastore choice",
+  "status": "superseded",
+  "date": "2026-02-01",
+  "reversibility": "hard",
+  "confidence": "medium",
+  "superseded_by": null
+}

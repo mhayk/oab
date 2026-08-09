@@ -1,0 +1,75 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://oab.run/schemas/adr.schema.json",
+  "title": "OAB Architecture Decision Record",
+  "description": "The YAML frontmatter contract for an ADR. The prose sections are defined by templates/adr.md; this schema governs the machine-readable part, so that a repository's decisions can be queried, and so revisit conditions cannot be omitted.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["id", "title", "status", "date", "reversibility", "confidence"],
+  "properties": {
+    "id": {
+      "type": "string",
+      "pattern": "^ADR-[0-9]{4}$",
+      "description": "Zero-padded and sequential within the repository."
+    },
+    "title": { "type": "string", "minLength": 5, "maxLength": 120 },
+    "status": {
+      "type": "string",
+      "enum": ["proposed", "accepted", "superseded", "deprecated", "rejected"]
+    },
+    "date": { "type": "string", "format": "date" },
+    "deciders": { "type": "array", "items": { "type": "string" } },
+    "supersedes": {
+      "type": "array",
+      "items": { "type": "string", "pattern": "^ADR-[0-9]{4}$" },
+      "uniqueItems": true
+    },
+    "superseded_by": {
+      "anyOf": [{ "type": "string", "pattern": "^ADR-[0-9]{4}$" }, { "type": "null" }]
+    },
+    "tags": { "type": "array", "items": { "type": "string" }, "uniqueItems": true },
+    "complexity_delta": {
+      "type": "number",
+      "description": "Change in complexity points from this decision. Negative is a simplification, and recording those is as valuable as recording additions."
+    },
+    "monthly_cost_delta": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["currency", "value"],
+      "properties": {
+        "currency": { "type": "string", "minLength": 3, "maxLength": 3 },
+        "value": { "type": "number" }
+      }
+    },
+    "reversibility": {
+      "type": "string",
+      "enum": ["easy", "moderate", "hard", "one-way"],
+      "description": "How hard this is to undo. One-way doors justify more analysis; a reversible decision made quickly usually beats a perfect decision made slowly."
+    },
+    "confidence": { "type": "string", "enum": ["high", "medium", "low"] },
+    "triggers": {
+      "type": "array",
+      "items": { "type": "string", "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$" },
+      "uniqueItems": true,
+      "description": "Ids of the evolution triggers that reopen this decision. A decision without one is a decision nobody can safely revisit."
+    }
+  },
+  "allOf": [
+    {
+      "if": { "properties": { "status": { "const": "accepted" } }, "required": ["status"] },
+      "then": {
+        "required": ["triggers"],
+        "properties": { "triggers": { "minItems": 1 } },
+        "description": "An accepted decision must carry at least one measurable revisit condition."
+      }
+    },
+    {
+      "if": { "properties": { "status": { "const": "superseded" } }, "required": ["status"] },
+      "then": {
+        "required": ["superseded_by"],
+        "properties": { "superseded_by": { "type": "string" } },
+        "description": "A superseded decision must say what replaced it, or the trail breaks."
+      }
+    }
+  ]
+}

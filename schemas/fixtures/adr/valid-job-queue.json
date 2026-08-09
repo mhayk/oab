@@ -1,0 +1,15 @@
+{
+  "id": "ADR-0007",
+  "title": "Use a database-backed job queue rather than a dedicated broker",
+  "status": "accepted",
+  "date": "2026-08-09",
+  "deciders": ["platform-team"],
+  "supersedes": [],
+  "superseded_by": null,
+  "tags": ["messaging", "async", "infrastructure"],
+  "complexity_delta": 0,
+  "monthly_cost_delta": { "currency": "GBP", "value": 0 },
+  "reversibility": "easy",
+  "confidence": "high",
+  "triggers": ["queue-throughput-limit", "queue-backlog-drain", "consumer-group-requirement"]
+}

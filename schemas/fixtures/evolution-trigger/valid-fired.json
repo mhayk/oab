@@ -1,0 +1,15 @@
+{
+  "id": "db-cpu-sustained-70",
+  "decision": "ADR-0003",
+  "metric": "database.cpu.utilisation",
+  "source": "managed database metrics dashboard",
+  "comparator": ">",
+  "threshold": 70,
+  "unit": "percent",
+  "window": "sustained over 3 consecutive days",
+  "action": "Re-run capacity analysis; evaluate query optimisation before adding infrastructure",
+  "owner": "backend on-call",
+  "status": "fired",
+  "created": "2026-01-15",
+  "fired_at": "2026-07-02"
+}

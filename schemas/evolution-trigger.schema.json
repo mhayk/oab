@@ -1,0 +1,88 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://oab.run/schemas/evolution-trigger.schema.json",
+  "title": "OAB Evolution Trigger",
+  "description": "A standing hypothesis with a falsification test: the measurable condition under which an architectural decision must be revisited. Triggers are what turn a design from a document that rots into a system that tells you when it has expired.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "id",
+    "metric",
+    "source",
+    "comparator",
+    "threshold",
+    "unit",
+    "window",
+    "action",
+    "owner",
+    "status"
+  ],
+  "properties": {
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$",
+      "description": "Stable, kebab-case, unique within the project."
+    },
+    "decision": {
+      "type": "string",
+      "pattern": "^ADR-[0-9]{4}$",
+      "description": "The decision this trigger guards."
+    },
+    "metric": {
+      "type": "string",
+      "minLength": 3,
+      "description": "What is measured. Must be observable today, or the trigger includes the work to instrument it — otherwise it never fires."
+    },
+    "source": {
+      "type": "string",
+      "minLength": 3,
+      "description": "WHERE the metric is read: a named dashboard, tool, or review. If you cannot name where it is read, it is not a trigger — it is a hope."
+    },
+    "comparator": { "type": "string", "enum": [">", ">=", "<", "<=", "==", "!="] },
+    "threshold": {
+      "type": "number",
+      "description": "Set with headroom before the cliff. A trigger at 95% CPU fires during the incident, not before it."
+    },
+    "unit": { "type": "string", "minLength": 1 },
+    "window": {
+      "type": "string",
+      "minLength": 3,
+      "description": "The sustained period over which the condition must hold. Instantaneous triggers fire on spikes and get ignored, which is worse than having no trigger."
+    },
+    "action": {
+      "type": "string",
+      "minLength": 10,
+      "description": "The next step, not the answer. 'Re-run capacity analysis and evaluate options' is right; 'add a message broker' pre-decides the outcome the analysis is supposed to reach."
+    },
+    "owner": {
+      "type": "string",
+      "minLength": 2,
+      "description": "A person, role, or team. Unowned triggers are decoration."
+    },
+    "verification": {
+      "type": "string",
+      "description": "How often someone confirms the metric is still emitted and the threshold still meaningful. Triggers rot when the dashboard they name is retired."
+    },
+    "status": {
+      "type": "string",
+      "enum": ["armed", "fired", "resolved", "retired"],
+      "description": "armed = watching; fired = the condition was met; resolved = fired and acted on; retired = no longer relevant."
+    },
+    "created": { "type": "string", "format": "date" },
+    "fired_at": {
+      "anyOf": [{ "type": "string", "format": "date" }, { "type": "null" }],
+      "description": "Retained after resolution rather than cleared, so the history of when an architecture actually strained is preserved."
+    },
+    "notes": { "type": "string" }
+  },
+  "allOf": [
+    {
+      "if": { "properties": { "status": { "enum": ["fired", "resolved"] } }, "required": ["status"] },
+      "then": {
+        "required": ["fired_at"],
+        "properties": { "fired_at": { "type": "string" } },
+        "description": "A trigger that fired must record when."
+      }
+    }
+  ]
+}
