@@ -43,7 +43,14 @@ the four calculator issues (#10–#13). Both require reading one guide and nothi
 
 ### 43.3 The issues
 
-Full text, labels, and acceptance criteria are in the GitHub issue tracker. Summary:
+All 43 issues exist in the tracker under the **M1 — First Milestone** milestone, numbered to match
+this table: <https://github.com/mhayk/oab/issues>. Full acceptance criteria live there; this is the
+map.
+
+Labels: `area:*` (foundation, schemas, calculators, frameworks, knowledge, integration, evaluation,
+docs, website) · `wave:0-foundation` … `wave:6-ship` · `parallel-safe` · `good first issue` · `spike`.
+
+Summary:
 
 | # | Title | Wave | Depends on | Parallel-safe |
 | --: | :-- | :-: | :-- | :-: |
