@@ -9,7 +9,9 @@ python3 -m http.server -d website 8000
 
 ## Deploying
 
-Any static host. Publish this directory; there is nothing to build.
+GitHub Pages, via `.github/workflows/pages.yml`: on any push touching `website/`, the directory is
+uploaded as-is — there is nothing to build. Custom domain `oab.run` is set in the repository's
+Pages settings; DNS points the apex at GitHub Pages' A/AAAA addresses.
 
 Assets are copied from `assets/logo/` rather than duplicated as sources:
 
