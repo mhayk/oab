@@ -1,0 +1,430 @@
+{
+  "oab_version": "0.1.7",
+  "generated": "2026-08-09",
+  "target": {
+    "repository": "linkding (snapshot)",
+    "commit": "0f72293",
+    "scope": "whole repository (headless run; context established from repository evidence alone)"
+  },
+  "context": {
+    "stage": "1",
+    "peak_rps": null,
+    "users": null,
+    "team_size": 1,
+    "availability_target": null,
+    "budget": null,
+    "assumptions": [
+      {
+        "text": "This is self-hosted, per-instance software: each deployment serves 1-5 users at well under 5 RPS peak. Evidence: README.md:11-12 positions it as a self-hosted, Docker-based personal bookmark manager; the default datastore is SQLite (bookmarks/settings/base.py:253) and docker-compose.yml runs a single container.",
+        "confidence": "high"
+      },
+      {
+        "text": "There is no formal availability target; seconds-to-minutes of downtime during container restarts and upgrades is acceptable to operators.",
+        "confidence": "high"
+      },
+      {
+        "text": "Data sensitivity is low-to-moderate: personal bookmarks, user password hashes, REST API tokens, and an optional OIDC client secret supplied via environment (bookmarks/settings/base.py:216).",
+        "confidence": "high"
+      },
+      {
+        "text": "The effective team is a single primary maintainer with community contributions. The local snapshot contains exactly one commit by one author; the 69 KB CHANGELOG.md indicates a mature project, but upstream history is absent from this clone, so contributor count is inferred, not measured.",
+        "confidence": "medium"
+      },
+      {
+        "text": "A meaningful fraction of instances are exposed to the internet (README.md:34 links a public demo and README.md:43 lists managed-hosting options), but the typical instance is single-user and private.",
+        "confidence": "medium"
+      },
+      {
+        "text": "Backups are the operator's responsibility; the repository is judged on providing a safe mechanism and a documented restore path, not on any one operator's practice.",
+        "confidence": "high"
+      }
+    ]
+  },
+  "repo_facts": {
+    "languages": [
+      { "name": "Python", "version": ">=3.13 (Docker: python:3.13.7-slim-trixie, docker/default.Dockerfile:14,51; pyproject.toml:6)" },
+      { "name": "JavaScript", "version": "Node 22 build image (docker/default.Dockerfile:2); ES modules bundled with rollup (rollup.config.mjs)" },
+      { "name": "CSS", "version": "PostCSS pipeline (postcss.config.js, package.json:6-7)" },
+      { "name": "HTML (Django templates)", "version": "46 .html files under bookmarks/templates" }
+    ],
+    "frameworks": [
+      "Django >=6.0.6 (pyproject.toml:11)",
+      "Django REST Framework >=3.16.1 (pyproject.toml:12)",
+      "Huey >=2.5.5 task queue (pyproject.toml:13)",
+      "mozilla-django-oidc >=5.0.2 (pyproject.toml:15)",
+      "requests >=2.33.0 (pyproject.toml:16)",
+      "waybackpy >=3.0.6 (pyproject.toml:19)",
+      "uWSGI >=2.0.31 (pyproject.toml:18)",
+      "supervisor >=4.3.0 (pyproject.toml:17)",
+      "beautifulsoup4 >=4.14.3 (pyproject.toml:8)",
+      "bleach >=6.4.0 HTML sanitisation (pyproject.toml:9)",
+      "Lit ^3.3.1 web components (package.json:17)",
+      "@hotwired/turbo ^8.0.21 (package.json:12)",
+      "pytest >=9.0.3 / pytest-django >=4.11.1 (pyproject.toml:29-30)",
+      "Playwright >=1.57.0 e2e (pyproject.toml:27)"
+    ],
+    "architecture_style": "single-deployable",
+    "deployables": [
+      { "name": "linkding web (uwsgi + Django)", "kind": "web", "path": "bootstrap.sh:39, uwsgi.ini:1-17, supervisord-all.conf:8-15" },
+      { "name": "huey background task consumer (same container, separate process)", "kind": "worker", "path": "supervisord-all.conf:17-27, supervisord-tasks.conf, bootstrap.sh:36-38" },
+      { "name": "management commands (full_backup, backup, import_netscape, generate_secret_key, enable_wal, create_initial_superuser, ensure_superuser, migrate_tasks)", "kind": "cli", "path": "bookmarks/management/commands/" }
+    ],
+    "datastores": [
+      {
+        "kind": "embedded",
+        "product": "SQLite (default engine, data/db.sqlite3, WAL enabled at boot)",
+        "managed": false,
+        "evidence": [
+          "bookmarks/settings/base.py:253 (LD_DB_ENGINE default 'sqlite')",
+          "bookmarks/settings/base.py:272-281 (sqlite3 backend, CONN_MAX_AGE=None)",
+          "bootstrap.sh:21 (manage.py enable_wal)",
+          "bookmarks/settings/base.py:285-287 (SQLite ICU extension for case-insensitive search)"
+        ]
+      },
+      {
+        "kind": "relational",
+        "product": "PostgreSQL (optional, via LD_DB_ENGINE=postgres, psycopg driver)",
+        "managed": null,
+        "evidence": [
+          "bookmarks/settings/base.py:261-270",
+          ".env.sample:37-51",
+          "pyproject.toml:41-43 (postgres dependency group)"
+        ]
+      },
+      {
+        "kind": "embedded",
+        "product": "SQLite huey task store (data/tasks.sqlite3)",
+        "managed": false,
+        "evidence": ["bookmarks/settings/base.py:171-173 (huey.SqliteHuey)"]
+      },
+      {
+        "kind": "object-storage",
+        "product": "local filesystem folders for favicons, preview images, and HTML/PDF snapshot assets (no cloud object store)",
+        "managed": false,
+        "evidence": [
+          "bookmarks/settings/base.py:292 (LD_FAVICON_FOLDER=data/favicons)",
+          "bookmarks/settings/base.py:301 (LD_PREVIEW_FOLDER=data/previews)",
+          "bookmarks/settings/base.py:313 (LD_ASSET_FOLDER=data/assets)",
+          "docker-compose.yml:7-8 (data dir mounted as host volume)"
+        ]
+      }
+    ],
+    "caches": [
+      {
+        "product": "functools.lru_cache (in-process, GitHub version check, ~1h TTL via ttl_hash)",
+        "kind": "in-process-memoisation",
+        "managed": false,
+        "evidence": ["bookmarks/views/settings.py:139 (@lru_cache)", "bookmarks/views/settings.py:162-164 (get_ttl_hash, 3600s)"]
+      }
+    ],
+    "queues": [
+      {
+        "product": "Huey with SqliteHuey storage; 2 thread workers, retries with exponential backoff",
+        "kind": "task-queue",
+        "managed": false,
+        "evidence": [
+          "bookmarks/settings/base.py:171-189 (HUEY config: workers=2, results=False)",
+          "bookmarks/services/tasks.py:28-47 (retry decorator, 5 retries, backoff x4)",
+          "supervisord-all.conf:21 (python manage.py run_huey -f)"
+        ]
+      }
+    ],
+    "external_services": [
+      {
+        "name": "Bookmarked target websites (arbitrary URLs: metadata scraping, PDF download, single-file snapshot)",
+        "category": "web-scraping",
+        "in_request_path": true,
+        "has_timeout": true,
+        "evidence": [
+          "bookmarks/api/routes.py:115 (synchronous load_website_metadata in GET /api/bookmarks/check)",
+          "bookmarks/services/website_loader.py:102 (requests.get timeout=10)",
+          "bookmarks/services/website_loader.py:149-161 (head/get timeout=10)",
+          "bookmarks/services/assets.py:97-99 (PDF download timeout=60, background task)",
+          "bookmarks/services/singlefile.py:27-28 + bookmarks/settings/base.py:340 (subprocess wait, LD_SINGLEFILE_TIMEOUT_SEC default 120, background task)",
+          "bookmarks/services/tasks.py:233-242 (metadata refresh also runs as background task)"
+        ]
+      },
+      {
+        "name": "Favicon provider (default t1.gstatic.com faviconV2, configurable via LD_FAVICON_PROVIDER)",
+        "category": "third-party-content",
+        "in_request_path": false,
+        "has_timeout": false,
+        "evidence": [
+          "bookmarks/settings/base.py:290-291",
+          "bookmarks/services/favicon_loader.py:73 (requests.get with no timeout argument)",
+          "bookmarks/services/tasks.py:133-149 (invoked only from huey task)"
+        ]
+      },
+      {
+        "name": "Preview image hosts (og:image URLs from arbitrary sites)",
+        "category": "third-party-content",
+        "in_request_path": false,
+        "has_timeout": false,
+        "evidence": [
+          "bookmarks/services/preview_image_loader.py:38 (requests.get with no timeout argument)",
+          "bookmarks/services/tasks.py:188-197 (invoked only from huey task)"
+        ]
+      },
+      {
+        "name": "Internet Archive Wayback Machine (save API via waybackpy)",
+        "category": "archiving",
+        "in_request_path": false,
+        "has_timeout": null,
+        "evidence": [
+          "bookmarks/services/tasks.py:67-70 (waybackpy.WaybackMachineSaveAPI, max_tries=1, background task)",
+          "bookmarks/services/wayback.py:20 (fallback web.archive.org URL is generated only, no server-side call)"
+        ]
+      },
+      {
+        "name": "GitHub API (latest release version check on settings page)",
+        "category": "version-check",
+        "in_request_path": true,
+        "has_timeout": true,
+        "evidence": [
+          "bookmarks/views/settings.py:146 (requests.get timeout=5)",
+          "bookmarks/views/settings.py:139,162-164 (lru_cache with ~1h TTL)"
+        ]
+      },
+      {
+        "name": "OIDC identity provider (optional, LD_ENABLE_OIDC)",
+        "category": "authentication",
+        "in_request_path": true,
+        "has_timeout": null,
+        "evidence": ["bookmarks/settings/base.py:203-221 (mozilla_django_oidc endpoints from env; no OIDC_TIMEOUT setting present in repo)"]
+      }
+    ],
+    "deployment": {
+      "containerised": true,
+      "orchestration": "docker-compose (single service, restart: unless-stopped); processes inside container managed by supervisord and/or uwsgi",
+      "iac": [],
+      "ci": [
+        "GitHub Actions: unit tests + Playwright e2e on PR/push to master (.github/workflows/main.yaml:1-68)",
+        "GitHub Actions: multi-arch Docker image builds to Docker Hub and GHCR, default/alpine/plus variants (.github/workflows/build.yaml, build-test.yaml)"
+      ],
+      "environments": ["dev (bookmarks/settings/dev.py)", "prod (bookmarks/settings/prod.py, set in uwsgi.ini:3)", "custom overrides (bookmarks/settings/custom.py)"],
+      "evidence": [
+        "docker/default.Dockerfile:51-113 (linkding and linkding-plus images)",
+        "docker/alpine.Dockerfile",
+        "docker-compose.yml:1-11",
+        "bootstrap.sh:30-40 (supervisord-all vs supervisord-tasks + uwsgi)",
+        "docker/default.Dockerfile:79-80 (container HEALTHCHECK curl /health)",
+        "uwsgi.ini:9-10 (2 processes x 2 threads)"
+      ]
+    },
+    "background_work": [
+      {
+        "name": "huey queue consumers: web-archive snapshot, favicon load/refresh, preview image load, metadata refresh (tasks enqueued from web process, persisted in tasks.sqlite3; scheduling is skipped entirely when LD_DISABLE_BACKGROUND_TASKS=True; queued tasks wait in the SQLite store until a consumer runs)",
+        "kind": "queue-consumer",
+        "evidence": [
+          "bookmarks/services/tasks.py:76-250",
+          "bookmarks/settings/base.py:163-189",
+          "bootstrap.sh:36-38 (consumer daemon only started when background tasks not disabled)",
+          ".env.sample:16 (LD_DISABLE_BACKGROUND_TASKS option)"
+        ]
+      },
+      {
+        "name": "periodic HTML snapshot scheduler: crontab(minute='*') with lock, processes up to 5 pending assets sequentially via single-file",
+        "kind": "cron",
+        "evidence": ["bookmarks/services/tasks.py:282-291 (@huey.periodic_task(crontab(minute='*')), lock_task)"]
+      }
+    ],
+    "testing": {
+      "frameworks": ["pytest + pytest-django (pytest.ini, pyproject.toml:29-30)", "Django test client view/API tests", "Playwright e2e (bookmarks/tests_e2e/, .github/workflows/main.yaml:34-62)", "coverage (.coveragerc, pyproject.toml:24)"],
+      "test_file_count": 93,
+      "source_file_count": 72,
+      "has_integration_tests": true
+    },
+    "migrations": {
+      "tool": "Django migrations",
+      "count": 54,
+      "evidence": [
+        "bookmarks/migrations/0001_initial.py through 0054_bookmarkbundle_filter_shared_and_more.py",
+        "11 RunPython operations, all with explicit reverse callables: e.g. 0053_migrate_api_tokens.py:30, 0047_populate_url_normalized_field.py:8,23, 0007_userprofile.py:65, 0044_bookmark_latest_snapshot.py:44, 0051_fix_normalized_url.py:30-34",
+        "no destructive raw-SQL or irreversible RunPython(forwards-only) migrations detected in bookmarks/migrations/"
+      ]
+    },
+    "observability": {
+      "structured_logging": false,
+      "metrics": false,
+      "tracing": false,
+      "error_tracking": false,
+      "correlation_ids": false,
+      "health_checks": true,
+      "evidence": [
+        "bookmarks/settings/prod.py:33-59 (plain-text console logging, root level WARN)",
+        "no sentry/prometheus/statsd/opentelemetry references in bookmarks/ or pyproject.toml (grep)",
+        "uwsgi.ini:13 (uwsgi stats socket 127.0.0.1:9191 is the only metrics-adjacent endpoint)",
+        "bookmarks/views/health.py:7-17 (GET /health checks DB connection, returns version+status)",
+        "bookmarks/urls.py:111 (health route)",
+        "docker/default.Dockerfile:79-80 (Docker HEALTHCHECK)",
+        "uwsgi.ini:37-39 (optional X-Forwarded-For request logging; no request/correlation IDs)"
+      ]
+    },
+    "configuration": {
+      "secrets_in_env": true,
+      "secrets_committed": true,
+      "config_files": [
+        ".env.sample (LD_DB_PASSWORD:44, LD_SUPERUSER_PASSWORD:14 supplied via env)",
+        "bookmarks/settings/base.py:25 (hardcoded Django SECRET_KEY committed; overridden in prod by data/secretkey.txt or a random key, bookmarks/settings/prod.py:17-22, generated at container boot by bootstrap.sh:17)",
+        "bookmarks/settings/base.py:216 (OIDC_RP_CLIENT_SECRET read from env)",
+        "bookmarks/settings/{base,dev,prod,custom}.py",
+        "uwsgi.ini (LD_REQUEST_TIMEOUT->harakiri:27-31 and LD_REQUEST_MAX_CONTENT_LENGTH->limit-post:33-35 applied only when env vars set)",
+        "pytest.ini, .coveragerc, pyproject.toml, docker-compose.yml"
+      ]
+    },
+    "repository": {
+      "file_count": 439,
+      "commit_count": 1,
+      "first_commit": "2026-08-09 (0f72293, 'Update CHANGELOG.md')",
+      "last_commit": "2026-08-09 (0f72293)",
+      "contributors": 1
+    },
+    "undetermined": [
+      "Repository age and real contributor/commit history: the local clone contains exactly one commit; upstream history of the linkding project is not present in this snapshot, so the contributor count (1) reflects the snapshot, not the project.",
+      "Timeout on Wayback Machine save calls: waybackpy.WaybackMachineSaveAPI is called with max_tries=1 (bookmarks/services/tasks.py:67-70) but the HTTP timeout is internal to the waybackpy library and not visible in this repository.",
+      "Timeout on OIDC provider HTTP calls: handled inside mozilla-django-oidc; no OIDC_TIMEOUT setting appears in the repository.",
+      "Rate limiting: no throttling/rate-limit configuration found in application code or DRF settings; whether a reverse proxy in front of deployments enforces limits is not determinable from the repository.",
+      "README scale/user claims: README.md makes no claims about user counts or scale; it describes the app as self-hosted, 'minimal, fast, easy to set up using Docker' (README.md:11-12).",
+      "Whether PostgreSQL deployments are managed or self-hosted: connection details come from environment variables only (.env.sample:37-51).",
+      "Production error rates/log destinations beyond container stdout: only console handlers are configured (bookmarks/settings/prod.py:42)."
+    ]
+  },
+  "findings": [
+    {
+      "id": "F-001",
+      "severity": "MEDIUM",
+      "title": "Favicon and preview-image downloads have no HTTP timeout and can stall the entire background worker pool",
+      "evidence": [
+        "bookmarks/services/favicon_loader.py:73 (requests.get(favicon_url, stream=True) — no timeout)",
+        "bookmarks/services/preview_image_loader.py:38 (requests.get(image_url, stream=True) — no timeout)",
+        "bookmarks/settings/base.py:179 (huey workers=2)",
+        "bookmarks/services/website_loader.py:102 (the pattern done correctly elsewhere: timeout=10)"
+      ],
+      "context": "Both calls run only in huey background tasks, and preview images are fetched from og:image URLs on arbitrary user-bookmarked sites — exactly the kind of host that hangs. The consumer has only 2 worker threads.",
+      "impact": "A connection that hangs without failing blocks a worker thread indefinitely; two such hangs silently halt all background processing — favicons, previews, HTML snapshots, and Wayback archiving — until the container is restarted. Nothing surfaces this to the operator except the absence of new results. This is a scale-independent defect: outbound calls without timeouts fail the same way at 1 user as at 10,000.",
+      "remedy": "Add an explicit timeout to both requests.get calls (e.g. timeout=10, matching website_loader.py:102). Two one-line changes.",
+      "effort": "S",
+      "knowledge": ["timeouts"],
+      "scale_independent": true
+    },
+    {
+      "id": "F-002",
+      "severity": "LOW",
+      "title": "GET /api/bookmarks/check scrapes an arbitrary external URL synchronously in a 4-slot worker pool",
+      "evidence": [
+        "bookmarks/api/routes.py:115 (load_website_metadata called synchronously in the request handler)",
+        "bookmarks/services/website_loader.py:102 (requests.get timeout=10 — bounded, but up to 10 s per call)",
+        "uwsgi.ini:9-10 (processes=2, threads=2 → 4 concurrent request slots)",
+        "uwsgi.ini:27-31 (harakiri applied only when LD_REQUEST_TIMEOUT is set; off by default)"
+      ],
+      "context": "The endpoint backs the new-bookmark form and browser extension, so it fires whenever a user saves a bookmark. At the assumed 1-5 users per instance, concurrent slow checks are rare, and the 10 s timeout bounds the worst case.",
+      "impact": "A few simultaneous checks against slow sites can occupy all 4 uwsgi slots, making the whole UI unresponsive for up to ~10 seconds. At assumed scale this is an occasional annoyance, not an outage; the design is also intrinsic to the feature (the user is waiting for the scrape result).",
+      "remedy": "No change needed now. If multi-user instances become common, either raise uwsgi threads for this workload or move the scrape to a polled background task.",
+      "effort": "M",
+      "knowledge": ["timeouts", "bulkheads"],
+      "trigger": "Revisit if an instance regularly serves 5+ concurrent users or the uwsgi stats socket shows all workers busy for sustained periods (see trigger uwsgi-workers-saturated).",
+      "scale_independent": false
+    },
+    {
+      "id": "F-003",
+      "severity": "LOW",
+      "title": "Server-side fetching of user-supplied URLs is an SSRF surface on shared or internally-networked instances",
+      "evidence": [
+        "bookmarks/api/routes.py:115 (any authenticated user can make the server GET an arbitrary URL)",
+        "bookmarks/services/website_loader.py:102 (direct fetch of user-supplied URL, no IP-range restrictions)",
+        "bookmarks/services/preview_image_loader.py:38 (server fetches og:image URL taken from scraped page content)",
+        "bookmarks/services/assets.py:97-99 (PDF download of user-supplied URL)"
+      ],
+      "context": "On the assumed single-user private instance, the only person who can trigger these fetches is the owner, so there is no trust boundary to cross. The risk is real only where an instance is shared with users who should not be able to probe the network the container sits in (home LANs, cloud VPCs with metadata endpoints).",
+      "impact": "On a shared instance, a low-privileged user can direct the server to fetch internal-network URLs (e.g. 169.254.169.254, router admin pages) and, via the check endpoint, observe response-derived metadata. No impact on the dominant single-user deployment.",
+      "remedy": "No change needed for the primary use case. If shared instances are a supported scenario, resolve-and-deny private/link-local IP ranges before fetching, or document that operators of shared instances should apply container egress restrictions.",
+      "effort": "M",
+      "knowledge": ["ssrf", "trust-boundaries"],
+      "trigger": "Revisit when an instance grants accounts to users who are not also trusted operators of the network the container runs in (see trigger untrusted-multi-user).",
+      "scale_independent": false
+    },
+    {
+      "id": "F-004",
+      "severity": "INFORMATIONAL",
+      "title": "Background task failures are visible only in container logs; five failed retries drop the work silently",
+      "evidence": [
+        "bookmarks/services/tasks.py:28-47 (retry decorator: 5 retries with backoff, then the failure is only logged)",
+        "bookmarks/settings/base.py:180 (huey results=False — no task result store)",
+        "bookmarks/settings/prod.py:33-59 (plain-text console logging, root level WARN, no error tracking)"
+      ],
+      "context": "Self-hosted software appropriately avoids bundling third-party error tracking; docker logs plus the /health endpoint (bookmarks/views/health.py:7-17) are the operational surface. This is an observation, not a defect, at the assumed scale.",
+      "impact": "A user whose snapshots or favicons persistently fail sees nothing in the UI and must read container logs to find out why. Cost is diagnostic friction, not data loss — bookmarks themselves are saved synchronously.",
+      "remedy": "No action implied. A per-bookmark 'snapshot failed' indicator would be a UX improvement if failure reports become a common support theme.",
+      "effort": "M",
+      "knowledge": ["observability"],
+      "scale_independent": false
+    },
+    {
+      "id": "F-005",
+      "severity": "INFORMATIONAL",
+      "title": "A development SECRET_KEY is committed; production falls back to a random per-boot key if the key file is missing",
+      "evidence": [
+        "bookmarks/settings/base.py:25 (hardcoded SECRET_KEY in the committed base settings)",
+        "bookmarks/settings/prod.py:17-22 (prod reads data/secretkey.txt, else generates a random key)",
+        "bootstrap.sh:17 (official container generates and persists the key file at first boot)"
+      ],
+      "context": "The official Docker images always create data/secretkey.txt at first boot, so deployed instances never use the committed key. The committed key is reachable only by running with dev settings or by running prod settings outside the official container without the key file.",
+      "impact": "Worst realistic case: an unconventional deployment without data/secretkey.txt gets a fresh random key on each restart, invalidating sessions — an inconvenience, not a breach. Anyone running dev settings on the internet has larger problems (DEBUG=True).",
+      "remedy": "No action implied. If tidying: derive the base-settings key from an env var with an obviously-unsafe default label.",
+      "effort": "S",
+      "knowledge": ["secret-handling"],
+      "scale_independent": false
+    }
+  ],
+  "summary": {
+    "verdict": "The architecture is appropriate and well-proportioned to its scale: a single container with SQLite (WAL-enabled), a lightweight huey worker, transaction-safe documented backups, fully reversible migrations, and a health check. One scale-independent defect needs fixing — two outbound HTTP calls without timeouts that can silently stall the entire background worker pool. Everything else is a watch item or an observation.",
+    "counts": {
+      "CRITICAL": 0,
+      "HIGH": 0,
+      "MEDIUM": 1,
+      "LOW": 2,
+      "INFORMATIONAL": 2
+    }
+  },
+  "triggers": [
+    {
+      "id": "uwsgi-workers-saturated",
+      "metric": "busy uwsgi workers (of 4 total)",
+      "source": "uwsgi stats socket 127.0.0.1:9191 (uwsgi.ini:13), read via uwsgitop or curl during operator review",
+      "comparator": ">=",
+      "threshold": 4,
+      "unit": "busy workers",
+      "window": "sustained for 60 seconds, recurring weekly",
+      "action": "Re-evaluate F-002: measure /api/bookmarks/check latency and decide between more uwsgi threads or moving the scrape to a background task.",
+      "owner": "instance operator",
+      "status": "armed",
+      "created": "2026-08-09"
+    },
+    {
+      "id": "huey-queue-backlog",
+      "metric": "pending tasks in the huey store",
+      "source": "sqlite3 query against data/tasks.sqlite3 (or absence of new favicons/snapshots), checked during operator review",
+      "comparator": ">",
+      "threshold": 500,
+      "unit": "pending tasks",
+      "window": "24 hours without draining",
+      "action": "Check container logs for hung or repeatedly failing tasks; if workers are blocked on network I/O, confirm F-001 remedy is deployed and reassess worker count.",
+      "owner": "instance operator",
+      "status": "armed",
+      "created": "2026-08-09"
+    },
+    {
+      "id": "untrusted-multi-user",
+      "metric": "active user accounts not operated by the instance owner",
+      "source": "Django admin user list on the instance",
+      "comparator": ">",
+      "threshold": 0,
+      "unit": "accounts",
+      "window": "steady state",
+      "action": "Re-assess F-003 (SSRF) and the absence of login/API rate limiting: apply egress restrictions to the container and consider request throttling before granting further accounts.",
+      "owner": "instance operator",
+      "status": "armed",
+      "created": "2026-08-09"
+    }
+  ]
+}
