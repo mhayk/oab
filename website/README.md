@@ -10,8 +10,15 @@ python3 -m http.server -d website 8000
 ## Deploying
 
 GitHub Pages, via `.github/workflows/pages.yml`: on any push touching `website/`, the directory is
-uploaded as-is — there is nothing to build. Custom domain `oab.run` is set in the repository's
-Pages settings; DNS points the apex at GitHub Pages' A/AAAA addresses.
+uploaded as-is — there is nothing to build.
+
+`oab.run` is set as the custom domain in the repository's Pages settings. DNS is on Cloudflare
+**with the proxy enabled**, so TLS terminates at Cloudflare's edge and HTTP→HTTPS is enforced by a
+Cloudflare Redirect Rule ("Redirect from HTTP to HTTPS"), not by GitHub's Enforce HTTPS — that
+setting cannot activate behind the proxy, because GitHub never sees its own IPs and never
+provisions its certificate. SSL mode must stay **Full** (not *strict*: GitHub serves the
+`*.github.io` certificate to the origin connection, which strict would reject; not *Flexible*,
+which would downgrade the origin hop to HTTP).
 
 Assets are copied from `assets/logo/` rather than duplicated as sources:
 
