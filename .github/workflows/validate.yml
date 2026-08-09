@@ -1,0 +1,124 @@
+name: validate
+
+# The single blocking CI entry point. Every check that must hold on every commit lives here.
+# Model-in-the-loop evaluation runs separately in evaluate.yml, because it needs a secret and
+# must not block contributions from forks.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: validate-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate:
+    name: structure and contracts
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      # Dev-only. Nothing in calculators/ or tools/ may depend on a third-party package at
+      # runtime; check_stdlib_only.py enforces that separately.
+      - name: Install validation dependencies
+        run: python -m pip install --quiet jsonschema
+
+      - name: Syntax — YAML and JSON
+        run: |
+          python - <<'PY'
+          import json, pathlib, sys
+          try:
+              import yaml
+          except ImportError:
+              yaml = None
+          bad = []
+          for p in pathlib.Path('.').rglob('*'):
+              if any(s in p.parts for s in ('.git', 'node_modules', '.venv')):
+                  continue
+              if p.suffix == '.json':
+                  try: json.loads(p.read_text())
+                  except Exception as e: bad.append(f'{p}: {e}')
+              elif p.suffix in ('.yml', '.yaml') and yaml:
+                  try: list(yaml.safe_load_all(p.read_text()))
+                  except Exception as e: bad.append(f'{p}: {e}')
+          if bad:
+              print('\n'.join(bad), file=sys.stderr); sys.exit(1)
+          print('✓ YAML and JSON parse')
+          PY
+
+      - name: Links — relative targets and anchors resolve
+        run: python3 tools/check_links.py
+
+      - name: Neutrality — no vendor names outside integrations/
+        run: |
+          if [ -f tools/check_neutrality.py ]; then
+            python3 tools/check_neutrality.py
+          else
+            echo "skipped — tools/check_neutrality.py lands in #8"
+          fi
+
+      - name: Dependencies — calculators and tools are stdlib only
+        run: |
+          if [ -f tools/check_stdlib_only.py ]; then
+            python3 tools/check_stdlib_only.py
+          else
+            echo "skipped — tools/check_stdlib_only.py lands in #8"
+          fi
+
+      - name: Knowledge — frontmatter and referential integrity
+        run: |
+          if [ -f tools/validate_knowledge.py ]; then
+            python3 tools/validate_knowledge.py
+          else
+            echo "skipped — tools/validate_knowledge.py lands in #4"
+          fi
+
+      - name: Artifacts — fixtures validate against their schemas
+        run: |
+          if [ -f tools/validate_artifacts.py ]; then
+            python3 tools/validate_artifacts.py
+          else
+            echo "skipped — tools/validate_artifacts.py lands in #5"
+          fi
+
+      - name: Pricing — price tables are not stale
+        run: |
+          if [ -f tools/check_price_staleness.py ]; then
+            python3 tools/check_price_staleness.py
+          else
+            echo "skipped — tools/check_price_staleness.py lands in #13"
+          fi
+
+      - name: Index — generated knowledge indexes are current
+        run: |
+          if [ -f tools/build_index.py ]; then
+            python3 tools/build_index.py --check
+          else
+            echo "skipped — tools/build_index.py lands in #20"
+          fi
+
+  plugin:
+    name: plugin manifest
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate plugin manifest
+        run: |
+          if [ -f .claude-plugin/plugin.json ]; then
+            npx --yes @anthropic-ai/claude-code plugin validate ./ --strict
+          else
+            echo "skipped — plugin manifest lands in #29"
+          fi

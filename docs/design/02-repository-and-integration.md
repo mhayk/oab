@@ -232,7 +232,7 @@ Plus one non-command skill:
 | :-- | :-- | :-- |
 | `oab-principles` | `user-invocable: false` | Background priors — proportionality, complexity cost, "quantify before deciding". Claude loads it automatically whenever architecture comes up, so OAB improves *ordinary* conversation, not only explicit commands. This is the highest-leverage, lowest-cost element of the whole integration. |
 
-Full specifications in [§38 Claude Commands](09-specifications.md#38-claude-commands).
+Full specifications in [§38 Claude Commands](09-specifications.md#38-claude-commands-m1).
 
 ### 10.6 Subagent usage
 
