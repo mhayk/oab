@@ -44,6 +44,8 @@ commands.
 /plugin install oab@oab
 ```
 
+![Installing OAB — real, unstaged](demo/out/install.gif)
+
 Verified end to end: fresh clone 0.8 s / 8.1 MB, and the committed examples include a live
 `/oab:design` run that passes every scenario assertion and a live third-party review with all
 evidence citations checked ([`examples/live-run/`](examples/live-run/),
@@ -53,7 +55,12 @@ skill-level validation is the fallback until that is resolved.
 
 ## What the output looks like
 
-From [`examples/tiny-startup/`](examples/tiny-startup/) — 100 users, £50/month, two developers:
+The deterministic heart — same inputs, same numbers, checkable by hand
+([`demo/`](demo/) holds the tapes; nothing is staged):
+
+![The capacity envelope: assumptions, formula, calculation, sensitivity](demo/out/calculator.gif)
+
+And from [`examples/tiny-startup/`](examples/tiny-startup/) — 100 users, £50/month, two developers:
 
 ```
 ## Complexity: 4 / 4  — no headroom
@@ -111,6 +118,8 @@ Every claim OAB makes is about behaviour, and behaviour claims without tests are
 | Calculator tests | 43 |
 | Schema fixtures (both directions) | 33 |
 | Knowledge units | 37 |
+
+![The scenario suite with magnitude perturbation](demo/out/evaluation.gif)
 
 Assertions run against **artifact fields**, never prose — a framework can be tuned to produce
 reassuring words far more easily than the right structure. Scenarios are also perturbed 100× and
