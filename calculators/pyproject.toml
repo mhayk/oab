@@ -1,0 +1,24 @@
+# Metadata only. There are no runtime dependencies and there must never be any:
+# these calculators run on a user's machine through their agent, and a pip install
+# would break the promise that OAB works from a git clone with nothing installed.
+# tools/check_stdlib_only.py enforces this in CI.
+
+[project]
+name = "oab-calc"
+version = "0.1.0"
+description = "Deterministic capacity calculators for OAB"
+readme = "README.md"
+requires-python = ">=3.9"
+license = { text = "Apache-2.0" }
+dependencies = []
+
+[project.urls]
+Homepage = "https://oab.run"
+Source = "https://github.com/mhayk/oab"
+
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+packages = ["oab_calc"]

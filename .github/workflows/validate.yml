@@ -64,40 +64,28 @@ jobs:
       - name: Tooling — validator tests
         run: python -m pytest tools/tests -q
 
-      - name: Neutrality — no vendor names outside integrations/
+      - name: Calculators — unit, property, and worked-example tests
         run: |
-          if [ -f tools/check_neutrality.py ]; then
-            python3 tools/check_neutrality.py
+          if [ -d calculators/tests ]; then
+            cd calculators && python -m pytest tests -q
           else
-            echo "skipped — tools/check_neutrality.py lands in #8"
+            echo "skipped — calculators land in #9"
           fi
 
-      - name: Dependencies — calculators and tools are stdlib only
-        run: |
-          if [ -f tools/check_stdlib_only.py ]; then
-            python3 tools/check_stdlib_only.py
-          else
-            echo "skipped — tools/check_stdlib_only.py lands in #8"
-          fi
+      - name: Neutrality — core is client-agnostic
+        run: python3 tools/check_neutrality.py
+
+      - name: Dependencies — calculators are stdlib only
+        run: python3 tools/check_stdlib_only.py
 
       - name: Knowledge — frontmatter and referential integrity
-        run: |
-          if [ -f tools/validate_knowledge.py ]; then
-            python3 tools/validate_knowledge.py
-          else
-            echo "skipped — tools/validate_knowledge.py lands in #4"
-          fi
+        run: python3 tools/validate_knowledge.py
 
       - name: Artifacts — fixtures validate against their schemas
         run: python3 tools/validate_artifacts.py
 
       - name: Pricing — price tables are not stale
-        run: |
-          if [ -f tools/check_price_staleness.py ]; then
-            python3 tools/check_price_staleness.py
-          else
-            echo "skipped — tools/check_price_staleness.py lands in #13"
-          fi
+        run: python3 tools/check_price_staleness.py
 
       - name: Index — generated knowledge indexes are current
         run: |
