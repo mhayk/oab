@@ -18,5 +18,9 @@ website/.astro/
 # OAB output artifacts produced in a user's repository
 .oab/
 
+# Local agent/client settings — personal plugin enablement, not project config
+.claude/settings.local.json
+.claude/settings.json
+
 # Local scratch
 /tmp/
