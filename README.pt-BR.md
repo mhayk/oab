@@ -1,4 +1,4 @@
-<!-- Tradução de README.md, sincronizada em 2026-08-09. O inglês é o canônico:
+<!-- Tradução de README.md, sincronizada em 2026-08-10. O inglês é o canônico:
      ao alterar o README.md, atualize este arquivo na mesma leva. -->
 
 <picture>
@@ -6,7 +6,7 @@
   <img src="assets/logo/oab-logo-on-light.png" alt="OAB — Open Architecture Brain" width="420">
 </picture>
 
-**Inteligência de arquitetura para agentes de código com IA.**
+**Seu agente sabe como são os grandes sistemas. Não sabe o que o seu precisa.**
 
 > Open knowledge. Open reasoning. Open architecture.
 
@@ -32,15 +32,15 @@ mudaria a resposta.
 
 ## O que o OAB faz
 
-| Comando | |
+| Comando | O que você recebe |
 | :-- | :-- |
-| `/oab:design` | Projeta um sistema proporcional à sua escala medida |
-| `/oab:review` | Revisa a arquitetura deste repositório, ponderada pela escala em que ele realmente opera |
-| `/oab:capacity` | Planejamento de capacidade com aritmética reproduzível |
-| `/oab:adr` | Registra uma decisão com gatilhos de revisão mensuráveis |
+| `/oab:design` | Uma arquitetura com os números por trás, os componentes recusados e o limiar que mudaria cada resposta |
+| `/oab:review` | Achados calibrados pela escala em que seu repositório realmente roda — não um checklist emprestado de um sistema mil vezes maior |
+| `/oab:capacity` | Quanto custa uma mudança antes de você fazê-la: requisições/segundo, crescimento de armazenamento, egress, custo, com a fórmula impressa para conferir |
+| `/oab:adr` | Uma decisão registrada com as opções que você pesou e a métrica que faria você revisitá-la |
 
-Mais uma skill de fundo que melhora a conversa *comum* sobre arquitetura, não apenas os comandos
-explícitos.
+Uma skill de fundo também carrega automaticamente, então a conversa comum sobre arquitetura recebe
+a mesma proporcionalidade — não só estes quatro comandos.
 
 ## Instalação
 
@@ -95,7 +95,7 @@ desenvolvedores:
 Essa segunda seção — o que foi considerado, recusado, e **a medição que reverte a recusa** — é a
 parte que um assistente genérico nunca produz.
 
-## Como ele evita overengineering
+## Como ele decide
 
 Cada componente custa **pontos de complexidade**, e cada time tem um orçamento:
 
@@ -113,6 +113,30 @@ diz isso com aritmética, não com preferência.
 
 É uma heurística calibrada, não uma lei — e a saída também diz isso.
 
+## Não é anti-complexidade — é anti-complexidade *injustificada*
+
+Kubernetes, Kafka e Redis são a resposta certa para muitos sistemas. A pergunta é se são a resposta
+certa para *este* — e o OAB falha nos próprios testes se errar em qualquer das duas direções.
+
+O cenário 03 em [`evaluations/`](evaluations/) descreve uma plataforma a 50.000 requisições por
+segundo em três regiões. As assertions dele **exigem** o maquinário que um sistema pequeno receberia
+recusado:
+
+```yaml
+must_include_components: [cdn, cache, event-stream, application-runtime]
+numeric:
+  - { field: "capacity.peak_rps",             min: 40000 }
+  - { field: "capacity.egress_gb_per_month",  min: 100000 }   # egress precisa ser calculado
+  - { field: "complexity.available",          min: 50 }
+```
+
+A suíte falha se o OAB recusar event streaming a 7.500 eventos/segundo com três grupos de
+consumidores independentes, ou omitir um CDN diante de 1,04 PB/mês de egress — onde 85% de offload
+economiza cerca de $35.000/mês, a maior alavanca de custo daquele desenho.
+
+**Dois dos cinco cenários protegem contra construir de menos; três contra construir demais.** Uma
+ferramenta que só evitasse excesso seria uma ferramenta que manda não fazer nada.
+
 ## Prova, não promessa
 
 Toda afirmação do OAB é sobre comportamento, e afirmação de comportamento sem teste é marketing.
@@ -120,8 +144,8 @@ Toda afirmação do OAB é sobre comportamento, e afirmação de comportamento s
 | | |
 | :-- | --: |
 | Cenários passando | **5 / 5** |
-| — guardas de overengineering | 3 / 3 |
-| — guardas de underengineering | 2 / 2 |
+| — guardas contra construir demais | 3 / 3 |
+| — guardas contra construir de menos | 2 / 2 |
 | Testes das calculadoras | 43 |
 | Fixtures de schema (nos dois sentidos) | 33 |
 | Unidades de conhecimento | 37 |

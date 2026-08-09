@@ -3,7 +3,7 @@
   <img src="assets/logo/oab-logo-on-light.png" alt="OAB — Open Architecture Brain" width="420">
 </picture>
 
-**Architecture intelligence for AI coding agents.**
+**Your agent knows what big systems look like. Not what yours needs.**
 
 > Open knowledge. Open reasoning. Open architecture.
 
@@ -29,15 +29,15 @@ would change the answer.
 
 ## What OAB does
 
-| Command | |
+| Command | What you get |
 | :-- | :-- |
-| `/oab:design` | Design a system proportional to its measured scale |
-| `/oab:review` | Review this repository's architecture, weighted by what it actually runs at |
-| `/oab:capacity` | Capacity planning with reproducible arithmetic |
-| `/oab:adr` | Record a decision with measurable revisit triggers |
+| `/oab:design` | An architecture with the capacity numbers behind it, the components it refused, and the threshold that would change each answer |
+| `/oab:review` | Findings weighted by the scale your repository actually runs at — not a checklist borrowed from a system a thousand times larger |
+| `/oab:capacity` | What a change costs before you make it: requests/second, storage growth, egress, cost, with the formula printed so you can check it |
+| `/oab:adr` | A decision recorded with the options you weighed and the metric that would send you back to it |
 
-Plus a background skill that improves *ordinary* architecture conversation, not only explicit
-commands.
+A background skill also loads automatically, so ordinary architecture conversation gets the same
+proportionality — not only these four commands.
 
 ## Install
 
@@ -90,7 +90,7 @@ And from [`examples/tiny-startup/`](examples/tiny-startup/) — 100 users, £50/
 That second section — what was considered, refused, and **the measurement that reverses it** — is
 the part a generic assistant never produces.
 
-## How it avoids overengineering
+## How it decides
 
 Every component costs **complexity points**, and every team has a budget:
 
@@ -108,6 +108,30 @@ rather than preference.
 
 It is a calibrated heuristic, not a law, and the output says that too.
 
+## Not anti-complexity — anti-*unjustified* complexity
+
+Kubernetes, Kafka and Redis are the right answer for plenty of systems. The question is whether
+they are the right answer for *this* one, and OAB fails its own tests if it gets that wrong in
+either direction.
+
+Scenario 03 in [`evaluations/`](evaluations/) describes a platform at 50,000 requests/second across
+three regions. Its assertions **require** the machinery a small system would be refused:
+
+```yaml
+must_include_components: [cdn, cache, event-stream, application-runtime]
+numeric:
+  - { field: "capacity.peak_rps",             min: 40000 }
+  - { field: "capacity.egress_gb_per_month",  min: 100000 }   # egress must be computed
+  - { field: "complexity.available",          min: 50 }
+```
+
+The suite fails if OAB refuses event streaming at 7,500 events/second with three independent
+consumer groups, or omits a CDN against 1.04 PB/month of egress — where 85% offload saves roughly
+$35,000/month, the largest single cost lever in that design.
+
+**Two of the five scenarios guard against under-building; three against over-building.** A tool
+that only prevented over-building would be a tool that tells you to do nothing.
+
 ## Proof, not claims
 
 Every claim OAB makes is about behaviour, and behaviour claims without tests are marketing.
@@ -115,8 +139,8 @@ Every claim OAB makes is about behaviour, and behaviour claims without tests are
 | | |
 | :-- | --: |
 | Scenarios passing | **5 / 5** |
-| — overengineering guards | 3 / 3 |
-| — underengineering guards | 2 / 2 |
+| — guards against building too much | 3 / 3 |
+| — guards against building too little | 2 / 2 |
 | Calculator tests | 43 |
 | Schema fixtures (both directions) | 33 |
 | Knowledge units | 37 |

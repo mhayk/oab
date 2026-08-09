@@ -1,4 +1,4 @@
-<!-- Traducción de README.md, sincronizada el 2026-08-09. El inglés es el canónico:
+<!-- Traducción de README.md, sincronizada el 2026-08-10. El inglés es el canónico:
      al modificar README.md, actualice este archivo en el mismo cambio. -->
 
 <picture>
@@ -6,7 +6,7 @@
   <img src="assets/logo/oab-logo-on-light.png" alt="OAB — Open Architecture Brain" width="420">
 </picture>
 
-**Inteligencia de arquitectura para agentes de código con IA.**
+**Tu agente sabe cómo son los grandes sistemas. No sabe lo que necesita el tuyo.**
 
 > Open knowledge. Open reasoning. Open architecture.
 
@@ -20,7 +20,7 @@
 
 ## El problema
 
-Pídale a un agente de código que "diseñe una API escalable" y normalmente recibirá Kubernetes,
+Pide a un agente de código que "diseñe una API escalable" y normalmente recibirás Kubernetes,
 Kafka, Redis y tres microservicios — para un producto con 100 usuarios y un desarrollador.
 
 El agente aprendió la *estética* del diseño de sistemas en charlas y artículos de blog, extraídos
@@ -32,15 +32,15 @@ que cambiaría la respuesta.
 
 ## Qué hace OAB
 
-| Comando | |
+| Comando | Lo que obtienes |
 | :-- | :-- |
-| `/oab:design` | Diseña un sistema proporcional a su escala medida |
-| `/oab:review` | Revisa la arquitectura de este repositorio, ponderada por la escala a la que realmente opera |
-| `/oab:capacity` | Planificación de capacidad con aritmética reproducible |
-| `/oab:adr` | Registra una decisión con disparadores de revisión medibles |
+| `/oab:design` | Una arquitectura con los números detrás, los componentes rechazados y el umbral que cambiaría cada respuesta |
+| `/oab:review` | Hallazgos calibrados por la escala a la que tu repositorio realmente funciona — no una lista prestada de un sistema mil veces mayor |
+| `/oab:capacity` | Cuánto cuesta un cambio antes de hacerlo: peticiones/segundo, crecimiento de almacenamiento, egress, coste, con la fórmula impresa para comprobarla |
+| `/oab:adr` | Una decisión registrada con las opciones que sopesaste y la métrica que te haría revisarla |
 
-Además, una skill de fondo que mejora la conversación *cotidiana* sobre arquitectura, no solo los
-comandos explícitos.
+Una skill de fondo también se carga automáticamente, así que la conversación cotidiana sobre
+arquitectura recibe la misma proporcionalidad — no solo estos cuatro comandos.
 
 ## Instalación
 
@@ -96,7 +96,7 @@ desarrolladores:
 Esa segunda sección — lo que se consideró, se rechazó, y **la medición que revierte el rechazo** —
 es la parte que un asistente genérico nunca produce.
 
-## Cómo evita la sobreingeniería
+## Cómo decide
 
 Cada componente cuesta **puntos de complejidad**, y cada equipo tiene un presupuesto:
 
@@ -114,6 +114,31 @@ con aritmética, no con preferencia.
 
 Es una heurística calibrada, no una ley — y la salida también lo dice.
 
+## No es anti-complejidad — es anti-complejidad *injustificada*
+
+Kubernetes, Kafka y Redis son la respuesta correcta para muchos sistemas. La pregunta es si son la
+correcta para *este* — y OAB falla sus propias pruebas si se equivoca en cualquiera de las dos
+direcciones.
+
+El escenario 03 en [`evaluations/`](evaluations/) describe una plataforma a 50.000 peticiones por
+segundo en tres regiones. Sus aserciones **exigen** la maquinaria que a un sistema pequeño se le
+rechazaría:
+
+```yaml
+must_include_components: [cdn, cache, event-stream, application-runtime]
+numeric:
+  - { field: "capacity.peak_rps",             min: 40000 }
+  - { field: "capacity.egress_gb_per_month",  min: 100000 }   # el egress debe calcularse
+  - { field: "complexity.available",          min: 50 }
+```
+
+La suite falla si OAB rechaza event streaming a 7.500 eventos/segundo con tres grupos de
+consumidores independientes, o si omite un CDN frente a 1,04 PB/mes de egress — donde un 85% de
+offload ahorra unos $35.000/mes, la mayor palanca de coste de ese diseño.
+
+**Dos de los cinco escenarios protegen contra construir de menos; tres contra construir de más.**
+Una herramienta que solo evitara el exceso sería una que te dice que no hagas nada.
+
 ## Pruebas, no promesas
 
 Toda afirmación de OAB es sobre comportamiento, y las afirmaciones de comportamiento sin pruebas
@@ -122,8 +147,8 @@ son marketing.
 | | |
 | :-- | --: |
 | Escenarios pasando | **5 / 5** |
-| — guardas de sobreingeniería | 3 / 3 |
-| — guardas de infraingeniería | 2 / 2 |
+| — guardas contra construir de más | 3 / 3 |
+| — guardas contra construir de menos | 2 / 2 |
 | Pruebas de las calculadoras | 43 |
 | Fixtures de esquema (en ambos sentidos) | 33 |
 | Unidades de conocimiento | 37 |
@@ -144,13 +169,13 @@ Lista honesta: sin servidor MCP · sin generación del grafo de conocimiento · 
 integración · `/oab:evolve` y los otros nueve comandos son M2 · ningún sitio más allá de una
 landing page · 6 dominios de conocimiento, no 18.
 
-Vea el [ROADMAP.md](ROADMAP.md) y el [§32 del diseño](docs/design/07-roadmap-and-risks.md#32-overengineering-review)
+Mira el [ROADMAP.md](ROADMAP.md) y el [§32 del diseño](docs/design/07-roadmap-and-risks.md#32-overengineering-review)
 — una crítica a nuestro propio brief fundacional.
 
 ## Contribuir
 
 **La contribución de mayor valor es conocimiento de arquitectura, y no exige entender nada del
-código** — copie una plantilla, rellénela, abra un pull request.
+código** — copia una plantilla, rellénala, abre un pull request.
 
 → [docs/contributing/knowledge.md](docs/contributing/knowledge.md)
 
@@ -158,7 +183,7 @@ Engine, integraciones y evaluación: [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## Apoyo
 
-OAB es gratuito, local-first, y no tiene servicio alojado que monetizar. Si se gana un lugar en su
+OAB es gratuito, local-first, y no tiene servicio alojado que monetizar. Si se gana un lugar en tu
 flujo de trabajo, [patrocinar](https://github.com/sponsors/mhayk) financia la parte sin glamur:
 mantener 37 unidades de conocimiento revisadas y al día, las ejecuciones de evaluación y el
 dominio.
@@ -166,6 +191,6 @@ dominio.
 ## Licencia
 
 [Apache-2.0](LICENSE). El nombre y el logo de OAB son marcas y no están cubiertos por esa
-licencia — vea el [NOTICE](NOTICE).
+licencia — mira el [NOTICE](NOTICE).
 
 [oab.run](https://oab.run/es/) · [Propuesta de diseño](docs/design/) · [Ejemplos](examples/)
