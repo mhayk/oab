@@ -29,18 +29,21 @@
     <source media="(prefers-color-scheme: light)" srcset="oab-logo-on-light.png">
     <img src="oab-logo-on-dark.png" alt="OAB — Open Architecture Brain">
   </picture>
-  <h1>Architecture intelligence for AI coding agents</h1>
-  <p class="manifesto">Open knowledge. Open reasoning. Open architecture.</p>
+  <h1>Your agent knows what big systems look like.<br>Not what yours needs.</h1>
+  <p class="hero-sub">OAB gives AI coding agents the numbers — traffic, storage, budget, team size —
+  to size an architecture to the system you are actually building, and to justify every component
+  in it.</p>
   <div class="cta">
-    <a class="btn solid" href="https://github.com/mhayk/oab">GitHub</a>
-    <a class="btn" href="https://github.com/mhayk/oab/tree/main/examples">See the output</a>
+    <a class="btn solid" href="#install">Install OAB</a>
+    <a class="btn" href="https://github.com/mhayk/oab/tree/main/examples/live-run">See a real decision</a>
   </div>
+  <p class="manifesto">Open knowledge. Open reasoning. Open architecture.</p>
 </header>
 
 <section class="blueprint" data-blueprint aria-label="The same brief, two answers">
   <div class="bp-intro">
     <p class="bp-eyebrow">The same brief, two answers</p>
-    <h2>You asked for an architecture. You got a platform team's job.</h2>
+    <h2>You asked for an architecture. You got a platform team’s job.</h2>
     <p>You are two people with £50 a month. Watch what a coding agent hands you — and what it
     never tells you: whether any of it is justified, or what would make it so.</p>
   </div>
@@ -84,6 +87,8 @@
           <p class="bp-panel-head">What OAB answers</p>
           <p class="bp-fact"><span class="bp-count bp-key" data-to="0.28" data-dp="2">0.28</span>
           <span class="bp-vs">peak requests per second — four orders of magnitude of headroom on one instance</span></p>
+          <p class="bp-derivation">100 users × 30% daily active × 2 sessions × 40 requests
+          = 2,400/day ÷ 86,400s = 0.028 average, × 10 peak factor</p>
           <ul class="bp-built">
             <li><span class="bp-tick">▸</span> application runtime</li>
             <li><span class="bp-tick">▸</span> managed database</li>
@@ -125,6 +130,96 @@
   </div>
 </section>
 
+<section class="reveal">
+  <p class="eyebrow">Side by side</p>
+  <h2>Same prompt. Different kind of answer.</h2>
+  <div class="cmp">
+    <div class="cmp-col">
+      <p class="cmp-head">A coding agent on its own</p>
+      <ul class="cmp-list">
+        <li>Reaches for the patterns it has seen most often</li>
+        <li>Sizes for scale you might reach one day</li>
+        <li>Rarely prices what the thing costs to operate</li>
+        <li>Offers no condition that would change its mind</li>
+      </ul>
+    </div>
+    <div class="cmp-col cmp-col-oab">
+      <p class="cmp-head">The same agent, with OAB</p>
+      <ul class="cmp-list">
+        <li>Works out the demand before choosing anything</li>
+        <li>Fits the architecture to the team and the budget</li>
+        <li>Names what it rejected, and on what number</li>
+        <li>Attaches the metric that would reverse each decision</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section class="reveal">
+  <p class="eyebrow">How it works</p>
+  <h2>Four steps, no magic</h2>
+  <ol class="steps">
+    <li>
+      <span class="steps-n">01</span>
+      <div>
+        <h3>Give it your context</h3>
+        <p>Users, traffic, data, team size, budget, and what you cannot afford to lose. It asks at
+        most five questions — only the ones whose answer changes the architecture.</p>
+      </div>
+    </li>
+    <li>
+      <span class="steps-n">02</span>
+      <div>
+        <h3>It works out the envelope</h3>
+        <p>Requests per second, storage growth, egress, connection demand, cost. Reproducible
+        arithmetic from tested calculators — with the formula printed so you can check it by hand.</p>
+      </div>
+    </li>
+    <li>
+      <span class="steps-n">03</span>
+      <div>
+        <h3>It spends complexity deliberately</h3>
+        <p>Every component has an operational price, not just an invoice. A team of two can carry
+        about four components before infrastructure starts eating the product. Over that line,
+        something has to come out — or someone has to be hired, and it says which.</p>
+      </div>
+    </li>
+    <li>
+      <span class="steps-n">04</span>
+      <div>
+        <h3>Decisions come with an exit</h3>
+        <p>Every rejection carries the measurement that would reverse it. A “no” becomes a plan
+        with a threshold instead of an opinion you have to trust.</p>
+      </div>
+    </li>
+  </ol>
+</section>
+
+<section class="reveal">
+  <p class="eyebrow">The other failure</p>
+  <h2>Not anti-complexity. Anti-unjustified complexity.</h2>
+  <p class="lead">Kubernetes, Kafka and Redis are the right answer for plenty of systems. The
+  question OAB asks is whether they are the right answer for <em>this</em> one — and it fails its
+  own tests if it gets that wrong in either direction.</p>
+
+  <div class="scale-up">
+    <p class="scale-head">At 50,000 requests/second across three regions, OAB’s test suite
+    <strong>fails</strong> if it does not recommend:</p>
+    <ul class="scale-list">
+      <li><b>event streaming</b> — 7,500 events/second with three independent consumer groups that
+      must replay the same stream</li>
+      <li><b>a distributed cache</b> — 67,500 reads/second cannot reach the database; at a 95% hit
+      rate, 3,375 reach five replicas</li>
+      <li><b>a CDN</b> — 1.04 PB/month of egress; 85% offload saves roughly $35,000/month, the
+      single largest cost lever in the design</li>
+      <li><b>write partitioning</b> — 7,500 writes/second exceeds one primary’s comfortable range</li>
+    </ul>
+    <p class="scale-note">Scenario 03 in <a href="https://github.com/mhayk/oab/tree/main/evaluations/scenarios">the
+    evaluation suite</a> asserts these components must be present. Two of the five scenarios guard
+    against under-building; three against over-building.</p>
+  </div>
+</section>
+
 <section>
   <h2>Same inputs, same numbers</h2>
   <p>Arithmetic is code, not model output — every capacity claim prints its assumptions, the
@@ -149,32 +244,89 @@
   cheaper — said with arithmetic rather than preference.</p>
 </section>
 
-<section>
-  <h2>Proof, not claims</h2>
-  <p>Behaviour claims without tests are marketing.</p>
-  <table>
-    <tr><th>Measure</th><th style="text-align:right">Value</th></tr>
-    <tr><td>Scenarios passing</td><td class="n">5 / 5</td></tr>
-    <tr><td>— overengineering guards</td><td class="n">3 / 3</td></tr>
-    <tr><td>— underengineering guards</td><td class="n">2 / 2</td></tr>
-    <tr><td>Calculator tests</td><td class="n">43</td></tr>
-    <tr><td>Schema fixtures, both directions</td><td class="n">33</td></tr>
-    <tr><td>Knowledge units</td><td class="n">37</td></tr>
-  </table>
-  <p>Assertions run against artifact fields, never prose. Scenarios are perturbed 100× and 0.01× to
-  prove they respond to magnitude rather than recognising specific numbers.</p>
-  <p>Scenario 07 is <em>“nothing needs to change”</em>. Scenario 08 is <em>“these requirements are
-  inconsistent”</em>. Those are the answers an eager assistant never gives.</p>
+<section class="reveal">
+  <p class="eyebrow">Evidence</p>
+  <h2>Every claim here is about behaviour</h2>
+  <p class="lead">Behaviour claims without tests are marketing. These run on every commit.</p>
+
+  <div class="ev">
+    <div class="ev-item">
+      <span class="ev-n">5 / 5</span>
+      <p><b>Scenarios passing.</b> Three guard against building too much, two against building too
+      little. A tool that only prevented over-building would be a tool that tells you to do nothing.</p>
+    </div>
+    <div class="ev-item">
+      <span class="ev-n">100× / 0.01×</span>
+      <p><b>Magnitude perturbation.</b> Every scenario is re-run with the capacity scaled up and
+      down; the assertions must break. It proves the reasoning responds to size, not to numbers it
+      has memorised.</p>
+    </div>
+    <div class="ev-item">
+      <span class="ev-n">43</span>
+      <p><b>Calculator tests.</b> The arithmetic is code, not model output — including worked
+      examples tied to the published design documents, so the docs cannot drift from the maths.</p>
+    </div>
+    <div class="ev-item">
+      <span class="ev-n">33</span>
+      <p><b>Schema fixtures, both directions.</b> Documents that must validate and documents that
+      must be rejected. A schema that accepts everything is not a contract.</p>
+    </div>
+    <div class="ev-item">
+      <span class="ev-n">37</span>
+      <p><b>Knowledge units.</b> Each one carries what it is, when it applies, and — mandatory —
+      when it does <em>not</em>.</p>
+    </div>
+    <div class="ev-item">
+      <span class="ev-n">2</span>
+      <p><b>Live runs, committed unedited.</b> A real design run and a real review of a third-party
+      repository, with every evidence citation checked against the code.</p>
+    </div>
+  </div>
 </section>
 
-<section>
-  <h2>Install</h2>
+<section class="reveal">
+  <p class="eyebrow">What you run</p>
+  <h2>Four commands</h2>
+  <div class="cmds">
+    <div class="cmd">
+      <code>/oab:design</code>
+      <p>Describe what you are building. Get an architecture with the capacity numbers behind it,
+      the components it refused, and the thresholds that would change each answer.</p>
+    </div>
+    <div class="cmd">
+      <code>/oab:review</code>
+      <p>Point it at a repository. Get findings weighted by the scale it actually runs at — not a
+      checklist borrowed from a system a thousand times larger.</p>
+    </div>
+    <div class="cmd">
+      <code>/oab:capacity</code>
+      <p>Ask what a change costs before you make it. Requests per second, storage growth, egress
+      and cost, with the formula and the substituted values printed.</p>
+    </div>
+    <div class="cmd">
+      <code>/oab:adr</code>
+      <p>Record a decision with the options you weighed, the trade-offs you accepted, and the
+      metric that would send you back to it.</p>
+    </div>
+  </div>
+  <p class="note">A background skill also loads automatically, so ordinary architecture
+  conversation gets the same proportionality — not only these four commands.</p>
+</section>
+
+<section class="final" id="install">
+  <h2>Give your coding agent architectural judgment,<br>not just architectural vocabulary.</h2>
   <pre><code>/plugin marketplace add mhayk/oab
 /plugin install oab@oab</code></pre>
+  <div class="cta">
+    <a class="btn solid" href="https://github.com/mhayk/oab">Get it on GitHub</a>
+    <a class="btn" href="https://github.com/mhayk/oab/tree/main/examples">Read a real output</a>
+  </div>
   <p class="note"><strong>v0.1.7 — the M1 release.</strong> Install and both flagship commands
-  verified with live, unedited evidence: a real design run passing every scenario assertion, and a
-  real third-party review with all eight evidence citations checked against the code.
-  <a href="https://github.com/mhayk/oab/releases/tag/v0.1.7">Release notes</a>.</p>
+  verified with live, unedited evidence. One known limitation: artifact-validation hooks fire via
+  <code>--plugin-dir</code> but not for marketplace installs in headless sessions
+  (<a href="https://github.com/mhayk/oab/issues/45">#45</a>). Not yet built: MCP server, knowledge
+  graph, a second agent integration — see the
+  <a href="https://github.com/mhayk/oab/blob/main/ROADMAP.md">roadmap</a>.</p>
 </section>
 
 <footer>
@@ -193,5 +345,6 @@
 <script src="vendor/gsap.min.js"></script>
 <script src="vendor/ScrollTrigger.min.js"></script>
 <script src="oab-blueprint.js"></script>
+<script src="reveal.js"></script>
 </body>
 </html>

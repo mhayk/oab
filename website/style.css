@@ -30,11 +30,11 @@
   .note{background:var(--raised);border:1px solid var(--line);border-radius:10px;padding:14px 18px;font-size:.9rem;color:var(--muted)}
   footer{padding:44px 0 72px;border-top:1px solid var(--line);color:var(--muted);font-size:.88rem;text-align:center}
   a{color:var(--accent)}
-  footer a{margin:0 10px;display:inline-block}
+  footer a{margin:0 6px;padding:4px 6px;display:inline-block;min-height:24px}
   .lang{position:absolute;top:18px;right:24px;font-size:.85rem;color:var(--muted);z-index:2}
-  .lang a{color:var(--muted);text-decoration:none;margin:0 2px}
+  .lang a{color:var(--muted);text-decoration:none;padding:6px 6px;display:inline-block;min-height:24px;min-width:24px;text-align:center}
   .lang a:hover{color:var(--accent)}
-  .lang strong{color:var(--fg);font-weight:600;margin:0 2px}
+  .lang strong{color:var(--fg);font-weight:600;padding:6px 6px;display:inline-block}
 
 /* ── The same brief, two answers ─────────────────────────────────────────────────────────────
    The contrast IS the thesis: the left panel is the developer's dread made visible (a stack that
@@ -131,3 +131,93 @@
 
 /* reduced motion needs no rule: the script returns before adding .is-live, so the section stays
    in its composed state and never pins. */
+
+/* ── Narrative sections ──────────────────────────────────────────────────────────────────────
+   Built from the existing tokens only — no new palette, no new type stack. The eyebrow/mono
+   treatment and the panel border are the page's existing language, reused rather than reinvented. */
+
+.hero-sub { max-width: 56ch; margin: 0 auto 26px; color: var(--fg); font-size: 1.02rem; }
+header .manifesto { margin: 26px 0 0; font-size: .84rem; }
+header h1 { line-height: 1.18; }
+
+.eyebrow {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: .72rem; letter-spacing: .2em; text-transform: uppercase;
+  color: var(--accent); margin: 0 0 10px;
+}
+section h3 { font-size: 1rem; color: var(--bright); margin: 0 0 6px; font-weight: 600; }
+
+/* side-by-side comparison */
+.cmp { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+@media (max-width: 720px) { .cmp { grid-template-columns: 1fr; } }
+.cmp-col { border: 1px solid var(--line); border-radius: 12px; padding: 18px 20px; }
+.cmp-col-oab { background: var(--raised); border-color: color-mix(in srgb, var(--accent) 30%, var(--line)); }
+.cmp-head {
+  font-family: ui-monospace, monospace; font-size: .72rem; letter-spacing: .12em;
+  text-transform: uppercase; color: var(--muted); margin: 0 0 12px;
+}
+.cmp-col-oab .cmp-head { color: var(--accent); }
+.cmp-list { list-style: none; margin: 0; padding: 0; }
+.cmp-list li { padding: 7px 0 7px 20px; position: relative; font-size: .93rem; border-top: 1px solid var(--line); }
+.cmp-list li:first-child { border-top: 0; }
+.cmp-list li::before { content: "–"; position: absolute; left: 0; color: var(--muted); }
+.cmp-col-oab .cmp-list li::before { content: "▸"; color: var(--accent); }
+
+/* numbered process — numbered because it genuinely is a sequence */
+.steps { list-style: none; margin: 0; padding: 0; counter-reset: none; }
+.steps > li { display: grid; grid-template-columns: 52px 1fr; gap: 16px; padding: 18px 0; border-top: 1px solid var(--line); }
+.steps > li:first-child { border-top: 0; padding-top: 0; }
+@media (max-width: 560px) { .steps > li { grid-template-columns: 38px 1fr; gap: 12px; } }
+.steps-n {
+  font-family: ui-monospace, monospace; font-size: .8rem; color: var(--accent);
+  font-variant-numeric: tabular-nums; padding-top: 2px;
+}
+.steps p { margin: 0; font-size: .93rem; }
+
+/* the scale-up counter-example */
+.scale-up { border: 1px solid color-mix(in srgb, var(--accent) 28%, var(--line)); border-radius: 12px; padding: 20px 22px; background: var(--raised); }
+.scale-head { margin: 0 0 12px; font-size: .95rem; }
+.scale-head strong { color: var(--accent); }
+.scale-list { list-style: none; margin: 0 0 14px; padding: 0; }
+.scale-list li { padding: 7px 0 7px 20px; position: relative; font-size: .9rem; color: var(--muted); }
+.scale-list li::before { content: "▸"; position: absolute; left: 0; color: var(--accent); }
+.scale-list b { color: var(--fg); font-weight: 600; }
+.scale-note { margin: 0; padding-top: 12px; border-top: 1px dashed var(--line); font-size: .84rem; color: var(--muted); }
+
+/* evidence, as behaviour rather than badges */
+.ev { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; }
+.ev-item { border-top: 2px solid var(--accent); padding-top: 12px; }
+.ev-n {
+  display: block; font-family: ui-monospace, monospace; font-size: 1.5rem; color: var(--accent);
+  font-variant-numeric: tabular-nums; margin-bottom: 6px;
+}
+.ev-item p { margin: 0; font-size: .88rem; color: var(--muted); }
+.ev-item b { color: var(--fg); }
+
+/* commands */
+.cmds { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 14px; margin: 0 0 16px; }
+.cmd { border: 1px solid var(--line); border-radius: 10px; padding: 16px 18px; }
+.cmd code {
+  display: inline-block; font-family: ui-monospace, monospace; font-size: .92rem;
+  color: var(--accent); margin-bottom: 8px;
+}
+.cmd p { margin: 0; font-size: .88rem; color: var(--muted); }
+
+/* final call */
+.final { text-align: center; }
+.final h2 { max-width: 24ch; margin-left: auto; margin-right: auto; line-height: 1.25; }
+.final pre { max-width: 420px; margin-left: auto; margin-right: auto; text-align: left; }
+.final .note { max-width: 62ch; margin-left: auto; margin-right: auto; text-align: left; }
+
+/* scroll reveal — CSS + IntersectionObserver, ~0.5KB of JS, no new dependency */
+.reveal { opacity: 1; }
+.js-reveal .reveal { opacity: 0; transform: translateY(14px); transition: opacity .5s ease, transform .5s ease; }
+.js-reveal .reveal.is-in { opacity: 1; transform: none; }
+@media (prefers-reduced-motion: reduce) {
+  .js-reveal .reveal { opacity: 1; transform: none; transition: none; }
+}
+
+/* keyboard focus, visible on every interactive element */
+a:focus-visible, .btn:focus-visible {
+  outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 4px;
+}

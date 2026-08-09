@@ -30,12 +30,13 @@
     <source media="(prefers-color-scheme: light)" srcset="../oab-logo-on-light.png">
     <img src="../oab-logo-on-dark.png" alt="OAB — Open Architecture Brain">
   </picture>
-  <h1>Inteligência de arquitetura para agentes de código com IA</h1>
-  <p class="manifesto">Open knowledge. Open reasoning. Open architecture.</p>
+  <h1>Seu agente sabe como grandes sistemas são.<br>Não o que o seu precisa.</h1>
+  <p class="hero-sub">O OAB dá aos agentes de código os números — tráfego, armazenamento, orçamento, tamanho do time — para dimensionar a arquitetura ao sistema que você está realmente construindo, e justificar cada componente dela.</p>
   <div class="cta">
-    <a class="btn solid" href="https://github.com/mhayk/oab">GitHub</a>
-    <a class="btn" href="https://github.com/mhayk/oab/tree/main/examples">Veja a saída</a>
+    <a class="btn solid" href="#install">Instalar o OAB</a>
+    <a class="btn" href="https://github.com/mhayk/oab/tree/main/examples/live-run">Ver uma decisão real</a>
   </div>
+  <p class="manifesto">Open knowledge. Open reasoning. Open architecture.</p>
 </header>
 
 <section class="blueprint" data-blueprint aria-label="O mesmo pedido, duas respostas">
@@ -123,6 +124,83 @@
   </div>
 </section>
 
+<section class="reveal">
+  <p class="eyebrow">Lado a lado</p>
+  <h2>Mesmo prompt. Outro tipo de resposta.</h2>
+  <div class="cmp">
+    <div class="cmp-col">
+      <p class="cmp-head">Um agente de código sozinho</p>
+      <ul class="cmp-list">
+        <li>Recorre aos padrões que mais viu</li>
+        <li>Dimensiona para uma escala que talvez você alcance um dia</li>
+        <li>Raramente precifica o custo de operar aquilo</li>
+        <li>Não oferece condição alguma que o faria mudar de ideia</li>
+      </ul>
+    </div>
+    <div class="cmp-col cmp-col-oab">
+      <p class="cmp-head">O mesmo agente, com OAB</p>
+      <ul class="cmp-list">
+        <li>Calcula a demanda antes de escolher qualquer coisa</li>
+        <li>Ajusta a arquitetura ao time e ao orçamento</li>
+        <li>Nomeia o que rejeitou, e com base em que número</li>
+        <li>Anexa a métrica que reverteria cada decisão</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section class="reveal">
+  <p class="eyebrow">Como funciona</p>
+  <h2>Quatro passos, sem mágica</h2>
+  <ol class="steps">
+    <li>
+      <span class="steps-n">01</span>
+      <div>
+        <h3>Dê o seu contexto</h3>
+        <p>Usuários, tráfego, dados, tamanho do time, orçamento, e o que você não pode perder. Ele faz no máximo cinco perguntas — só as que mudam a arquitetura.</p>
+      </div>
+    </li>
+    <li>
+      <span class="steps-n">02</span>
+      <div>
+        <h3>Ele calcula o envelope</h3>
+        <p>Requisições por segundo, crescimento de storage, egress, demanda de conexões, custo. Aritmética reproduzível de calculadoras testadas — com a fórmula impressa para você conferir à mão.</p>
+      </div>
+    </li>
+    <li>
+      <span class="steps-n">03</span>
+      <div>
+        <h3>Ele gasta complexidade de propósito</h3>
+        <p>Todo componente tem um preço operacional, não só uma fatura. Um time de dois carrega cerca de quatro componentes antes de a infraestrutura comer o produto. Passando disso, algo tem que sair — ou alguém tem que ser contratado, e ele diz qual.</p>
+      </div>
+    </li>
+    <li>
+      <span class="steps-n">04</span>
+      <div>
+        <h3>Decisões vêm com saída</h3>
+        <p>Toda recusa carrega a medição que a reverteria. Um “não” vira um plano com limiar, em vez de uma opinião em que você tem que confiar.</p>
+      </div>
+    </li>
+  </ol>
+</section>
+
+<section class="reveal">
+  <p class="eyebrow">A outra falha</p>
+  <h2>Não é anti-complexidade. É anti-complexidade injustificada.</h2>
+  <p class="lead">Kubernetes, Kafka e Redis são a resposta certa para muitos sistemas. A pergunta que o OAB faz é se são a resposta certa para <em>este</em> — e ele falha nos próprios testes se errar em qualquer das duas direções.</p>
+
+  <div class="scale-up">
+    <p class="scale-head">A 50.000 requisições/segundo em três regiões, a suíte de testes do OAB <strong>falha</strong> se ele não recomendar:</p>
+    <ul class="scale-list">
+      <li><b>event streaming</b> — 7.500 eventos/segundo com três grupos de consumidores independentes que precisam reprocessar o mesmo stream</li>
+      <li><b>um cache distribuído</b> — 67.500 leituras/segundo não podem chegar ao banco; com 95% de acerto, 3.375 chegam a cinco réplicas</li>
+      <li><b>um CDN</b> — 1,04 PB/mês de egress; 85% de offload economiza cerca de $35.000/mês, a maior alavanca de custo do desenho</li>
+      <li><b>particionamento de escrita</b> — 7.500 escritas/segundo excedem a faixa confortável de um primário</li>
+    </ul>
+    <p class="scale-note">O cenário 03 na <a href="https://github.com/mhayk/oab/tree/main/evaluations/scenarios">suíte de avaliação</a> exige que esses componentes estejam presentes. Dois dos cinco cenários protegem contra subdimensionar; três contra superdimensionar.</p>
+  </div>
+</section>
+
 <section>
   <h2>Mesmas entradas, mesmos números</h2>
   <p>Aritmética é código, não saída de modelo — toda afirmação de capacidade imprime suas
@@ -147,33 +225,73 @@
   gerenciado é mais barato — dito com aritmética, não com preferência.</p>
 </section>
 
-<section>
-  <h2>Prova, não promessa</h2>
-  <p>Afirmação de comportamento sem teste é marketing.</p>
-  <table>
-    <tr><th>Medida</th><th style="text-align:right">Valor</th></tr>
-    <tr><td>Cenários passando</td><td class="n">5 / 5</td></tr>
-    <tr><td>— guardas de overengineering</td><td class="n">3 / 3</td></tr>
-    <tr><td>— guardas de underengineering</td><td class="n">2 / 2</td></tr>
-    <tr><td>Testes das calculadoras</td><td class="n">43</td></tr>
-    <tr><td>Fixtures de schema, nos dois sentidos</td><td class="n">33</td></tr>
-    <tr><td>Unidades de conhecimento</td><td class="n">37</td></tr>
-  </table>
-  <p>As assertions rodam contra campos do artefato, nunca contra prosa. Os cenários são perturbados
-  em 100× e 0,01× para provar que respondem à magnitude em vez de reconhecer números específicos.</p>
-  <p>O cenário 07 é <em>“nada precisa mudar”</em>. O cenário 08 é <em>“esses requisitos são
-  inconsistentes”</em>. São as respostas que um assistente ansioso nunca dá.</p>
+<section class="reveal">
+  <p class="eyebrow">Evidência</p>
+  <h2>Toda afirmação aqui é sobre comportamento</h2>
+  <p class="lead">Afirmação de comportamento sem teste é marketing. Estes rodam a cada commit.</p>
+
+  <div class="ev">
+    <div class="ev-item">
+      <span class="ev-n">5 / 5</span>
+      <p><b>Cenários passando.</b> Três protegem contra construir demais, dois contra construir de menos. Uma ferramenta que só evitasse excesso seria uma ferramenta que manda não fazer nada.</p>
+    </div>
+    <div class="ev-item">
+      <span class="ev-n">100× / 0.01×</span>
+      <p><b>Perturbação de magnitude.</b> Cada cenário roda de novo com a capacidade escalada para cima e para baixo; as assertions precisam quebrar. Prova que o raciocínio responde a tamanho, não a números que decorou.</p>
+    </div>
+    <div class="ev-item">
+      <span class="ev-n">43</span>
+      <p><b>Testes das calculadoras.</b> A aritmética é código, não saída de modelo — incluindo exemplos ligados aos documentos de design publicados, para que a documentação não descole da matemática.</p>
+    </div>
+    <div class="ev-item">
+      <span class="ev-n">33</span>
+      <p><b>Fixtures de schema, nos dois sentidos.</b> Documentos que precisam validar e documentos que precisam ser rejeitados. Um schema que aceita tudo não é contrato.</p>
+    </div>
+    <div class="ev-item">
+      <span class="ev-n">37</span>
+      <p><b>Unidades de conhecimento.</b> Each one carries what it is, when it applies, and — mandatory —
+      when it does <em>not</em>.</p>
+    </div>
+    <div class="ev-item">
+      <span class="ev-n">2</span>
+      <p><b>Execuções reais, commitadas sem edição.</b> Cada uma carrega o que é, quando se aplica e — obrigatório — quando <em>não</em> se aplica.</p>
+    </div>
+  </div>
 </section>
 
-<section>
-  <h2>Instalação</h2>
+<section class="reveal">
+  <p class="eyebrow">O que você roda</p>
+  <h2>Quatro comandos</h2>
+  <div class="cmds">
+    <div class="cmd">
+      <code>/oab:design</code>
+      <p>Descreva o que está construindo. Receba uma arquitetura com os números por trás, os componentes recusados e os limiares que mudariam cada resposta.</p>
+    </div>
+    <div class="cmd">
+      <code>/oab:review</code>
+      <p>Aponte para um repositório. Receba achados ponderados pela escala em que ele realmente opera — não um checklist emprestado de um sistema mil vezes maior.</p>
+    </div>
+    <div class="cmd">
+      <code>/oab:capacity</code>
+      <p>Pergunte quanto custa uma mudança antes de fazê-la. Requisições por segundo, crescimento de storage, egress e custo, com a fórmula e os valores substituídos impressos.</p>
+    </div>
+    <div class="cmd">
+      <code>/oab:adr</code>
+      <p>Registre uma decisão com as opções que pesou, os trade-offs que aceitou e a métrica que o traria de volta a ela.</p>
+    </div>
+  </div>
+  <p class="note">Uma skill de fundo também carrega automaticamente, então a conversa comum sobre arquitetura recebe a mesma proporcionalidade — não só estes quatro comandos.</p>
+</section>
+
+<section class="final" id="install">
+  <h2>Dê ao seu agente de código julgamento arquitetural,<br>não apenas vocabulário arquitetural.</h2>
   <pre><code>/plugin marketplace add mhayk/oab
 /plugin install oab@oab</code></pre>
-  <p class="note"><strong>v0.1.7 — a release M1.</strong> Instalação e os dois comandos principais
-  verificados com evidência viva e sem edição: uma execução real de design passando em todas as
-  assertions de cenário, e uma revisão real de terceiros com as oito citações de evidência
-  conferidas no código.
-  <a href="https://github.com/mhayk/oab/releases/tag/v0.1.7">Notas da release</a>.</p>
+  <div class="cta">
+    <a class="btn solid" href="https://github.com/mhayk/oab">Pegar no GitHub</a>
+    <a class="btn" href="https://github.com/mhayk/oab/tree/main/examples">Ler uma saída real</a>
+  </div>
+  <p class="note"><strong>v0.1.7 — a release M1.</strong> Instalação e os dois comandos principais verificados com evidência viva e sem edição. Uma limitação conhecida: hooks de validação de artefato disparam via <code>--plugin-dir</code>, mas não em instalações do marketplace em sessões headless (<a href="https://github.com/mhayk/oab/issues/45">#45</a>). Ainda não construído: servidor MCP, grafo de conhecimento, uma segunda integração — veja o <a href="https://github.com/mhayk/oab/blob/main/ROADMAP.md">roadmap</a>.</p>
 </section>
 
 <footer>
@@ -192,5 +310,6 @@
 <script src="../vendor/gsap.min.js"></script>
 <script src="../vendor/ScrollTrigger.min.js"></script>
 <script src="../oab-blueprint.js"></script>
+<script src="../reveal.js"></script>
 </body>
 </html>
