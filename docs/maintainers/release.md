@@ -47,6 +47,28 @@ release without a bump is a no-op, however green CI is.
 To force a local refresh while developing, use `claude --plugin-dir ./` rather than the installed
 copy.
 
+## Plugin hooks and the workspace-trust gate
+
+Hooks shipped by a **marketplace-installed** plugin do not run in a non-interactive (`-p`) session.
+The cause is documented in `claude --help`: *the workspace trust dialog is skipped in
+non-interactive mode.* Plugin components are gated on workspace trust; with the dialog skipped,
+trust is never granted and the plugin's hooks are silently not loaded. `--dangerously-skip-permissions`
+does **not** override this — permission bypass and component trust are different gates.
+
+Confirmed with a positive control (2026-08-09): the identical hook fires under `--plugin-dir`
+(hook events visible in `--output-format=stream-json --include-hook-events`, feedback quoted back
+to the agent), and produces zero hook events when the same plugin is marketplace-installed and run
+headless.
+
+Consequences:
+- The evaluation harness uses `--plugin-dir`, which is unaffected — and also tests the working
+  tree rather than a cached copy.
+- Interactive users: the hook should fire after the one-time workspace-trust prompt is accepted.
+  Not yet confirmed from within this tooling, because it needs a genuine interactive TTY.
+- Headless/CI users of the *installed* plugin: the hook will not fire. Skill-level validation
+  remains the fallback, and `tools/hook_validate_artifact.py` can be wired as a project-settings
+  hook (which is trusted implicitly and does fire headless) where enforcement is required.
+
 ## Tagging
 
 1. Bump `version` in `.claude-plugin/plugin.json` **and** the marketplace entry — they must match.
