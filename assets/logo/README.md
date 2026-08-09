@@ -11,7 +11,9 @@ Colours, typography, and accessibility notes are in [`BRAND.md`](BRAND.md).
 | `oab-icon.png` | 512 × 512, exported from `oab-icon.svg` | Where SVG is not accepted |
 | `oab-mark-on-dark.png` | 512 px, white mark, transparent | Raster fallback on dark surfaces |
 | `oab-mark-on-light.png` | 512 px, dark mark, transparent | Raster fallback on light surfaces |
-| `oab-logo-on-dark.png` | 1200 × 512 lockup with wordmark, transparent | README banner **on dark only** — see the limitation below |
+| `oab-logo.svg` | **Full lockup**: mark + wordmark, real Sora outlines, 8.4 KB | Website header, docs, anywhere SVG is accepted |
+| `oab-logo-on-dark.png` | 1200 px lockup, white, transparent | README banner on dark |
+| `oab-logo-on-light.png` | 1200 px lockup, dark, transparent, accent darkened to `#00758F` | README banner on light |
 | `oab-social-card.png` | 1280 × 640, opaque dark | GitHub social preview, OpenGraph |
 | `concept-board-1.png`, `concept-board-2.png` | The original AI-generated concept boards | Reference only. **Not assets** — the mark is drawn differently in every panel |
 
@@ -29,12 +31,24 @@ dotted axis becomes solid, and the strokes thicken. Dots and fine strokes disapp
 48 px, so a straight downscale of the mark would produce mush. This is standard practice, and it is
 why the icon and the mark are two files rather than one.
 
-## Known limitations
+## The wordmark
 
-**The wordmark is not vectorised.** `oab-logo-on-dark.png` is the AI-generated lockup, kept because
-it looks good on dark surfaces. It is white-only, and its baked-in drop shadow shows as a grey
-smudge on light backgrounds. Until the typeface is chosen (see `BRAND.md`) and the wordmark is set
-as outlines, prefer `oab-mark.svg` plus a Markdown or HTML heading over the raster lockup.
+`oab-logo.svg` is **generated**, not drawn: `tools/build_wordmark.py` reads Sora SemiBold and emits
+the glyph outlines as SVG paths. A logo must never rely on an `<text>` element, because that renders
+with whatever font the viewer has installed.
+
+To regenerate after a layout change:
+
+```bash
+pip install fonttools
+curl -o /tmp/Sora-SemiBold.ttf \
+  "https://fonts.gstatic.com/s/sora/v17/xMQOuFFYT72X5wkB_18qmnndmSeMmX-K.ttf"
+python3 tools/build_wordmark.py /tmp/Sora-SemiBold.ttf assets/logo/oab-logo.svg
+```
+
+Sora is SIL OFL. The font file is not committed; only the outlines it produced are.
+
+## Known limitations
 
 **16 px favicons are weak.** A wireframe mark cannot hold at 16 px; the internal edges collapse.
 It is legible from 32 px up, and most browsers now render the 32 px asset. Accept it, or commission
@@ -56,13 +70,17 @@ Inline SVG in a web page can use `oab-mark.svg` directly and colour it with CSS.
 
 ## Regenerating the rasters
 
-Every PNG except `oab-logo-on-dark.png` and `oab-social-card.png` is exported from the SVGs.
-Never edit them by hand.
+Every PNG except `oab-social-card.png` is exported from the SVGs. Never edit them by hand.
+Note the accent substitution on the light lockup — see `BRAND.md`.
 
 ```bash
+cd assets/logo
 rsvg-convert -w 512 -h 512 oab-icon.svg -o oab-icon.png
 sed 's|<svg |<svg style="color:#FFFFFF" |' oab-mark.svg | rsvg-convert -w 512 -o oab-mark-on-dark.png
 sed 's|<svg |<svg style="color:#0B0F14" |' oab-mark.svg | rsvg-convert -w 512 -o oab-mark-on-light.png
+sed 's|<svg |<svg style="color:#FFFFFF" |' oab-logo.svg | rsvg-convert -w 1200 -o oab-logo-on-dark.png
+sed -e 's|<svg |<svg style="color:#0B0F14" |' -e 's|#00D1FF|#00758F|g' oab-logo.svg \
+  | rsvg-convert -w 1200 -o oab-logo-on-light.png
 ```
 
 ## Licensing
