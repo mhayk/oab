@@ -7,6 +7,7 @@
 
 > Open knowledge. Open reasoning. Open architecture.
 
+[![Website](https://img.shields.io/badge/oab.run-live-00D1FF?style=flat&labelColor=0B0F14)](https://oab.run)
 [![License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](LICENSE)
 [![Scenarios](https://img.shields.io/badge/scenarios-5%2F5%20passing-brightgreen.svg)](evaluations/)
 [![Release](https://img.shields.io/badge/release-v0.1.7%20·%20M1-brightgreen.svg)](https://github.com/mhayk/oab/releases/tag/v0.1.7)
@@ -45,6 +46,9 @@ proportionality — not only these four commands.
 /plugin marketplace add mhayk/oab
 /plugin install oab@oab
 ```
+
+Prefer to look before installing? **[oab.run](https://oab.run)** walks through the same decision
+end to end — the brief, the numbers, and what gets refused.
 
 ![Installing OAB — real, unstaged](demo/out/install.gif)
 
