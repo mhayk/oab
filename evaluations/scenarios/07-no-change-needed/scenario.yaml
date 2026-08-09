@@ -1,0 +1,11 @@
+id: no-change-needed
+description: "A healthy, appropriately-sized system where the correct answer is to change nothing"
+guards: "the reflex to always recommend something"
+input:
+  product: "Internal expense tool, stable usage, in production 3 years"
+  users_total: 800
+  peak_rps: 12
+  team: { engineers: 4, dedicated_ops: 0 }
+  availability_target: "99.9%"
+  existing: "single app instance pair behind a load balancer, managed database with PITR,
+             error tracking, structured logs, timeouts on all outbound calls, tested restores"

@@ -1,0 +1,17 @@
+# Proves OAB scales UP when the numbers justify it — and still refuses what they do not.
+must_include_components: [application-runtime, relational-database, worker]
+must_not_include_components: [event-stream, connection-pooler, orchestration-platform]
+must_reject_components: [event-stream]
+
+numeric:
+  - { field: "capacity.peak_rps", min: 100, max: 400 }
+  - { field: "complexity.spent", lte_field: "complexity.available" }
+  - { field: "complexity.available", min: 10 }
+  - { field: "cost.monthly_operational.low", min: 1 }   # operational cost must be modelled
+
+structural:
+  - { field: "stage", in: ["2", "3"] }
+  - { field: "options", min_length: 2 }
+  - { field: "options[*].verdict", contains: "rejected" }
+  - { field: "triggers", min_length: 3 }
+  - { field: "assumptions", min_length: 3 }

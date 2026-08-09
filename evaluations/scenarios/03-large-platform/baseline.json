@@ -1,0 +1,376 @@
+{
+  "oab_version": "0.1.0",
+  "generated": "2026-08-09",
+  "system": {
+    "name": "Consumer content platform",
+    "description": "Feed, search, notifications at global scale"
+  },
+  "stage": "5",
+  "requirements": {
+    "functional": [
+      "Publish and edit recipes",
+      "Browse and search recipes",
+      "Comment on recipes",
+      "Upload and serve photos"
+    ],
+    "non_functional": [
+      {
+        "name": "average requests per second",
+        "value": 50000,
+        "unit": "requests/second",
+        "quantified": true
+      },
+      {
+        "name": "regions",
+        "value": 3,
+        "unit": "regions",
+        "quantified": true
+      },
+      {
+        "name": "engineering team",
+        "value": 40,
+        "unit": "engineers",
+        "quantified": true
+      },
+      {
+        "name": "dedicated operations",
+        "value": 4,
+        "unit": "engineers",
+        "quantified": true
+      },
+      {
+        "name": "availability target",
+        "value": "99.99%",
+        "quantified": true
+      }
+    ]
+  },
+  "assumptions": [
+    {
+      "text": "1.5x peak factor from global traffic smoothing",
+      "confidence": "medium",
+      "impact": "proportional on peak"
+    },
+    {
+      "text": "8 KB average response payload",
+      "confidence": "medium",
+      "impact": "proportional on egress, the largest cost line"
+    },
+    {
+      "text": "90:10 read to write ratio",
+      "confidence": "medium",
+      "impact": "shifts cache and database sizing"
+    },
+    {
+      "text": "85% edge offload achievable on current content mix",
+      "confidence": "low",
+      "impact": "\u00b1$35k/month"
+    }
+  ],
+  "capacity": {
+    "avg_rps": 50000,
+    "peak_rps": 75000,
+    "peak_reads_per_second": 67500,
+    "peak_writes_per_second": 7500,
+    "storage_gb_per_year": 296000,
+    "egress_gb_per_month": 1036800,
+    "concurrency": 3750
+  },
+  "complexity": {
+    "available": 77,
+    "spent": 27
+  },
+  "components": [
+    {
+      "name": "Application fleet",
+      "kind": "application-runtime",
+      "managed": true,
+      "self_hosted": false,
+      "complexity_cost": 1,
+      "count": 150,
+      "justification": "75,000 peak RPS at 8 ms CPU is 600 cores; 150 instances at 60% utilisation with AZ-failure headroom."
+    },
+    {
+      "name": "CDN",
+      "kind": "cdn",
+      "managed": true,
+      "self_hosted": false,
+      "complexity_cost": 1,
+      "count": 1,
+      "justification": "1.04 PB/month egress. 85% offload saves roughly $35,000/month \u2014 the single largest cost lever in this design."
+    },
+    {
+      "name": "Distributed cache cluster",
+      "kind": "cache",
+      "managed": true,
+      "self_hosted": false,
+      "complexity_cost": 2,
+      "count": 1,
+      "justification": "67,500 reads/second cannot reach the database. At a 95% hit rate, 3,375 reads/second reach 5 replicas."
+    },
+    {
+      "name": "Relational primary, partitioned",
+      "kind": "relational-database",
+      "managed": true,
+      "self_hosted": false,
+      "complexity_cost": 3,
+      "count": 1,
+      "justification": "7,500 writes/second exceeds a single primary's comfortable range for an indexed workload."
+    },
+    {
+      "name": "Read replicas",
+      "kind": "read-replica",
+      "managed": true,
+      "self_hosted": false,
+      "complexity_cost": 1,
+      "count": 5,
+      "justification": "675 reads/second each after cache absorption."
+    },
+    {
+      "name": "Event stream",
+      "kind": "event-stream",
+      "managed": true,
+      "self_hosted": false,
+      "complexity_cost": 4,
+      "count": 1,
+      "justification": "7,500 events/second with 3 independent consumer groups (search indexing, analytics, notifications) requiring independent replay. 48 partitions from throughput with rebalance headroom."
+    },
+    {
+      "name": "Object storage",
+      "kind": "object-storage",
+      "managed": true,
+      "self_hosted": false,
+      "complexity_cost": 1,
+      "count": 1,
+      "justification": "Media storage, served through the edge."
+    },
+    {
+      "name": "Load balancers",
+      "kind": "load-balancer",
+      "managed": true,
+      "self_hosted": false,
+      "complexity_cost": 1,
+      "count": 3,
+      "justification": "Health-checked routing across regions."
+    },
+    {
+      "name": "Observability",
+      "kind": "observability",
+      "managed": true,
+      "self_hosted": false,
+      "complexity_cost": 2,
+      "count": 1,
+      "justification": "99.99% is 4.4 minutes per month; diagnosis must be immediate."
+    },
+    {
+      "name": "Workers",
+      "kind": "worker",
+      "managed": true,
+      "self_hosted": false,
+      "complexity_cost": 1,
+      "count": 40,
+      "justification": "Asynchronous fan-out consumers."
+    }
+  ],
+  "rejected_components": [
+    {
+      "kind": "search-engine",
+      "reason": "A second search technology costs 3 points and a synchronisation pipeline whose inconsistency becomes a support burden. The existing ranking requirements are met.",
+      "revisit_when": "Ranking requirements exceed what the current store provides, or search p95 exceeds 200 ms."
+    },
+    {
+      "kind": "service-mesh",
+      "reason": "Observability and retry policy are already handled in the service framework. A mesh adds an operational surface without a measured problem.",
+      "revisit_when": "More than 20 services with heterogeneous runtimes needing uniform policy enforcement."
+    }
+  ],
+  "options": [
+    {
+      "id": "cell-based-multi-region",
+      "description": "Regional cells with active-passive transactional store and regional read replicas",
+      "components": [
+        "application-runtime",
+        "cdn",
+        "cache",
+        "relational-database",
+        "read-replica",
+        "event-stream",
+        "object-storage",
+        "observability"
+      ],
+      "complexity_cost": 27,
+      "monthly_cost": {
+        "currency": "USD",
+        "low": 180000,
+        "high": 240000
+      },
+      "reversibility": "hard",
+      "verdict": "selected",
+      "trade_offs": [
+        "Cross-region write latency for the passive regions",
+        "Cell routing adds a layer to reason about",
+        "Partition key on the transactional store is effectively permanent"
+      ]
+    },
+    {
+      "id": "single-region-scaled-up",
+      "description": "One region, maximal vertical and horizontal scaling",
+      "components": [
+        "application-runtime",
+        "cdn",
+        "cache",
+        "relational-database",
+        "read-replica",
+        "event-stream",
+        "observability"
+      ],
+      "complexity_cost": 19,
+      "monthly_cost": {
+        "currency": "USD",
+        "low": 120000,
+        "high": 160000
+      },
+      "reversibility": "moderate",
+      "verdict": "rejected",
+      "reason": "Cannot meet the APAC latency requirement, and a regional failure alone would consume the annual error budget for 99.99%.",
+      "trade_offs": [
+        "Materially simpler to operate",
+        "Lower cost"
+      ]
+    },
+    {
+      "id": "multi-region-active-active",
+      "description": "Active-active writes in all three regions",
+      "components": [
+        "application-runtime",
+        "cdn",
+        "cache",
+        "relational-database",
+        "event-stream",
+        "observability"
+      ],
+      "complexity_cost": 38,
+      "monthly_cost": {
+        "currency": "USD",
+        "low": 260000,
+        "high": 340000
+      },
+      "reversibility": "one-way",
+      "verdict": "rejected",
+      "reason": "No stated requirement for cross-region write availability. Multi-master conflict resolution is a permanent tax on every future feature, and active-passive meets 99.99%.",
+      "trade_offs": [
+        "Write availability during a full regional loss"
+      ]
+    }
+  ],
+  "cost": {
+    "currency": "USD",
+    "monthly_infrastructure": {
+      "low": 180000,
+      "high": 240000
+    },
+    "monthly_operational": {
+      "low": 6500,
+      "high": 8000
+    },
+    "monthly_total": {
+      "low": 186500,
+      "high": 248000
+    },
+    "price_table_date": "2026-08-09"
+  },
+  "availability": {
+    "target": "99.99%",
+    "achievable": "99.99%",
+    "consistent": true,
+    "explanation": "53 minutes per year. Multi-region with automated failover under 60 seconds and no manual step in recovery, cell-based blast radius containment, and 4 dedicated operations engineers to exercise it."
+  },
+  "triggers": [
+    {
+      "id": "write-throughput",
+      "metric": "database.writes_per_second",
+      "source": "platform metrics dashboard",
+      "comparator": ">",
+      "threshold": 12000,
+      "unit": "writes/second",
+      "window": "sustained at peak over 1 week",
+      "action": "Re-run partitioning analysis; evaluate splitting the hottest entity",
+      "owner": "platform team",
+      "status": "armed",
+      "created": "2026-08-09",
+      "fired_at": null
+    },
+    {
+      "id": "cache-hit-rate-floor",
+      "metric": "cache.hit_rate",
+      "source": "platform metrics dashboard",
+      "comparator": ">",
+      "threshold": 93,
+      "unit": "percent",
+      "window": "sustained below over 1 day",
+      "action": "Investigate working-set growth; resize before database load rises",
+      "owner": "platform team",
+      "status": "armed",
+      "created": "2026-08-09",
+      "fired_at": null
+    },
+    {
+      "id": "edge-offload",
+      "metric": "cdn.offload_ratio",
+      "source": "platform metrics dashboard",
+      "comparator": ">",
+      "threshold": 80,
+      "unit": "percent",
+      "window": "sustained below over 1 week",
+      "action": "Investigate cache-key configuration; offload is the largest cost lever",
+      "owner": "platform team",
+      "status": "armed",
+      "created": "2026-08-09",
+      "fired_at": null
+    },
+    {
+      "id": "consumer-lag",
+      "metric": "stream.consumer_lag_seconds",
+      "source": "platform metrics dashboard",
+      "comparator": ">",
+      "threshold": 300,
+      "unit": "seconds",
+      "window": "sustained over 30 minutes",
+      "action": "Scale consumers or repartition; check per-partition variance for hot keys",
+      "owner": "platform team",
+      "status": "armed",
+      "created": "2026-08-09",
+      "fired_at": null
+    },
+    {
+      "id": "cross-region-latency",
+      "metric": "cross_region.p95_latency",
+      "source": "platform metrics dashboard",
+      "comparator": ">",
+      "threshold": 150,
+      "unit": "milliseconds",
+      "window": "sustained over 1 day for a material user segment",
+      "action": "Re-evaluate regional placement for that segment",
+      "owner": "platform team",
+      "status": "armed",
+      "created": "2026-08-09",
+      "fired_at": null
+    }
+  ],
+  "knowledge_used": [
+    "proportional-architecture",
+    "egress-cost",
+    "cache-sizing",
+    "when-you-need-streaming",
+    "partitioning-and-sharding",
+    "read-replicas",
+    "availability-targets",
+    "tail-latency",
+    "utilisation-and-queueing"
+  ],
+  "confidence": "medium",
+  "open_questions": [
+    "Is cross-region write availability a genuine requirement, or is active-passive acceptable?",
+    "What is the actual content mix, which determines whether 85% edge offload is reachable?"
+  ]
+}

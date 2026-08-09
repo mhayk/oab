@@ -1,0 +1,11 @@
+id: growing-saas
+description: "B2B project-management SaaS, multi-tenant, 100k MAU, eight engineers"
+guards: "under-provisioning, and adopting streaming for queue-sized work"
+input:
+  product: "Multi-tenant project management with reports, integrations, notifications"
+  users_total: 100000
+  dau_share: 0.25
+  tenants: 1200
+  team: { engineers: 8, dedicated_ops: 0 }
+  availability_target: "99.9%"
+  compliance: "EU data residency"

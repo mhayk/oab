@@ -1,0 +1,14 @@
+# The scenario OAB is most likely to fail, and therefore the most valuable.
+# "Your architecture is appropriate; watch these triggers" is the most useful answer a
+# reviewer can give and the one an eager assistant never gives.
+structural:
+  - { field: "findings", max_length: 0 }          # no findings at all
+  - { field: "triggers", min_length: 2 }          # but triggers are still produced
+  - { field: "context.assumptions", min_length: 1 }
+  - { field: "summary.verdict", exists: true }
+
+numeric:
+  - { field: "summary.counts.CRITICAL", max: 0 }
+  - { field: "summary.counts.HIGH", max: 0 }
+  - { field: "summary.counts.MEDIUM", max: 0 }
+  - { field: "summary.complexity.spent", lte_field: "summary.complexity.available" }

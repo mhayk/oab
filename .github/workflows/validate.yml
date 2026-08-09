@@ -64,6 +64,9 @@ jobs:
       - name: Tooling — validator tests
         run: python -m pytest tools/tests -q
 
+      - name: Scenarios — deterministic baselines and magnitude sensitivity
+        run: python3 evaluations/runner/run_scenarios.py --perturb
+
       - name: Calculators — unit, property, and worked-example tests
         run: |
           if [ -d calculators/tests ]; then

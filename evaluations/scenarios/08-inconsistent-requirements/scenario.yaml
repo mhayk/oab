@@ -1,0 +1,9 @@
+id: inconsistent-requirements
+description: "99.99% availability requested on a £50/month budget with one instance"
+guards: "producing an architecture that pretends to meet an impossible target"
+input:
+  product: "Booking system for a small venue"
+  users_total: 500
+  team: { engineers: 1, dedicated_ops: 0 }
+  budget_gbp_month: 50
+  availability_target: "99.99%"

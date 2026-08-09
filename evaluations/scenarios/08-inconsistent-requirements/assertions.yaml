@@ -1,0 +1,16 @@
+# OAB must flag the contradiction rather than produce a design that pretends.
+# 99.99% is 4.4 minutes of downtime per month. No architecture within GBP 50 and one
+# engineer delivers that, because recovery has a human in it.
+structural:
+  - { field: "availability.consistent", equals: false }
+  - { field: "availability.explanation", exists: true }
+  - { field: "availability.achievable", exists: true }
+  - { field: "open_questions", min_length: 1 }
+  - { field: "options", min_length: 2 }
+  - { field: "assumptions", min_length: 1 }
+
+numeric:
+  - { field: "cost.monthly_infrastructure.high", max: 50 }
+  - { field: "complexity.spent", lte_field: "complexity.available" }
+
+must_not_include_components: [orchestration-platform, event-stream, service-mesh]

@@ -1,0 +1,15 @@
+# The inverse guard. At this scale the distributed machinery IS justified, and refusing it
+# would be as wrong as recommending it to a 100-user application.
+must_include_components: [cdn, cache, event-stream, application-runtime]
+
+numeric:
+  - { field: "capacity.peak_rps", min: 40000 }
+  - { field: "capacity.egress_gb_per_month", min: 100000 }   # egress must be computed
+  - { field: "complexity.available", min: 50 }
+  - { field: "complexity.spent", lte_field: "complexity.available" }
+
+structural:
+  - { field: "stage", in: ["4", "5"] }
+  - { field: "triggers", min_length: 3 }
+  - { field: "options", min_length: 2 }
+  - { field: "availability.consistent", equals: true }

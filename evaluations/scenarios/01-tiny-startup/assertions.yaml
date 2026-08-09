@@ -1,0 +1,24 @@
+# The headline scenario. If OAB fails this, its central claim is false.
+must_not_include_components:
+  [orchestration-platform, event-stream, search-engine, cache, read-replica,
+   service-mesh, connection-pooler, vector-database, wide-column-database]
+
+must_include_components: [application-runtime, relational-database]
+
+must_reject_components: [orchestration-platform, cache, event-stream]
+
+numeric:
+  - { field: "capacity.peak_rps", max: 5 }
+  - { field: "cost.monthly_infrastructure.high", max: 50 }
+  - { field: "complexity.spent", max: 4 }
+  - { field: "complexity.spent", lte_field: "complexity.available" }
+
+structural:
+  - { field: "assumptions", min_length: 3 }
+  - { field: "options", min_length: 2 }
+  - { field: "options[*].verdict", contains: "rejected" }
+  - { field: "options[*].verdict", contains: "selected" }
+  - { field: "triggers", min_length: 3 }
+  - { field: "stage", in: ["0", "1"] }
+  - { field: "confidence", in: ["high", "medium", "low"] }
+  - { field: "complexity.override", exists: false }

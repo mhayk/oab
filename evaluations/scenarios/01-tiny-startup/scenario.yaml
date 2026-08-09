@@ -1,0 +1,11 @@
+id: tiny-startup
+description: "Recipe-sharing web app, pre-revenue, two developers"
+guards: overengineering
+input:
+  product: "Users publish recipes, browse, comment, and upload photos"
+  users_total: 100
+  dau_estimate: unknown
+  team: { engineers: 2, dedicated_ops: 0 }
+  budget_gbp_month: 50
+  availability_target: unstated
+  compliance: none

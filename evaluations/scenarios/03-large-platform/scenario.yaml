@@ -1,0 +1,9 @@
+id: large-platform
+description: "Consumer content platform, 50,000 RPS, multi-region, 40 engineers with 4 SRE"
+guards: "refusing complexity the numbers genuinely justify"
+input:
+  product: "Consumer content platform with feed, search, and notifications"
+  avg_rps: 50000
+  regions: ["EU", "US", "APAC"]
+  team: { engineers: 40, dedicated_ops: 4 }
+  availability_target: "99.99%"

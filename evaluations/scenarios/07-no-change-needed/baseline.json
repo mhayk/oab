@@ -1,0 +1,221 @@
+{
+  "oab_version": "0.1.0",
+  "generated": "2026-08-09",
+  "target": {
+    "repository": "example/expenses",
+    "commit": "0000000",
+    "scope": "full"
+  },
+  "context": {
+    "stage": "2",
+    "peak_rps": 12,
+    "users": 800,
+    "team_size": 4,
+    "availability_target": "99.9%",
+    "budget": null,
+    "assumptions": [
+      {
+        "text": "Peak traffic around 30 RPS, inferred from a 6-person team and 12k users with no analytics configuration present",
+        "confidence": "low"
+      },
+      {
+        "text": "No formal availability target exists; none is stated in the repository",
+        "confidence": "medium"
+      }
+    ]
+  },
+  "repo_facts": {
+    "languages": [
+      {
+        "name": "Ruby",
+        "version": "3.2",
+        "share": 0.86
+      },
+      {
+        "name": "JavaScript",
+        "share": 0.11
+      }
+    ],
+    "frameworks": [
+      "Rails 7.0"
+    ],
+    "architecture_style": "single-deployable",
+    "deployables": [
+      {
+        "name": "web",
+        "kind": "web",
+        "path": "."
+      },
+      {
+        "name": "worker",
+        "kind": "worker",
+        "path": "."
+      }
+    ],
+    "datastores": [
+      {
+        "kind": "relational",
+        "product": "PostgreSQL",
+        "managed": null,
+        "evidence": [
+          "config/database.yml:3",
+          "Gemfile:14"
+        ]
+      }
+    ],
+    "caches": [],
+    "queues": [
+      {
+        "product": "Sidekiq",
+        "kind": "queue",
+        "managed": false,
+        "evidence": [
+          "Gemfile:22",
+          "config/sidekiq.yml:1"
+        ]
+      }
+    ],
+    "external_services": [
+      {
+        "name": "Stripe",
+        "category": "payments",
+        "in_request_path": true,
+        "has_timeout": false,
+        "evidence": [
+          "app/services/checkout.rb:88",
+          "Gemfile:41"
+        ]
+      }
+    ],
+    "deployment": {
+      "containerised": true,
+      "orchestration": "none",
+      "iac": [],
+      "ci": [
+        "GitHub Actions"
+      ],
+      "environments": [
+        "production",
+        "staging"
+      ],
+      "evidence": [
+        "Dockerfile:1",
+        ".github/workflows/deploy.yml:1"
+      ]
+    },
+    "background_work": [
+      {
+        "name": "nightly digest",
+        "kind": "cron",
+        "evidence": [
+          "config/schedule.rb:12"
+        ]
+      }
+    ],
+    "testing": {
+      "frameworks": [
+        "RSpec"
+      ],
+      "test_file_count": 214,
+      "source_file_count": 631,
+      "has_integration_tests": true
+    },
+    "migrations": {
+      "tool": "ActiveRecord",
+      "count": 87,
+      "evidence": [
+        "db/migrate/"
+      ]
+    },
+    "observability": {
+      "structured_logging": false,
+      "metrics": false,
+      "tracing": false,
+      "error_tracking": true,
+      "correlation_ids": false,
+      "health_checks": true,
+      "evidence": [
+        "Gemfile:55",
+        "config/routes.rb:9"
+      ]
+    },
+    "configuration": {
+      "secrets_in_env": true,
+      "secrets_committed": false,
+      "config_files": [
+        "config/application.rb",
+        ".env.example"
+      ]
+    },
+    "repository": {
+      "file_count": 1284,
+      "commit_count": 3401,
+      "first_commit": "2024-03-11",
+      "last_commit": "2026-08-01",
+      "contributors": 6
+    },
+    "undetermined": [
+      "Actual production traffic \u2014 no analytics configuration found in the repository",
+      "Whether the database is managed or self-hosted \u2014 no infrastructure-as-code present"
+    ]
+  },
+  "findings": [],
+  "summary": {
+    "verdict": "No findings. The architecture is proportional to its measured scale and the operational fundamentals are in place. Watch the triggers below rather than changing anything now.",
+    "counts": {
+      "CRITICAL": 0,
+      "HIGH": 0,
+      "MEDIUM": 0,
+      "LOW": 0,
+      "INFORMATIONAL": 0
+    },
+    "complexity": {
+      "available": 7,
+      "spent": 4
+    }
+  },
+  "triggers": [
+    {
+      "id": "app-cpu-sustained",
+      "metric": "application.cpu.utilisation",
+      "source": "hosting platform metrics dashboard",
+      "comparator": ">",
+      "threshold": 70,
+      "unit": "percent",
+      "window": "sustained 1 hour at peak, on 3 consecutive days",
+      "action": "Re-run capacity analysis before adding instances",
+      "owner": "platform team",
+      "status": "armed",
+      "created": "2026-08-09",
+      "fired_at": null
+    },
+    {
+      "id": "db-cpu-sustained",
+      "metric": "database.cpu.utilisation",
+      "source": "managed database metrics dashboard",
+      "comparator": ">",
+      "threshold": 70,
+      "unit": "percent",
+      "window": "sustained over 3 consecutive days",
+      "action": "Optimise queries and indexes before evaluating a read replica",
+      "owner": "platform team",
+      "status": "armed",
+      "created": "2026-08-09",
+      "fired_at": null
+    },
+    {
+      "id": "restore-test-age",
+      "metric": "days since last successful restore test",
+      "source": "runbook log",
+      "comparator": ">",
+      "threshold": 90,
+      "unit": "days",
+      "window": "confirmed, not estimated",
+      "action": "Run a restore test; an untested restore is not a backup",
+      "owner": "platform team",
+      "status": "armed",
+      "created": "2026-08-09",
+      "fired_at": null
+    }
+  ]
+}
