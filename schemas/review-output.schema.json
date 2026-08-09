@@ -1,0 +1,87 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://oab.run/schemas/review-output.schema.json",
+  "title": "OAB Review Output",
+  "description": "The machine-readable companion to an architecture review. Emitted alongside the prose so evaluation assertions can check properties rather than parse text, and so a user can pipe review results into their own tooling.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["oab_version", "generated", "context", "repo_facts", "findings", "summary"],
+  "properties": {
+    "oab_version": { "type": "string" },
+    "generated": { "type": "string", "format": "date" },
+    "target": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "repository": { "type": "string" },
+        "commit": { "type": "string" },
+        "scope": { "type": "string" }
+      }
+    },
+    "context": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["stage", "assumptions"],
+      "description": "Established BEFORE any finding is generated. Without it, review degenerates into pattern matching against the largest systems on earth.",
+      "properties": {
+        "stage": { "type": "string", "enum": ["0", "1", "2", "3", "4", "5"] },
+        "peak_rps": { "type": ["number", "null"] },
+        "users": { "type": ["number", "null"] },
+        "team_size": { "type": ["number", "null"] },
+        "availability_target": { "type": ["string", "null"] },
+        "budget": { "type": ["number", "null"] },
+        "assumptions": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["text", "confidence"],
+            "properties": {
+              "text": { "type": "string", "minLength": 5 },
+              "confidence": { "type": "string", "enum": ["high", "medium", "low"] }
+            }
+          },
+          "description": "Where scale is unknown, assume small and say so. Assuming large is how a 100-user application gets told it needs multiple regions."
+        }
+      }
+    },
+    "repo_facts": { "$ref": "https://oab.run/schemas/repo-facts.schema.json" },
+    "findings": {
+      "type": "array",
+      "items": { "$ref": "https://oab.run/schemas/review-finding.schema.json" },
+      "description": "May be empty. 'Your architecture is appropriate, here are the triggers to watch' is a valid and valuable review outcome."
+    },
+    "summary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["verdict", "counts"],
+      "properties": {
+        "verdict": { "type": "string", "minLength": 20 },
+        "counts": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "CRITICAL": { "type": "integer", "minimum": 0 },
+            "HIGH": { "type": "integer", "minimum": 0 },
+            "MEDIUM": { "type": "integer", "minimum": 0 },
+            "LOW": { "type": "integer", "minimum": 0 },
+            "INFORMATIONAL": { "type": "integer", "minimum": 0 }
+          }
+        },
+        "complexity": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "available": { "type": "number" },
+            "spent": { "type": "number" }
+          }
+        }
+      }
+    },
+    "triggers": {
+      "type": "array",
+      "items": { "$ref": "https://oab.run/schemas/evolution-trigger.schema.json" }
+    }
+  }
+}

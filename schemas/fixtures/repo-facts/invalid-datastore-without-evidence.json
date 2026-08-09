@@ -1,0 +1,9 @@
+{
+  "languages": [{ "name": "Ruby" }],
+  "architecture_style": "single-deployable",
+  "datastores": [{ "kind": "relational", "product": "PostgreSQL", "evidence": [] }],
+  "external_services": [],
+  "observability": {
+    "structured_logging": false, "metrics": false, "tracing": false, "error_tracking": true
+  }
+}

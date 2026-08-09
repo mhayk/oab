@@ -1,0 +1,13 @@
+{
+  "id": "F-003",
+  "severity": "HIGH",
+  "title": "Payment provider called synchronously in the request path with no timeout",
+  "evidence": ["app/services/checkout.rb:88", "Gemfile:41"],
+  "context": "Checkout is the primary revenue path; roughly 30 RPS peak; no circuit breaker present",
+  "impact": "Provider latency propagates directly to users. A provider stall exhausts the web worker pool and takes down all endpoints, not just checkout.",
+  "remedy": "Set an explicit client timeout (2 s connect, 5 s read) and isolate the call behind a bulkhead so provider degradation cannot consume the whole pool",
+  "effort": "S",
+  "knowledge": ["timeouts", "bulkheads", "circuit-breakers"],
+  "trigger": "Revisit for asynchronous processing when checkout p95 exceeds 800 ms or provider error rate exceeds 1% over 1 hour",
+  "scale_independent": true
+}

@@ -1,0 +1,45 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://oab.run/schemas/review-finding.schema.json",
+  "title": "OAB Review Finding",
+  "description": "One architectural finding. Severity is a function of impact GIVEN ACTUAL SCALE, not of pattern matching — a single database instance is not a finding for a system with no availability target and low traffic. Evidence is mandatory: a finding without a file reference is deleted, not softened.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["id", "severity", "title", "evidence", "context", "impact", "remedy"],
+  "properties": {
+    "id": { "type": "string", "pattern": "^F-[0-9]{3}$" },
+    "severity": {
+      "type": "string",
+      "enum": ["CRITICAL", "HIGH", "MEDIUM", "LOW", "INFORMATIONAL"],
+      "description": "CRITICAL: data loss, breach, or total outage likely under conditions the system will meet soon. HIGH: significant degradation under realistic near-term load, or a one-way door being closed badly. MEDIUM: real risk, conditions not near. LOW: future friction. INFORMATIONAL: observation, no action implied."
+    },
+    "title": { "type": "string", "minLength": 10, "maxLength": 160 },
+    "evidence": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "type": "string", "minLength": 1 },
+      "description": "file:line references or named configuration facts. Mandatory — this is what separates a finding from an opinion."
+    },
+    "context": {
+      "type": "string",
+      "minLength": 10,
+      "description": "The scale and requirements that make this matter. Findings are weighted by what the system actually does, so the weighting must be visible."
+    },
+    "impact": { "type": "string", "minLength": 10 },
+    "remedy": { "type": "string", "minLength": 10 },
+    "effort": { "type": "string", "enum": ["S", "M", "L", "XL"] },
+    "knowledge": {
+      "type": "array",
+      "items": { "type": "string", "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$" },
+      "description": "Knowledge unit ids supporting this finding."
+    },
+    "trigger": {
+      "type": "string",
+      "description": "For a finding deliberately not actioned now: the measurable condition that would change that."
+    },
+    "scale_independent": {
+      "type": "boolean",
+      "description": "True for findings that hold at every scale — missing backups, untested restore, unbounded external calls, missing timeouts, no error tracking. Their failure is not proportional to traffic, so they are never downgraded for being a small system."
+    }
+  }
+}

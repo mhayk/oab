@@ -1,0 +1,9 @@
+{
+  "id": "F-004",
+  "severity": "HIGH",
+  "title": "The application does not use a service mesh",
+  "evidence": [],
+  "context": "30 RPS, single deployable",
+  "impact": "No observability between services",
+  "remedy": "Adopt a service mesh"
+}

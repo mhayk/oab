@@ -1,0 +1,209 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://oab.run/schemas/design-output.schema.json",
+  "title": "OAB Design Output",
+  "description": "The machine-readable companion to a system design. This is the artifact evaluation assertions run against: components, budget, options and triggers as fields rather than prose, so 'did OAB recommend Kubernetes for 100 users' is a field check instead of a string search. It is written BEFORE the prose, so a skipped reasoning step is detectable.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "oab_version",
+    "generated",
+    "stage",
+    "requirements",
+    "assumptions",
+    "capacity",
+    "complexity",
+    "components",
+    "options",
+    "triggers",
+    "confidence"
+  ],
+  "properties": {
+    "oab_version": { "type": "string" },
+    "generated": { "type": "string", "format": "date" },
+    "system": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "name": { "type": "string" },
+        "description": { "type": "string" }
+      }
+    },
+    "stage": { "type": "string", "enum": ["0", "1", "2", "3", "4", "5"] },
+    "requirements": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["functional", "non_functional"],
+      "properties": {
+        "functional": { "type": "array", "items": { "type": "string" } },
+        "non_functional": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["name", "quantified"],
+            "properties": {
+              "name": { "type": "string" },
+              "value": { "type": ["number", "string", "null"] },
+              "unit": { "type": "string" },
+              "quantified": {
+                "type": "boolean",
+                "description": "False is allowed but must be explicit, and an unquantified requirement makes the decision provisional rather than confident."
+              }
+            }
+          }
+        }
+      }
+    },
+    "assumptions": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["text", "confidence"],
+        "properties": {
+          "text": { "type": "string", "minLength": 5 },
+          "confidence": { "type": "string", "enum": ["high", "medium", "low"] },
+          "impact": { "type": "string" }
+        }
+      }
+    },
+    "capacity": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "peak_rps": { "type": ["number", "null"] },
+        "avg_rps": { "type": ["number", "null"] },
+        "peak_writes_per_second": { "type": ["number", "null"] },
+        "peak_reads_per_second": { "type": ["number", "null"] },
+        "storage_gb_per_year": { "type": ["number", "null"] },
+        "egress_gb_per_month": { "type": ["number", "null"] },
+        "concurrency": { "type": ["number", "null"] },
+        "results": {
+          "type": "array",
+          "items": { "$ref": "https://oab.run/schemas/capacity-result.schema.json" }
+        }
+      }
+    },
+    "complexity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["available", "spent"],
+      "properties": {
+        "available": { "type": "number", "minimum": 0 },
+        "spent": { "type": "number", "minimum": 0 },
+        "override": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["justification", "mitigation"],
+          "properties": {
+            "justification": { "type": "string", "minLength": 20 },
+            "mitigation": { "type": "string", "minLength": 10 }
+          }
+        }
+      }
+    },
+    "components": {
+      "type": "array",
+      "minItems": 1,
+      "description": "The recommended architecture, as a list an assertion can check. Names are generic kinds, not products, so a scenario can assert 'no orchestration platform' without enumerating vendors.",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["name", "kind", "complexity_cost", "justification"],
+        "properties": {
+          "name": { "type": "string" },
+          "kind": {
+            "type": "string",
+            "enum": [
+              "application-runtime", "worker", "relational-database", "document-database",
+              "key-value-store", "wide-column-database", "graph-database", "time-series-database",
+              "search-engine", "vector-database", "cache", "queue", "event-stream",
+              "object-storage", "cdn", "load-balancer", "api-gateway", "reverse-proxy",
+              "orchestration-platform", "service-mesh", "observability", "read-replica",
+              "connection-pooler", "embedded-database", "other"
+            ]
+          },
+          "managed": { "type": "boolean" },
+          "self_hosted": { "type": "boolean" },
+          "complexity_cost": { "type": "number", "minimum": 0 },
+          "justification": {
+            "type": "string",
+            "minLength": 15,
+            "description": "Why this component exists, referencing the numbers. Every component must justify its existence against current measurements, not a hypothetical future."
+          },
+          "count": { "type": "integer", "minimum": 1 }
+        }
+      }
+    },
+    "rejected_components": {
+      "type": "array",
+      "description": "What was considered and refused, each with the measurement that would change the answer. This is the most valuable part of an OAB design and the part a generic assistant never produces.",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["kind", "reason"],
+        "properties": {
+          "kind": { "type": "string" },
+          "reason": { "type": "string", "minLength": 15 },
+          "revisit_when": { "type": "string" }
+        }
+      }
+    },
+    "options": {
+      "type": "array",
+      "minItems": 2,
+      "items": { "$ref": "https://oab.run/schemas/reasoning-trace.schema.json#/properties/options/items" }
+    },
+    "cost": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["currency"],
+      "properties": {
+        "currency": { "type": "string", "minLength": 3, "maxLength": 3 },
+        "monthly_infrastructure": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": { "low": { "type": "number" }, "high": { "type": "number" } }
+        },
+        "monthly_operational": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": { "low": { "type": "number" }, "high": { "type": "number" } },
+          "description": "complexity_points x hours_per_point x loaded_rate. Usually larger than the infrastructure line for small teams, and invisible in every cloud calculator."
+        },
+        "monthly_total": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": { "low": { "type": "number" }, "high": { "type": "number" } }
+        },
+        "price_table_date": { "type": "string", "format": "date" }
+      }
+    },
+    "availability": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "target": { "type": ["string", "null"] },
+        "achievable": { "type": ["string", "null"] },
+        "consistent": {
+          "type": "boolean",
+          "description": "False when the stated target exceeds what the architecture can deliver. OAB must flag the inconsistency rather than produce a design that pretends."
+        },
+        "explanation": { "type": "string" }
+      }
+    },
+    "triggers": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "https://oab.run/schemas/evolution-trigger.schema.json" }
+    },
+    "knowledge_used": {
+      "type": "array",
+      "items": { "type": "string", "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$" }
+    },
+    "confidence": { "type": "string", "enum": ["high", "medium", "low"] },
+    "open_questions": { "type": "array", "items": { "type": "string" } }
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "id": "F-005",
+  "severity": "BLOCKER",
+  "title": "Something is wrong here",
+  "evidence": ["app/main.py:1"],
+  "context": "30 RPS",
+  "impact": "Unclear impact",
+  "remedy": "Fix it somehow"
+}

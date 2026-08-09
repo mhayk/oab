@@ -1,0 +1,323 @@
+{
+  "oab_version": "0.1.0",
+  "generated": "2026-08-09",
+  "system": {
+    "name": "Recipe sharing web app",
+    "description": "Users publish recipes, browse, comment, and upload photos"
+  },
+  "stage": "1",
+  "requirements": {
+    "functional": [
+      "Publish and edit recipes",
+      "Browse and search recipes",
+      "Comment on recipes",
+      "Upload and serve photos"
+    ],
+    "non_functional": [
+      {
+        "name": "registered users",
+        "value": 100,
+        "unit": "users",
+        "quantified": true
+      },
+      {
+        "name": "monthly infrastructure budget",
+        "value": 50,
+        "unit": "GBP",
+        "quantified": true
+      },
+      {
+        "name": "engineering team",
+        "value": 2,
+        "unit": "engineers",
+        "quantified": true
+      },
+      {
+        "name": "availability target",
+        "value": null,
+        "quantified": false
+      }
+    ]
+  },
+  "assumptions": [
+    {
+      "text": "30% of registered users are daily active",
+      "confidence": "low",
+      "impact": "\u00b13x on RPS"
+    },
+    {
+      "text": "2 sessions per active user per day",
+      "confidence": "low",
+      "impact": "\u00b12x on RPS"
+    },
+    {
+      "text": "40 requests per session",
+      "confidence": "medium",
+      "impact": "\u00b11.5x on RPS"
+    },
+    {
+      "text": "85:15 read to write ratio",
+      "confidence": "medium",
+      "impact": "shifts database load"
+    },
+    {
+      "text": "2 KB average record size",
+      "confidence": "medium",
+      "impact": "\u00b12x on storage"
+    },
+    {
+      "text": "10x peak factor from single-timezone evening concentration",
+      "confidence": "medium",
+      "impact": "\u00b12x on peak"
+    }
+  ],
+  "capacity": {
+    "avg_rps": 0.028,
+    "peak_rps": 0.28,
+    "peak_writes_per_second": 0.042,
+    "peak_reads_per_second": 0.24,
+    "storage_gb_per_year": 0.66,
+    "egress_gb_per_month": 2.2,
+    "concurrency": 0.04
+  },
+  "complexity": {
+    "available": 4,
+    "spent": 4
+  },
+  "components": [
+    {
+      "name": "Application instance",
+      "kind": "application-runtime",
+      "managed": true,
+      "self_hosted": false,
+      "complexity_cost": 1,
+      "count": 1,
+      "justification": "0.28 peak RPS against a single instance's capacity leaves roughly four orders of magnitude of headroom."
+    },
+    {
+      "name": "Managed relational database",
+      "kind": "relational-database",
+      "managed": true,
+      "self_hosted": false,
+      "complexity_cost": 1,
+      "count": 1,
+      "justification": "0.66 GB/year on the smallest tier. Managed for tested point-in-time recovery, which a two-person team will not build or exercise themselves."
+    },
+    {
+      "name": "Object storage for photos",
+      "kind": "object-storage",
+      "managed": true,
+      "self_hosted": false,
+      "complexity_cost": 1,
+      "count": 1,
+      "justification": "13 GB/year of photos. Serving binaries from the application instance would couple storage growth to compute."
+    },
+    {
+      "name": "CDN / edge cache",
+      "kind": "cdn",
+      "managed": true,
+      "self_hosted": false,
+      "complexity_cost": 1,
+      "count": 1,
+      "justification": "Photo-heavy payloads at 30 KB average; a free tier removes egress from the single instance at no cost."
+    },
+    {
+      "name": "Cache",
+      "kind": "cache",
+      "managed": true,
+      "self_hosted": false,
+      "complexity_cost": 1,
+      "justification": "nice"
+    }
+  ],
+  "rejected_components": [
+    {
+      "kind": "orchestration-platform",
+      "reason": "Three times the complexity budget and four times the money budget for a system with four orders of magnitude of headroom on one instance.",
+      "revisit_when": "More than 4 independently deployable services exist and a dedicated operations engineer is on the team."
+    },
+    {
+      "kind": "cache",
+      "reason": "At 0.24 peak reads/second there is no measured read pressure to relieve.",
+      "revisit_when": "A single query exceeds 10 requests/second at over 50 ms, or database CPU is sustained above 60% for 3 days."
+    },
+    {
+      "kind": "event-stream",
+      "reason": "0.042 writes/second. A broker solves a throughput problem five orders of magnitude beyond measured demand.",
+      "revisit_when": "Sustained above 500 events/second, or 3 or more independent consumer groups need to replay the same stream."
+    },
+    {
+      "kind": "read-replica",
+      "reason": "The primary is idle at this load; a replica would add a component and replication lag for no measured benefit.",
+      "revisit_when": "Database CPU sustained above 70% for 3 days after query optimisation."
+    },
+    {
+      "kind": "search-engine",
+      "reason": "Full-text search in the existing relational database satisfies the browse and search requirement at this catalogue size.",
+      "revisit_when": "Search p95 exceeds 300 ms, or ranking requirements exceed what the database provides."
+    }
+  ],
+  "options": [
+    {
+      "id": "managed-single-instance",
+      "description": "One application instance, managed database, object storage, CDN",
+      "components": [
+        "application-runtime",
+        "relational-database",
+        "object-storage",
+        "cdn"
+      ],
+      "complexity_cost": 4,
+      "monthly_cost": {
+        "currency": "GBP",
+        "low": 22,
+        "high": 35
+      },
+      "reversibility": "easy",
+      "verdict": "selected",
+      "trade_offs": [
+        "Single instance means restarts are visible to users",
+        "Realistically about 99.5% availability, which is not claimed as more",
+        "No complexity headroom left: adding anything requires removing something"
+      ]
+    },
+    {
+      "id": "embedded-database-on-volume",
+      "description": "One instance with a file-based database on a persistent volume",
+      "components": [
+        "application-runtime",
+        "embedded-database",
+        "cdn"
+      ],
+      "complexity_cost": 3,
+      "monthly_cost": {
+        "currency": "GBP",
+        "low": 8,
+        "high": 12
+      },
+      "reversibility": "moderate",
+      "verdict": "rejected",
+      "reason": "No managed point-in-time recovery. Restore is manual and untested, and a two-person team will not exercise it. GBP 15/month buys a tested recovery path.",
+      "trade_offs": [
+        "Cheapest option",
+        "One fewer service to operate"
+      ]
+    },
+    {
+      "id": "cache-and-replica",
+      "description": "The selected option plus a cache and a read replica",
+      "components": [
+        "application-runtime",
+        "relational-database",
+        "read-replica",
+        "cache",
+        "object-storage",
+        "cdn"
+      ],
+      "complexity_cost": 6,
+      "monthly_cost": {
+        "currency": "GBP",
+        "low": 60,
+        "high": 80
+      },
+      "reversibility": "easy",
+      "verdict": "rejected",
+      "reason": "Over the complexity budget (6 > 4) and over the money budget. At 0.28 peak RPS neither component has a problem to solve.",
+      "trade_offs": [
+        "Would absorb a sudden traffic increase without redesign"
+      ]
+    }
+  ],
+  "cost": {
+    "currency": "GBP",
+    "monthly_infrastructure": {
+      "low": 22,
+      "high": 35
+    },
+    "monthly_operational": {
+      "low": 800,
+      "high": 1100
+    },
+    "monthly_total": {
+      "low": 822,
+      "high": 1135
+    },
+    "price_table_date": "2026-08-09"
+  },
+  "availability": {
+    "target": null,
+    "achievable": "99.5%",
+    "consistent": true,
+    "explanation": "No availability target was stated, so none is claimed. A single instance with platform restarts and managed database maintenance windows realistically delivers about 99.5%. 99.9% would require a different architecture and budget."
+  },
+  "triggers": [
+    {
+      "id": "app-cpu-sustained",
+      "metric": "application.cpu.utilisation",
+      "source": "hosting platform metrics dashboard",
+      "comparator": ">",
+      "threshold": 70,
+      "unit": "percent",
+      "window": "sustained 1 hour at peak, on 3 consecutive days",
+      "action": "Scale vertically first; re-run capacity analysis before adding instances",
+      "owner": "founding engineers",
+      "status": "armed",
+      "created": "2026-08-09",
+      "fired_at": null
+    },
+    {
+      "id": "p95-response-time",
+      "metric": "http.response_time.p95",
+      "source": "application performance monitoring",
+      "comparator": ">",
+      "threshold": 800,
+      "unit": "milliseconds",
+      "window": "sustained over 3 consecutive days",
+      "action": "Profile and check for N+1 queries before adding any infrastructure",
+      "owner": "founding engineers",
+      "status": "armed",
+      "created": "2026-08-09",
+      "fired_at": null
+    },
+    {
+      "id": "db-cpu-sustained",
+      "metric": "database.cpu.utilisation",
+      "source": "managed database metrics dashboard",
+      "comparator": ">",
+      "threshold": 60,
+      "unit": "percent",
+      "window": "sustained over 3 consecutive days",
+      "action": "Optimise queries and indexes before evaluating a read replica",
+      "owner": "founding engineers",
+      "status": "armed",
+      "created": "2026-08-09",
+      "fired_at": null
+    },
+    {
+      "id": "registered-users-growth",
+      "metric": "product.registered_users",
+      "source": "application database",
+      "comparator": ">",
+      "threshold": 5000,
+      "unit": "users",
+      "window": "confirmed count, not projected",
+      "action": "Re-run capacity analysis; the assumptions behind this design no longer hold",
+      "owner": "founding engineers",
+      "status": "armed",
+      "created": "2026-08-09",
+      "fired_at": null
+    }
+  ],
+  "knowledge_used": [
+    "proportional-architecture",
+    "complexity-cost",
+    "backup-restore-and-pitr",
+    "when-not-to-cache",
+    "availability-targets"
+  ],
+  "confidence": "high",
+  "open_questions": [
+    "Is there a regulatory or data-residency constraint not mentioned?",
+    "Is photo upload volume closer to 20% of writes, or higher?"
+  ]
+}

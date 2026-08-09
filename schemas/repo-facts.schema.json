@@ -1,0 +1,177 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://oab.run/schemas/repo-facts.schema.json",
+  "title": "OAB Repository Facts",
+  "description": "The structured return contract for repository inspection. FACTS ONLY — no severity, no judgement, no recommendation. Separating inventory from analysis is what lets the same scan feed review, capacity, and evolution without re-reading the repository, and it stops the scanner from forming opinions before scale is known.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["languages", "architecture_style", "datastores", "external_services", "observability"],
+  "properties": {
+    "languages": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["name"],
+        "properties": {
+          "name": { "type": "string" },
+          "version": { "type": "string" },
+          "share": { "type": "number", "minimum": 0, "maximum": 1 }
+        }
+      }
+    },
+    "frameworks": { "type": "array", "items": { "type": "string" } },
+    "architecture_style": {
+      "type": "string",
+      "enum": ["single-deployable", "multi-service", "serverless-functions", "library", "mixed", "unknown"],
+      "description": "Inferred from build and deploy configuration. 'unknown' is a legitimate answer and preferable to a guess."
+    },
+    "deployables": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["name"],
+        "properties": {
+          "name": { "type": "string" },
+          "kind": { "type": "string", "enum": ["web", "worker", "scheduled", "function", "cli", "unknown"] },
+          "path": { "type": "string" }
+        }
+      }
+    },
+    "datastores": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["kind", "evidence"],
+        "properties": {
+          "kind": {
+            "type": "string",
+            "enum": ["relational", "document", "key-value", "wide-column", "graph", "time-series",
+                     "search", "vector", "object-storage", "embedded", "unknown"]
+          },
+          "product": { "type": "string", "description": "Factual identification, not a recommendation." },
+          "managed": { "type": ["boolean", "null"] },
+          "evidence": { "type": "array", "items": { "type": "string" }, "minItems": 1 }
+        }
+      }
+    },
+    "caches": { "type": "array", "items": { "$ref": "#/$defs/component" } },
+    "queues": { "type": "array", "items": { "$ref": "#/$defs/component" } },
+    "external_services": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["name", "evidence"],
+        "properties": {
+          "name": { "type": "string" },
+          "category": { "type": "string" },
+          "in_request_path": {
+            "type": ["boolean", "null"],
+            "description": "Whether it is called synchronously during a user request. Null when it could not be determined — a guess here would drive a wrong finding."
+          },
+          "has_timeout": { "type": ["boolean", "null"] },
+          "evidence": { "type": "array", "items": { "type": "string" }, "minItems": 1 }
+        }
+      }
+    },
+    "deployment": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "containerised": { "type": ["boolean", "null"] },
+        "orchestration": { "type": "string" },
+        "iac": { "type": "array", "items": { "type": "string" } },
+        "ci": { "type": "array", "items": { "type": "string" } },
+        "environments": { "type": "array", "items": { "type": "string" } },
+        "evidence": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "background_work": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["name", "evidence"],
+        "properties": {
+          "name": { "type": "string" },
+          "kind": { "type": "string", "enum": ["queue-consumer", "cron", "scheduled", "stream-consumer", "unknown"] },
+          "evidence": { "type": "array", "items": { "type": "string" }, "minItems": 1 }
+        }
+      }
+    },
+    "testing": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "frameworks": { "type": "array", "items": { "type": "string" } },
+        "test_file_count": { "type": "integer", "minimum": 0 },
+        "source_file_count": { "type": "integer", "minimum": 0 },
+        "has_integration_tests": { "type": ["boolean", "null"] }
+      }
+    },
+    "migrations": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "tool": { "type": "string" },
+        "count": { "type": "integer", "minimum": 0 },
+        "evidence": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "observability": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["structured_logging", "metrics", "tracing", "error_tracking"],
+      "properties": {
+        "structured_logging": { "type": ["boolean", "null"] },
+        "metrics": { "type": ["boolean", "null"] },
+        "tracing": { "type": ["boolean", "null"] },
+        "error_tracking": { "type": ["boolean", "null"] },
+        "correlation_ids": { "type": ["boolean", "null"] },
+        "health_checks": { "type": ["boolean", "null"] },
+        "evidence": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "configuration": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "secrets_in_env": { "type": ["boolean", "null"] },
+        "secrets_committed": { "type": ["boolean", "null"] },
+        "config_files": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "repository": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "file_count": { "type": "integer", "minimum": 0 },
+        "commit_count": { "type": "integer", "minimum": 0 },
+        "first_commit": { "type": "string" },
+        "last_commit": { "type": "string" },
+        "contributors": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "undetermined": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Facts the scan could not establish. Reporting these explicitly is required: an omission reads as absence, and 'no metrics found' must not be confused with 'metrics not detectable from the repository'."
+    }
+  },
+  "$defs": {
+    "component": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["evidence"],
+      "properties": {
+        "product": { "type": "string" },
+        "kind": { "type": "string" },
+        "managed": { "type": ["boolean", "null"] },
+        "evidence": { "type": "array", "items": { "type": "string" }, "minItems": 1 }
+      }
+    }
+  }
+}
