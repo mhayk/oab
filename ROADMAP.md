@@ -11,13 +11,23 @@ The reasoning behind this sequencing is in [`docs/design/07-roadmap-and-risks.md
 | :-- | :-- |
 | Design proposal | ✅ Complete |
 | Brand assets | ✅ Complete |
-| Repository foundation | 🚧 In progress |
-| Schemas, calculators, frameworks, knowledge | ⬜ Not started |
-| Claude Code integration | ⬜ Not started |
-| Evaluation suite | ⬜ Not started |
+| Repository foundation and CI | ✅ Complete |
+| Schemas and contracts | ✅ Complete — 9 schemas, 33 fixtures |
+| Calculators | ✅ Complete — 8 calculators, 43 tests |
+| Frameworks | ✅ Complete — 6 procedures |
+| Knowledge | ✅ Complete — 37 units, 6 domains |
+| Agent integration | ✅ Built — manifest validates |
+| Evaluation suite | ✅ Complete — 5 scenarios passing |
+| Docs, examples, website | ✅ Complete |
+| **v0.1.0 release** | 🚧 **Held on manual verification** |
 
-**Nothing is installable yet.** Track progress in the
-[M1 milestone](https://github.com/mhayk/oab/milestone/1).
+**42 of 43 M1 issues are closed.** What remains cannot be automated: a clean-machine install, a
+real `/oab:design` run asserted against the scenario, and a real `/oab:review` of a third-party
+repository. See [#43](https://github.com/mhayk/oab/issues/43) and
+`docs/maintainers/release.md`.
+
+Until those pass, treat the committed examples as **reference artifacts** rather than as evidence
+of live behaviour.
 
 ## M1 — Prove the idea
 
