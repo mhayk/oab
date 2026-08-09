@@ -1,0 +1,9 @@
+{
+  "calculator": "rps",
+  "assumptions": [
+    { "name": "requests per day", "value": 2400, "source": "stated", "confidence": "high" }
+  ],
+  "formula": "avg_rps = requests_per_day / 86400",
+  "result": { "value": 0.028, "unit": "requests/second" },
+  "confidence": "high"
+}

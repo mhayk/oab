@@ -89,12 +89,7 @@ jobs:
           fi
 
       - name: Artifacts — fixtures validate against their schemas
-        run: |
-          if [ -f tools/validate_artifacts.py ]; then
-            python3 tools/validate_artifacts.py
-          else
-            echo "skipped — tools/validate_artifacts.py lands in #5"
-          fi
+        run: python3 tools/validate_artifacts.py
 
       - name: Pricing — price tables are not stale
         run: |

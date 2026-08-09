@@ -1,0 +1,11 @@
+{
+  "decision": "Primary datastore",
+  "stage": "1",
+  "complexity_budget": { "available": 4, "spent": 1 },
+  "assumptions": [],
+  "options": [
+    { "id": "a", "complexity_cost": 1, "verdict": "selected" },
+    { "id": "b", "complexity_cost": 2, "verdict": "rejected" }
+  ],
+  "confidence": "high"
+}

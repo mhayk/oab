@@ -1,0 +1,11 @@
+{
+  "decision": "Primary datastore",
+  "stage": "1",
+  "complexity_budget": { "available": 4, "spent": 1 },
+  "assumptions": [{ "text": "30% daily active", "confidence": "low" }],
+  "options": [
+    { "id": "managed-postgres", "complexity_cost": 1, "verdict": "selected" },
+    { "id": "another-option", "complexity_cost": 2, "verdict": "deferred" }
+  ],
+  "confidence": "high"
+}

@@ -1,0 +1,118 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://oab.run/schemas/capacity-result.schema.json",
+  "title": "OAB Capacity Result",
+  "description": "The output of one capacity calculation. Every calculation is reproducible: same inputs, same numbers, from a tested implementation. The envelope is fixed so a reader can check the arithmetic by hand and dispute a specific line rather than the conclusion.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "calculator",
+    "assumptions",
+    "formula",
+    "calculation",
+    "result",
+    "confidence"
+  ],
+  "properties": {
+    "calculator": {
+      "type": "string",
+      "description": "Which calculator produced this, e.g. 'rps' or 'storage_growth'.",
+      "pattern": "^[a-z][a-z0-9_]*$"
+    },
+    "assumptions": {
+      "type": "array",
+      "minItems": 1,
+      "description": "Every input, labelled by where it came from. An empty list is impossible: even a fully observed calculation has assumptions about what the observation means.",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["name", "value", "source", "confidence"],
+        "properties": {
+          "name": { "type": "string", "minLength": 1 },
+          "value": { "type": ["number", "string", "boolean"] },
+          "unit": { "type": "string" },
+          "source": {
+            "type": "string",
+            "enum": ["observed", "stated", "assumed", "calculated"],
+            "description": "observed = measured from the system; stated = the user said so; assumed = OAB filled a gap; calculated = derived from an earlier result."
+          },
+          "confidence": { "type": "string", "enum": ["high", "medium", "low"] },
+          "impact_if_wrong": {
+            "type": "string",
+            "description": "How much the result moves if this input is wrong, e.g. '±3x on RPS'."
+          }
+        }
+      }
+    },
+    "formula": {
+      "type": "string",
+      "minLength": 3,
+      "description": "The literal expression, in symbols, so it can be disputed independently of the numbers."
+    },
+    "calculation": {
+      "type": "string",
+      "minLength": 3,
+      "description": "The formula with values substituted, so a reader can check it by hand. This is what makes the result auditable rather than trusted."
+    },
+    "result": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["value", "unit"],
+      "properties": {
+        "value": { "type": "number" },
+        "unit": { "type": "string", "minLength": 1 },
+        "range": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["low", "high"],
+          "properties": {
+            "low": { "type": "number" },
+            "high": { "type": "number" }
+          },
+          "description": "Required whenever any input has low confidence. A point estimate from an uncertain input is false precision."
+        },
+        "significant_figures": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 6,
+          "description": "At most 2 for any value derived from an assumed input. '0.28 RPS' is honest; '0.2777 RPS' is a lie about precision."
+        }
+      }
+    },
+    "safety_margin": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["factor", "rationale"],
+      "properties": {
+        "factor": { "type": "number", "exclusiveMinimum": 0 },
+        "rationale": {
+          "type": "string",
+          "minLength": 10,
+          "description": "Why this margin. A margin without a reason is superstition."
+        }
+      }
+    },
+    "confidence": {
+      "type": "string",
+      "enum": ["high", "medium", "low"],
+      "description": "Propagated, not asserted: a chain containing any low-confidence input cannot report high confidence. Note that confidence in the DECISION can still be high when the result is insensitive to every uncertain input across its plausible range — that case is stated in `sensitivity`."
+    },
+    "sensitivity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["dominant_input", "explanation"],
+      "properties": {
+        "dominant_input": {
+          "type": "string",
+          "description": "Which single assumption most changes the result — the one to go and measure first."
+        },
+        "explanation": { "type": "string", "minLength": 10 },
+        "decision_is_insensitive": {
+          "type": "boolean",
+          "description": "True when the conclusion holds across the entire plausible input range. This is a stronger finding than any individual number and should be stated plainly when it holds."
+        }
+      }
+    },
+    "notes": { "type": "array", "items": { "type": "string" } }
+  }
+}

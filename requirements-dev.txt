@@ -7,4 +7,5 @@
 
 PyYAML>=6.0
 jsonschema>=4.20
+referencing>=0.30      # offline resolution of cross-schema $ref
 pytest>=8.0

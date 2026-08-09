@@ -1,0 +1,27 @@
+{
+  "calculator": "rps",
+  "assumptions": [
+    { "name": "registered users", "value": 100, "source": "stated", "confidence": "high" },
+    { "name": "daily active share", "value": 0.30, "source": "assumed", "confidence": "low",
+      "impact_if_wrong": "±3x on RPS" },
+    { "name": "sessions per active user per day", "value": 2, "source": "assumed", "confidence": "low",
+      "impact_if_wrong": "±2x" },
+    { "name": "requests per session", "value": 40, "source": "assumed", "confidence": "medium",
+      "impact_if_wrong": "±1.5x" },
+    { "name": "peak factor", "value": 10, "unit": "x", "source": "assumed", "confidence": "medium",
+      "impact_if_wrong": "±2x on peak" }
+  ],
+  "formula": "avg_rps = requests_per_day / 86400 ; peak_rps = avg_rps * peak_factor",
+  "calculation": "requests_per_day = 100 * 0.30 * 2 * 40 = 2400 ; avg_rps = 2400 / 86400 = 0.028 ; peak_rps = 0.028 * 10 = 0.28",
+  "result": { "value": 0.28, "unit": "requests/second", "significant_figures": 2 },
+  "safety_margin": {
+    "factor": 2.0,
+    "rationale": "Peak factor is assumed from a single-timezone evening-concentrated traffic shape rather than measured."
+  },
+  "confidence": "high",
+  "sensitivity": {
+    "dominant_input": "daily active share",
+    "explanation": "At 100% DAU and a 20x peak factor the result is 1.9 RPS, still under 2. The recommendation does not change anywhere in the plausible input range.",
+    "decision_is_insensitive": true
+  }
+}

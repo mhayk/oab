@@ -1,0 +1,51 @@
+{
+  "decision": "Primary datastore",
+  "stage": "1",
+  "complexity_budget": { "available": 4, "spent": 4 },
+  "inputs": [
+    { "fact": "peak RPS", "value": 0.28, "unit": "requests/second", "source": "calculated", "confidence": "medium" },
+    { "fact": "team size", "value": 2, "unit": "engineers", "source": "stated", "confidence": "high" },
+    { "fact": "monthly budget", "value": 50, "unit": "GBP", "source": "stated", "confidence": "high" }
+  ],
+  "assumptions": [
+    { "text": "30% of registered users are daily active", "confidence": "low", "impact": "±3x on RPS" },
+    { "text": "average record size 2 KB", "confidence": "medium", "impact": "±2x on storage" }
+  ],
+  "knowledge_used": ["relational-vs-document", "backup-restore-and-pitr", "connection-pooling"],
+  "options": [
+    {
+      "id": "managed-postgres",
+      "description": "Single managed PostgreSQL instance, smallest tier, daily backup with PITR",
+      "components": ["managed-relational-database"],
+      "complexity_cost": 1,
+      "monthly_cost": { "currency": "GBP", "low": 12, "high": 18 },
+      "reversibility": "easy",
+      "verdict": "selected",
+      "trade_offs": ["Costs GBP 15/month more than a file-based database on the same host"]
+    },
+    {
+      "id": "sqlite-on-volume",
+      "description": "File-based database on a persistent volume",
+      "components": ["embedded-database"],
+      "complexity_cost": 0,
+      "monthly_cost": { "currency": "GBP", "low": 0, "high": 0 },
+      "reversibility": "moderate",
+      "verdict": "rejected",
+      "reason": "No managed point-in-time recovery; restore is manual and untested. A two-person team will not test it. Revisit if a tested restore procedure exists and is exercised quarterly.",
+      "trade_offs": ["Free", "No separate service to operate"]
+    },
+    {
+      "id": "postgres-plus-redis",
+      "description": "Managed PostgreSQL with a managed cache in front",
+      "components": ["managed-relational-database", "managed-cache"],
+      "complexity_cost": 2,
+      "monthly_cost": { "currency": "GBP", "low": 22, "high": 30 },
+      "reversibility": "easy",
+      "verdict": "rejected",
+      "reason": "At 0.28 peak RPS there is no measured read pressure to relieve. Revisit when a single query exceeds 10 requests/second at over 50 ms.",
+      "trade_offs": ["Would relieve read pressure that does not exist"]
+    }
+  ],
+  "confidence": "high",
+  "triggers": ["db-cpu-sustained-70", "p95-query-latency-slo-breach", "storage-60pct-plan"]
+}
