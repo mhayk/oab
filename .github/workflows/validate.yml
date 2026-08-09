@@ -88,12 +88,7 @@ jobs:
         run: python3 tools/check_price_staleness.py
 
       - name: Index — generated knowledge indexes are current
-        run: |
-          if [ -f tools/build_index.py ]; then
-            python3 tools/build_index.py --check
-          else
-            echo "skipped — tools/build_index.py lands in #20"
-          fi
+        run: python3 tools/build_index.py --check
 
   plugin:
     name: plugin manifest
