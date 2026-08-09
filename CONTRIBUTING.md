@@ -54,8 +54,13 @@ paid courses, or articles. A knowledge project that launders copyrighted text ha
 
 ### 3. No new runtime dependencies
 
-`calculators/` and `tools/` are standard-library Python only. A user must be able to `git clone`
-and run without installing anything. Test-only and build-only dependencies are fine.
+**`calculators/` is standard-library Python only**, and CI enforces it. Those calculators run on a
+user's machine through their agent; a user must be able to `git clone` and get exact arithmetic
+without installing anything.
+
+`tools/` and tests may use the dev dependencies in `requirements-dev.txt` (PyYAML, jsonschema,
+pytest). They run in CI and on a contributor's machine, where two well-known packages are a
+reasonable cost for real schema validation rather than a hand-rolled YAML parser.
 
 ### 4. Quantify
 
@@ -105,6 +110,8 @@ Explain **why** in the body when the change is not self-evident. Do not add co-a
 ## Running checks locally
 
 ```bash
+pip install -r requirements-dev.txt      # once
+
 python3 tools/validate_knowledge.py      # frontmatter + referential integrity
 python3 tools/check_neutrality.py        # no vendor names outside integrations/
 python3 tools/check_stdlib_only.py       # no third-party imports in calculators/

@@ -1,0 +1,235 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://oab.run/schemas/knowledge-unit.schema.json",
+  "title": "OAB Knowledge Unit",
+  "description": "The YAML frontmatter contract for a knowledge unit in knowledge/. One file, one concept. The body follows a fixed heading skeleton so an agent can locate a section without reading the whole file.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "id",
+    "title",
+    "description",
+    "category",
+    "maturity",
+    "confidence",
+    "applies_at_stage",
+    "trade_offs",
+    "failure_modes",
+    "complexity_cost",
+    "references",
+    "last_reviewed"
+  ],
+  "properties": {
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$",
+      "minLength": 2,
+      "maxLength": 60,
+      "description": "Stable, repo-unique identifier. Never change it; record former ids in `aliases` instead, because other units link by id."
+    },
+    "title": {
+      "type": "string",
+      "minLength": 2,
+      "maxLength": 80
+    },
+    "description": {
+      "type": "string",
+      "minLength": 20,
+      "maxLength": 300,
+      "description": "One sentence. Used in generated indexes and by an agent deciding whether to read the unit, so it must state what the concept is, not why it is interesting."
+    },
+    "category": {
+      "type": "string",
+      "enum": [
+        "fundamentals",
+        "databases",
+        "caching",
+        "messaging",
+        "reliability",
+        "cost",
+        "distributed-systems",
+        "performance",
+        "observability",
+        "security",
+        "api-design",
+        "multi-tenancy",
+        "scalability",
+        "networking",
+        "cloud",
+        "testing",
+        "ai-systems",
+        "patterns",
+        "anti-patterns"
+      ],
+      "description": "Must match the directory the file lives in. Categories beyond the six M1 domains are reserved for M2."
+    },
+    "subcategory": { "type": "string", "maxLength": 60 },
+    "tags": {
+      "type": "array",
+      "items": { "type": "string", "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$" },
+      "uniqueItems": true
+    },
+    "maturity": {
+      "type": "string",
+      "enum": ["draft", "reviewed", "stable"],
+      "description": "Trust signal. Agents prefer `stable` and must flag `draft` content as provisional. `draft` is a legitimate landing state for a good but unreviewed contribution."
+    },
+    "confidence": {
+      "type": "string",
+      "enum": ["high", "medium", "low"],
+      "description": "How settled the industry is on this. `low` means genuine disagreement exists — the unit must record the disagreement rather than pick a side silently."
+    },
+    "applies_at_stage": {
+      "type": "array",
+      "items": { "type": "string", "enum": ["0", "1", "2", "3", "4", "5"] },
+      "minItems": 1,
+      "uniqueItems": true,
+      "description": "Maturity stages where this concept is relevant. THE PRIMARY OVERENGINEERING GUARD: retrieval filters on this, so a stage-4 concept cannot surface in a stage-1 design. Set it deliberately — listing every stage is almost always wrong unless the concept is genuinely scale-independent, like tested backups or timeouts."
+    },
+    "prerequisites": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/unitId" },
+      "uniqueItems": true,
+      "description": "Concepts required to understand this one. Must not form a cycle."
+    },
+    "related": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/unitId" },
+      "uniqueItems": true,
+      "description": "Peer concepts. Cross-domain edges are the most valuable ones in the graph: they encode what a specialist knows and a generalist misses."
+    },
+    "supersedes": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/unitId" },
+      "uniqueItems": true
+    },
+    "superseded_by": {
+      "anyOf": [{ "$ref": "#/$defs/unitId" }, { "type": "null" }]
+    },
+    "aliases": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/unitId" },
+      "uniqueItems": true,
+      "description": "Former ids, so links from other units keep resolving after a rename."
+    },
+    "trade_offs": {
+      "type": "array",
+      "minItems": 1,
+      "description": "Structured, not prose. An entry with no costs means the concept has not been understood.",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["gains", "costs", "when_worth_it"],
+        "properties": {
+          "gains": { "type": "string", "minLength": 10 },
+          "costs": { "type": "string", "minLength": 10 },
+          "when_worth_it": {
+            "type": "string",
+            "minLength": 10,
+            "description": "Quantified where possible. This is the field that turns knowledge into a decision."
+          }
+        }
+      }
+    },
+    "failure_modes": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["mode", "symptom", "detection", "mitigation"],
+        "properties": {
+          "mode": { "type": "string", "minLength": 5 },
+          "symptom": {
+            "type": "string",
+            "minLength": 5,
+            "description": "What an operator observes, not what happens internally."
+          },
+          "detection": {
+            "type": "string",
+            "minLength": 5,
+            "description": "The specific signal or metric that reveals it. 'Monitoring' is not detection."
+          },
+          "mitigation": { "type": "string", "minLength": 5 }
+        }
+      }
+    },
+    "triggers": {
+      "type": "array",
+      "description": "Measurable conditions that make this concept relevant. Generates the trigger library, so these must be observable metrics rather than narrative conditions.",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["metric", "comparator", "threshold", "unit", "window", "action"],
+        "properties": {
+          "metric": { "type": "string", "minLength": 3 },
+          "comparator": { "type": "string", "enum": [">", ">=", "<", "<=", "==", "!="] },
+          "threshold": { "type": "number" },
+          "unit": { "type": "string", "minLength": 1 },
+          "window": {
+            "type": "string",
+            "minLength": 3,
+            "description": "A sustained period. Instantaneous triggers fire on spikes and get ignored."
+          },
+          "action": {
+            "type": "string",
+            "minLength": 10,
+            "description": "A next step such as 're-run capacity analysis', not a predetermined solution."
+          }
+        }
+      }
+    },
+    "anti_patterns": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 10 },
+      "description": "Named misuses of this concept."
+    },
+    "complexity_cost": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 5,
+      "description": "Operational burden if adopted, in complexity points. 0 means free (a technique, not a component). Feeds the complexity budget. See frameworks/complexity-budget/weights.yaml."
+    },
+    "references": {
+      "type": "array",
+      "minItems": 1,
+      "description": "At least one attributable source. Summarise concepts in original prose; verbatim copyrighted text is prohibited.",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["title", "type", "accessed"],
+        "properties": {
+          "title": { "type": "string", "minLength": 3 },
+          "author": { "type": "string" },
+          "url": { "type": "string", "format": "uri" },
+          "type": {
+            "type": "string",
+            "enum": [
+              "paper",
+              "book",
+              "rfc",
+              "standard",
+              "official-docs",
+              "engineering-blog",
+              "talk",
+              "measurement",
+              "other"
+            ]
+          },
+          "accessed": { "type": "string", "format": "date" }
+        }
+      }
+    },
+    "last_reviewed": {
+      "type": "string",
+      "format": "date",
+      "description": "Staleness signal. CI warns beyond 18 months, because knowledge with concrete figures rots."
+    }
+  },
+  "$defs": {
+    "unitId": {
+      "type": "string",
+      "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$"
+    }
+  }
+}

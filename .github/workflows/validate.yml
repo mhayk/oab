@@ -33,7 +33,7 @@ jobs:
       # Dev-only. Nothing in calculators/ or tools/ may depend on a third-party package at
       # runtime; check_stdlib_only.py enforces that separately.
       - name: Install validation dependencies
-        run: python -m pip install --quiet jsonschema
+        run: python -m pip install --quiet -r requirements-dev.txt
 
       - name: Syntax — YAML and JSON
         run: |
@@ -60,6 +60,9 @@ jobs:
 
       - name: Links — relative targets and anchors resolve
         run: python3 tools/check_links.py
+
+      - name: Tooling — validator tests
+        run: python -m pytest tools/tests -q
 
       - name: Neutrality — no vendor names outside integrations/
         run: |

@@ -1,0 +1,10 @@
+# Development and CI dependencies only.
+#
+# These are NOT runtime dependencies. calculators/ is standard-library Python so a user
+# can `git clone` and run with nothing installed; tools/check_stdlib_only.py enforces that.
+# The tools in tools/ run in CI and on a contributor's machine, where installing two
+# well-known packages is a reasonable cost for real schema validation.
+
+PyYAML>=6.0
+jsonschema>=4.20
+pytest>=8.0
