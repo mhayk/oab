@@ -35,3 +35,116 @@
   .lang a{color:var(--muted);text-decoration:none;margin:0 2px}
   .lang a:hover{color:var(--accent)}
   .lang strong{color:var(--fg);font-weight:600;margin:0 2px}
+
+/* ── The blueprint that assembles itself ─────────────────────────────────────────────────────
+   Scroll-scrubbed explainer. All rules namespaced under .blueprint / .bp-* so section padding
+   never collides with the base .wrap sections. The tall .blueprint provides scroll distance; the
+   inner .bp-stage is pinned with position:sticky; oab-blueprint.js scrubs the timeline. */
+
+.blueprint { position: relative; border-top: 1px solid var(--line); }
+.bp-intro { padding: 64px 0 8px; }
+.bp-eyebrow {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: .74rem; letter-spacing: .22em; text-transform: uppercase;
+  color: var(--accent); margin: 0 0 12px;
+}
+.bp-intro h2 { font-size: clamp(1.4rem, 3.5vw, 2rem); color: var(--bright); margin: 0 0 12px; font-weight: 600; letter-spacing: -.01em; }
+.bp-intro p { max-width: 60ch; margin: 0; }
+
+/* scroll track: tall enough to scrub the whole timeline */
+/* height comes from JS (.is-live) so no-JS and reduced-motion users get a compact section with
+   no dead scroll gap; only the live scrubbed version reserves the tall track. */
+.bp-track.is-live { min-height: 420vh; }
+@media (max-width: 720px) { .bp-track.is-live { min-height: 300vh; } }
+
+.bp-stage {
+  display: grid; grid-template-columns: 200px 1fr; gap: 32px; align-items: start;
+  padding: 24px 0;
+}
+/* Only the live scrubbed version pins and reserves a viewport; no-JS and reduced-motion get a
+   compact static section with no dead space (the min-height:100vh was the gap). */
+.is-live .bp-stage { position: sticky; top: 0; min-height: 100vh; align-items: center; }
+@media (max-width: 720px) {
+  .bp-stage { grid-template-columns: 1fr; gap: 20px; }
+  .is-live .bp-stage { min-height: 100svh; align-content: center; }
+}
+
+/* the phase rail — numbered because the pipeline genuinely is a sequence */
+.bp-steps { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 14px; }
+@media (max-width: 720px) { .bp-steps { flex-direction: row; flex-wrap: wrap; gap: 10px; } }
+.bp-step {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: .8rem; color: var(--muted); display: flex; gap: 10px; align-items: baseline;
+  opacity: .5; transition: opacity .3s, color .3s;
+}
+.bp-step .bp-step-n { color: var(--line); font-variant-numeric: tabular-nums; transition: color .3s; }
+.bp-step.is-active { opacity: 1; color: var(--fg); }
+.bp-step.is-active .bp-step-n { color: var(--accent); }
+
+/* the scene */
+.bp-scene {
+  position: relative; background: var(--raised); border: 1px solid var(--line); border-radius: 14px;
+  padding: 28px; min-height: 460px;
+  background-image:
+    linear-gradient(var(--line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--line) 1px, transparent 1px);
+  background-size: 32px 32px; background-position: -1px -1px;
+  overflow: hidden;
+}
+.bp-scene::before { /* fade the grid at the edges so it reads as a drawing surface, not a table */
+  content: ""; position: absolute; inset: 0; pointer-events: none;
+  background: radial-gradient(120% 90% at 50% 40%, transparent 55%, var(--raised) 100%);
+}
+.bp-scene > * { position: relative; }
+
+.bp-brief {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  color: var(--muted); font-size: .95rem; margin: 0 0 20px;
+}
+.bp-brief b { color: var(--fg); font-weight: 600; }
+
+.bp-metrics { display: flex; flex-wrap: wrap; gap: 10px 28px; margin: 0 0 22px; }
+.bp-metric-row { display: flex; flex-direction: column; }
+.bp-metric {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 1.5rem; color: var(--accent); font-variant-numeric: tabular-nums; line-height: 1.1;
+}
+.bp-metric-label { font-size: .72rem; color: var(--muted); letter-spacing: .04em; }
+
+/* complexity gate */
+.bp-gate { margin: 0 0 24px; max-width: 320px; }
+.bp-gate-head { display: flex; justify-content: space-between; font-family: ui-monospace, monospace; font-size: .78rem; color: var(--muted); margin: 0 0 6px; }
+.bp-gate-value.is-locked { color: var(--accent); }
+.bp-gate-bar { height: 8px; border-radius: 4px; background: var(--bg); border: 1px solid var(--line); overflow: hidden; }
+.bp-gate-fill { height: 100%; width: 100%; background: linear-gradient(90deg, var(--accent), var(--brightCyan, #2AE7F3)); }
+
+/* cube + built components, side by side */
+.bp-build { display: grid; grid-template-columns: auto 1fr; gap: 24px; align-items: center; }
+@media (max-width: 520px) { .bp-build { grid-template-columns: 1fr; } }
+.bp-cube { width: 150px; height: 150px; display: block; }
+.bp-cube [data-draw] { fill: none; stroke: var(--fg); stroke-width: 6; stroke-linejoin: round; stroke-linecap: round; }
+.bp-cube [data-axis] { fill: none; stroke: var(--accent); stroke-width: 5; stroke-linecap: round; stroke-dasharray: 0.5 12; }
+.bp-cube [data-accent] { fill: var(--accent); }
+
+.bp-built, .bp-rejects { list-style: none; margin: 0; padding: 0; }
+.bp-built li, .bp-reject {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: .82rem;
+  padding: 3px 0; display: flex; gap: 8px; align-items: baseline;
+}
+.bp-built li { color: var(--fg); }
+.bp-built .bp-tick { color: var(--accent); }
+
+/* refused components */
+.bp-rejects { margin-top: 22px; border-top: 1px dashed var(--line); padding-top: 16px; }
+.bp-rejects-head { font-family: ui-monospace, monospace; font-size: .72rem; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); margin: 0 0 10px; }
+.bp-reject { color: var(--muted); flex-wrap: wrap; }
+.bp-reject .bp-x { color: var(--muted); opacity: .7; }
+.bp-reject .bp-kind { color: var(--fg); text-decoration: line-through; text-decoration-color: var(--muted); }
+.bp-reject .bp-trigger { flex-basis: 100%; padding-left: 22px; color: var(--muted); font-size: .74rem; opacity: .85; }
+.bp-reject .bp-trigger em { color: var(--accent); font-style: normal; }
+
+.bp-caption { margin: 22px 0 0; color: var(--fg); font-size: 1rem; max-width: 62ch; }
+.bp-caption b { color: var(--bright); }
+
+/* reduced motion needs no special rule: oab-blueprint.js returns before adding .is-live, so the
+   section stays in its compact composed state and never pins. */

@@ -48,6 +48,91 @@
   names the exact measurement that would change the answer.</p>
 </section>
 
+<section class="blueprint" data-blueprint aria-label="How OAB turns a brief into a proportional design">
+  <div class="bp-intro">
+    <p class="bp-eyebrow">From brief to architecture</p>
+    <h2>It draws only what the numbers justify</h2>
+    <p>A vague request becomes measured numbers, a complexity budget locks, and a proportional
+    architecture assembles itself — while the components the numbers do not justify stay drawn but
+    refused, each with the measurement that would summon it. Scroll to watch it decide.</p>
+  </div>
+
+  <div class="bp-track">
+    <div class="bp-stage">
+
+      <ol class="bp-steps" aria-hidden="true">
+        <li class="bp-step"><span class="bp-step-n">01</span> Frame</li>
+        <li class="bp-step"><span class="bp-step-n">02</span> Quantify</li>
+        <li class="bp-step"><span class="bp-step-n">03</span> Budget</li>
+        <li class="bp-step"><span class="bp-step-n">04</span> Build</li>
+        <li class="bp-step"><span class="bp-step-n">05</span> Refuse</li>
+      </ol>
+
+      <div class="bp-scene">
+        <p class="bp-brief">brief: <b>“a recipe-sharing web app”</b> — 100 users, 2 developers, £50/mo</p>
+
+        <div class="bp-metrics">
+          <div class="bp-metric-row">
+            <span class="bp-metric" data-to="0.28" data-dp="2" data-suffix="">0.28</span>
+            <span class="bp-metric-label">peak requests / second</span>
+          </div>
+          <div class="bp-metric-row">
+            <span class="bp-metric" data-to="0.66" data-dp="2" data-suffix="">0.66</span>
+            <span class="bp-metric-label">GB / year storage</span>
+          </div>
+          <div class="bp-metric-row">
+            <span class="bp-metric" data-to="27" data-dp="0" data-suffix="">27</span>
+            <span class="bp-metric-label">£ / month</span>
+          </div>
+        </div>
+
+        <div class="bp-gate">
+          <div class="bp-gate-head"><span>complexity budget</span><span class="bp-gate-value">4 / 4 — locked</span></div>
+          <div class="bp-gate-bar"><div class="bp-gate-fill"></div></div>
+        </div>
+
+        <div class="bp-build">
+          <svg class="bp-cube" viewBox="0 0 256 256" role="img" aria-label="The proportional architecture, as an isometric cube">
+            <path data-axis d="M128 44 L128 212"/>
+            <g>
+              <path data-draw d="M128 26 L190 44 L128 62 L66 44 Z"/>
+              <path data-draw d="M128 72 L176.5 100 L176.5 156 L128 184 L79.5 156 L79.5 100 Z"/>
+              <path data-draw d="M128 128 L79.5 100"/>
+              <path data-draw d="M128 128 L176.5 100"/>
+              <path data-draw d="M128 194 L190 212 L128 230 L66 212 Z"/>
+            </g>
+            <path data-accent d="M128 37 L139 44 L128 51 L117 44 Z"/>
+            <path data-accent d="M128 205 L139 212 L128 219 L117 212 Z"/>
+          </svg>
+          <ul class="bp-built">
+            <li><span class="bp-tick">▸</span> application runtime</li>
+            <li><span class="bp-tick">▸</span> managed database</li>
+            <li><span class="bp-tick">▸</span> object storage</li>
+            <li><span class="bp-tick">▸</span> CDN</li>
+          </ul>
+        </div>
+
+        <div class="bp-rejects">
+          <p class="bp-rejects-head">refused — and when to revisit</p>
+          <ul class="bp-rejects">
+            <li class="bp-reject"><span class="bp-x">✕</span> <span class="bp-kind">cache</span>
+              <span class="bp-trigger">revisit at <em>10 req/s on one key</em></span></li>
+            <li class="bp-reject"><span class="bp-x">✕</span> <span class="bp-kind">event stream</span>
+              <span class="bp-trigger">revisit at <em>500 events/s</em></span></li>
+            <li class="bp-reject"><span class="bp-x">✕</span> <span class="bp-kind">orchestration platform</span>
+              <span class="bp-trigger">revisit at <em>&gt;4 services + a dedicated ops engineer</em></span></li>
+          </ul>
+        </div>
+
+        <p class="bp-caption"><b>This is proportional architecture:</b> four components the numbers
+        justify, three refused with the threshold that would change the answer — the part a generic
+        assistant never produces.</p>
+      </div>
+
+    </div>
+  </div>
+</section>
+
 <section>
   <h2>Same inputs, same numbers</h2>
   <p>Arithmetic is code, not model output — every capacity claim prints its assumptions, the
@@ -59,18 +144,6 @@
   </video>
   <p class="note">Recorded from a committed <a href="https://github.com/mhayk/oab/tree/main/demo">VHS tape</a> —
   the demo is code too, and nothing in it is staged.</p>
-</section>
-
-<section>
-  <h2>What was rejected, and when to revisit</h2>
-  <p>The part a generic assistant never produces. From the tiny-startup example:</p>
-  <blockquote><strong><code>cache</code></strong> — At 0.24 peak reads/second there is no measured
-  read pressure to relieve.<br><em>Revisit when: a single query exceeds 10 requests/second at over
-  50&nbsp;ms, or database CPU is sustained above 60% for 3 days.</em></blockquote>
-  <blockquote><strong><code>orchestration-platform</code></strong> — Three times the complexity
-  budget and four times the money budget.<br><em>Revisit when: more than 4 independently deployable
-  services exist and a dedicated operations engineer is on the team.</em></blockquote>
-  <p>A “no” with a threshold is a plan. A “no” without one is an opinion.</p>
 </section>
 
 <section>
@@ -125,5 +198,8 @@
 </footer>
 
 </div>
+<script src="vendor/gsap.min.js"></script>
+<script src="vendor/ScrollTrigger.min.js"></script>
+<script src="oab-blueprint.js"></script>
 </body>
 </html>

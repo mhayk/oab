@@ -33,6 +33,22 @@ cp assets/logo/oab-logo-on-dark.png assets/logo/oab-logo-on-light.png \
    assets/logo/oab-icon.png assets/logo/oab-social-card.png website/
 ```
 
+## The animated section
+
+`index.html` (and `/pt/`, `/es/`) carry one scroll-scrubbed section — *the blueprint that
+assembles itself* — driven by `oab-blueprint.js` with GSAP + ScrollTrigger vendored in
+`vendor/`. **Vendored, not from a CDN**, so the page still makes no external request at runtime,
+which is the point the page itself argues.
+
+It degrades honestly: the markup ships in its composed end state, so with no JS or under
+`prefers-reduced-motion` the section is fully legible and compact — the script winds the scene
+*back* to its start and scrubs it forward on scroll, and adds the `.is-live` class that reserves
+the tall scroll track, so a script failure or a reduced-motion preference simply leaves the
+finished blueprint on screen. GSAP is MIT-class free software; see `NOTICE`.
+
+The three language pages share `style.css` and `oab-blueprint.js`; only the section's text
+differs, and it carries the same sync-date rule as the rest of the translations.
+
 ## Deliberately not here
 
 Search · a docs framework · an interactive calculator · analytics beyond aggregate page views ·

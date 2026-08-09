@@ -50,6 +50,87 @@
   nomeia a medição exata que mudaria a resposta.</p>
 </section>
 
+<section class="blueprint" data-blueprint aria-label="Como o OAB transforma um pedido em um design proporcional">
+  <div class="bp-intro">
+    <p class="bp-eyebrow">Do pedido à arquitetura</p>
+    <h2>Ele desenha só o que os números justificam</h2>
+    <p>Um pedido vago vira números medidos, um orçamento de complexidade trava, e uma arquitetura proporcional se monta sozinha — enquanto os componentes que os números não justificam ficam desenhados, porém recusados, cada um com a medição que os convocaria. Role para ver a decisão acontecer.</p>
+  </div>
+
+  <div class="bp-track">
+    <div class="bp-stage">
+
+      <ol class="bp-steps" aria-hidden="true">
+        <li class="bp-step"><span class="bp-step-n">01</span> Enquadrar</li>
+        <li class="bp-step"><span class="bp-step-n">02</span> Quantificar</li>
+        <li class="bp-step"><span class="bp-step-n">03</span> Orçamento</li>
+        <li class="bp-step"><span class="bp-step-n">04</span> Construir</li>
+        <li class="bp-step"><span class="bp-step-n">05</span> Recusar</li>
+      </ol>
+
+      <div class="bp-scene">
+        <p class="bp-brief">pedido: <b>“um app web de compartilhar receitas”</b> — 100 usuários, 2 devs, £50/mês</p>
+
+        <div class="bp-metrics">
+          <div class="bp-metric-row">
+            <span class="bp-metric" data-to="0.28" data-dp="2" data-suffix="">0.28</span>
+            <span class="bp-metric-label">req. de pico / segundo</span>
+          </div>
+          <div class="bp-metric-row">
+            <span class="bp-metric" data-to="0.66" data-dp="2" data-suffix="">0.66</span>
+            <span class="bp-metric-label">GB / ano de storage</span>
+          </div>
+          <div class="bp-metric-row">
+            <span class="bp-metric" data-to="27" data-dp="0" data-suffix="">27</span>
+            <span class="bp-metric-label">£ / mês</span>
+          </div>
+        </div>
+
+        <div class="bp-gate">
+          <div class="bp-gate-head"><span>orçamento de complexidade</span><span class="bp-gate-value">4 / 4 — travado</span></div>
+          <div class="bp-gate-bar"><div class="bp-gate-fill"></div></div>
+        </div>
+
+        <div class="bp-build">
+          <svg class="bp-cube" viewBox="0 0 256 256" role="img" aria-label="A arquitetura proporcional, como um cubo isométrico">
+            <path data-axis d="M128 44 L128 212"/>
+            <g>
+              <path data-draw d="M128 26 L190 44 L128 62 L66 44 Z"/>
+              <path data-draw d="M128 72 L176.5 100 L176.5 156 L128 184 L79.5 156 L79.5 100 Z"/>
+              <path data-draw d="M128 128 L79.5 100"/>
+              <path data-draw d="M128 128 L176.5 100"/>
+              <path data-draw d="M128 194 L190 212 L128 230 L66 212 Z"/>
+            </g>
+            <path data-accent d="M128 37 L139 44 L128 51 L117 44 Z"/>
+            <path data-accent d="M128 205 L139 212 L128 219 L117 212 Z"/>
+          </svg>
+          <ul class="bp-built">
+            <li><span class="bp-tick">▸</span> runtime da aplicação</li>
+            <li><span class="bp-tick">▸</span> banco gerenciado</li>
+            <li><span class="bp-tick">▸</span> object storage</li>
+            <li><span class="bp-tick">▸</span> CDN</li>
+          </ul>
+        </div>
+
+        <div class="bp-rejects">
+          <p class="bp-rejects-head">recusados — e quando revisitar</p>
+          <ul class="bp-rejects">
+            <li class="bp-reject"><span class="bp-x">✕</span> <span class="bp-kind">cache</span>
+              <span class="bp-trigger">revisitar a <em>10 req/s numa chave</em></span></li>
+            <li class="bp-reject"><span class="bp-x">✕</span> <span class="bp-kind">event stream</span>
+              <span class="bp-trigger">revisitar a <em>500 eventos/s</em></span></li>
+            <li class="bp-reject"><span class="bp-x">✕</span> <span class="bp-kind">plataforma de orquestração</span>
+              <span class="bp-trigger">revisitar a <em>&gt;4 serviços + um engenheiro de ops dedicado</em></span></li>
+          </ul>
+        </div>
+
+        <p class="bp-caption"><b>Isto é arquitetura proporcional:</b> quatro componentes que os números justificam, três recusados com o limiar que mudaria a resposta — a parte que um assistente genérico nunca produz.</p>
+      </div>
+
+    </div>
+  </div>
+</section>
+
 <section>
   <h2>Mesmas entradas, mesmos números</h2>
   <p>Aritmética é código, não saída de modelo — toda afirmação de capacidade imprime suas
@@ -61,20 +142,6 @@
   </video>
   <p class="note">Gravado a partir de um <a href="https://github.com/mhayk/oab/tree/main/demo">tape VHS</a>
   commitado — a demo também é código, e nada nela é encenado.</p>
-</section>
-
-<section>
-  <h2>O que foi rejeitado, e quando revisitar</h2>
-  <p>A parte que um assistente genérico nunca produz. Do exemplo tiny-startup:</p>
-  <blockquote><strong><code>cache</code></strong> — A 0,24 leituras/segundo no pico, não há pressão
-  de leitura medida para aliviar.<br><em>Revisitar quando: uma única query exceder 10
-  requisições/segundo acima de 50&nbsp;ms, ou a CPU do banco ficar sustentada acima de 60% por 3
-  dias.</em></blockquote>
-  <blockquote><strong><code>orchestration-platform</code></strong> — Três vezes o orçamento de
-  complexidade e quatro vezes o orçamento financeiro.<br><em>Revisitar quando: existirem mais de 4
-  serviços implantáveis de forma independente e houver um engenheiro de operações dedicado no
-  time.</em></blockquote>
-  <p>Um “não” com limiar é um plano. Um “não” sem limiar é uma opinião.</p>
 </section>
 
 <section>
@@ -130,5 +197,8 @@
 </footer>
 
 </div>
+<script src="../vendor/gsap.min.js"></script>
+<script src="../vendor/ScrollTrigger.min.js"></script>
+<script src="../oab-blueprint.js"></script>
 </body>
 </html>

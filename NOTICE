@@ -46,3 +46,9 @@ please open an issue or contact the maintainers per SECURITY.md.
 The OAB wordmark was set in Sora (https://github.com/googlefonts/sora), licensed
 under the SIL Open Font License 1.1, and converted to outlines. The font file
 itself is not redistributed in this repository.
+
+The oab.run landing page animates one section with GSAP and its ScrollTrigger plugin
+(https://gsap.com), version 3.12.5, vendored in website/vendor/ with their licence headers
+intact. GSAP is distributed under its standard "no charge" licence and is free for this use
+including the ScrollTrigger plugin. It is used only by the website; no part of OAB's core,
+plugin, or calculators depends on it.

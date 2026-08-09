@@ -50,6 +50,87 @@
   nombra la medición exacta que cambiaría la respuesta.</p>
 </section>
 
+<section class="blueprint" data-blueprint aria-label="Cómo OAB convierte un brief en un diseño proporcional">
+  <div class="bp-intro">
+    <p class="bp-eyebrow">Del brief a la arquitectura</p>
+    <h2>Dibuja solo lo que los números justifican</h2>
+    <p>Una petición vaga se convierte en números medidos, un presupuesto de complejidad se bloquea, y una arquitectura proporcional se ensambla sola — mientras los componentes que los números no justifican quedan dibujados, pero rechazados, cada uno con la medición que lo convocaría. Desplázate para ver la decisión.</p>
+  </div>
+
+  <div class="bp-track">
+    <div class="bp-stage">
+
+      <ol class="bp-steps" aria-hidden="true">
+        <li class="bp-step"><span class="bp-step-n">01</span> Encuadrar</li>
+        <li class="bp-step"><span class="bp-step-n">02</span> Cuantificar</li>
+        <li class="bp-step"><span class="bp-step-n">03</span> Presupuesto</li>
+        <li class="bp-step"><span class="bp-step-n">04</span> Construir</li>
+        <li class="bp-step"><span class="bp-step-n">05</span> Rechazar</li>
+      </ol>
+
+      <div class="bp-scene">
+        <p class="bp-brief">brief: <b>“una app web para compartir recetas”</b> — 100 usuarios, 2 devs, £50/mes</p>
+
+        <div class="bp-metrics">
+          <div class="bp-metric-row">
+            <span class="bp-metric" data-to="0.28" data-dp="2" data-suffix="">0.28</span>
+            <span class="bp-metric-label">peticiones pico / segundo</span>
+          </div>
+          <div class="bp-metric-row">
+            <span class="bp-metric" data-to="0.66" data-dp="2" data-suffix="">0.66</span>
+            <span class="bp-metric-label">GB / año de almacenamiento</span>
+          </div>
+          <div class="bp-metric-row">
+            <span class="bp-metric" data-to="27" data-dp="0" data-suffix="">27</span>
+            <span class="bp-metric-label">£ / mes</span>
+          </div>
+        </div>
+
+        <div class="bp-gate">
+          <div class="bp-gate-head"><span>presupuesto de complejidad</span><span class="bp-gate-value">4 / 4 — bloqueado</span></div>
+          <div class="bp-gate-bar"><div class="bp-gate-fill"></div></div>
+        </div>
+
+        <div class="bp-build">
+          <svg class="bp-cube" viewBox="0 0 256 256" role="img" aria-label="La arquitectura proporcional, como un cubo isométrico">
+            <path data-axis d="M128 44 L128 212"/>
+            <g>
+              <path data-draw d="M128 26 L190 44 L128 62 L66 44 Z"/>
+              <path data-draw d="M128 72 L176.5 100 L176.5 156 L128 184 L79.5 156 L79.5 100 Z"/>
+              <path data-draw d="M128 128 L79.5 100"/>
+              <path data-draw d="M128 128 L176.5 100"/>
+              <path data-draw d="M128 194 L190 212 L128 230 L66 212 Z"/>
+            </g>
+            <path data-accent d="M128 37 L139 44 L128 51 L117 44 Z"/>
+            <path data-accent d="M128 205 L139 212 L128 219 L117 212 Z"/>
+          </svg>
+          <ul class="bp-built">
+            <li><span class="bp-tick">▸</span> runtime de la aplicación</li>
+            <li><span class="bp-tick">▸</span> base de datos gestionada</li>
+            <li><span class="bp-tick">▸</span> almacenamiento de objetos</li>
+            <li><span class="bp-tick">▸</span> CDN</li>
+          </ul>
+        </div>
+
+        <div class="bp-rejects">
+          <p class="bp-rejects-head">rechazados — y cuándo reconsiderar</p>
+          <ul class="bp-rejects">
+            <li class="bp-reject"><span class="bp-x">✕</span> <span class="bp-kind">cache</span>
+              <span class="bp-trigger">reconsiderar a <em>10 req/s en una clave</em></span></li>
+            <li class="bp-reject"><span class="bp-x">✕</span> <span class="bp-kind">event stream</span>
+              <span class="bp-trigger">reconsiderar a <em>500 eventos/s</em></span></li>
+            <li class="bp-reject"><span class="bp-x">✕</span> <span class="bp-kind">plataforma de orquestación</span>
+              <span class="bp-trigger">reconsiderar a <em>&gt;4 servicios + un ingeniero de ops dedicado</em></span></li>
+          </ul>
+        </div>
+
+        <p class="bp-caption"><b>Esto es arquitectura proporcional:</b> cuatro componentes que los números justifican, tres rechazados con el umbral que cambiaría la respuesta — la parte que un asistente genérico nunca produce.</p>
+      </div>
+
+    </div>
+  </div>
+</section>
+
 <section>
   <h2>Mismas entradas, mismos números</h2>
   <p>La aritmética es código, no salida de un modelo — toda afirmación de capacidad imprime sus
@@ -61,20 +142,6 @@
   </video>
   <p class="note">Grabado a partir de un <a href="https://github.com/mhayk/oab/tree/main/demo">tape VHS</a>
   incluido en el repositorio — la demo también es código, y nada en ella está montado.</p>
-</section>
-
-<section>
-  <h2>Qué se rechazó, y cuándo reconsiderarlo</h2>
-  <p>La parte que un asistente genérico nunca produce. Del ejemplo tiny-startup:</p>
-  <blockquote><strong><code>cache</code></strong> — Con 0,24 lecturas/segundo en pico, no hay
-  presión de lectura medida que aliviar.<br><em>Reconsiderar cuando: una sola consulta supere 10
-  peticiones/segundo por encima de 50&nbsp;ms, o la CPU de la base de datos se mantenga por encima
-  del 60% durante 3 días.</em></blockquote>
-  <blockquote><strong><code>orchestration-platform</code></strong> — Tres veces el presupuesto de
-  complejidad y cuatro veces el presupuesto económico.<br><em>Reconsiderar cuando: existan más de 4
-  servicios desplegables de forma independiente y haya un ingeniero de operaciones dedicado en el
-  equipo.</em></blockquote>
-  <p>Un “no” con umbral es un plan. Un “no” sin umbral es una opinión.</p>
 </section>
 
 <section>
@@ -131,5 +198,8 @@
 </footer>
 
 </div>
+<script src="../vendor/gsap.min.js"></script>
+<script src="../vendor/ScrollTrigger.min.js"></script>
+<script src="../oab-blueprint.js"></script>
 </body>
 </html>
