@@ -1,0 +1,57 @@
+name: 🧭 Framework or reasoning change
+description: Propose a change to how OAB reasons, or challenge a recommendation it makes
+title: "frameworks: "
+labels: ["area:frameworks"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Framework changes alter the architecture OAB recommends to everyone. They are treated as
+        breaking changes and need evidence, not preference.
+
+  - type: textarea
+    id: current
+    attributes:
+      label: Current behaviour
+      description: What does OAB reason or recommend today? Quote the procedure or an actual output.
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposed
+    attributes:
+      label: Proposed behaviour
+    validations:
+      required: true
+
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Evidence
+      description: >-
+        Why is the new behaviour more correct? Measurements, sources, or a concrete system where the
+        current behaviour gives the wrong answer. "It is best practice" is not evidence.
+    validations:
+      required: true
+
+  - type: textarea
+    id: scenario
+    attributes:
+      label: Which evaluation scenario covers this?
+      description: >-
+        **Required.** Name the existing scenario in `evaluations/scenarios/` that would catch a
+        regression, or describe the new scenario this change needs. A framework change without a
+        scenario cannot be defended against future edits.
+    validations:
+      required: true
+
+  - type: dropdown
+    id: direction
+    attributes:
+      label: Which failure does this guard against?
+      options:
+        - Overengineering — OAB recommends more than the numbers justify
+        - Underengineering — OAB recommends less than the numbers require
+        - Neither — accuracy or clarity of the reasoning itself
+    validations:
+      required: true

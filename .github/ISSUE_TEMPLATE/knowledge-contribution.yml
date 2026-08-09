@@ -1,0 +1,109 @@
+name: 📚 Knowledge contribution
+description: Propose a new architecture knowledge unit, or correct an existing one
+title: "knowledge: "
+labels: ["area:knowledge"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        **This is the most valuable contribution to OAB.** It requires no understanding of the
+        codebase — just experience with the topic and the ability to edit a Markdown file.
+
+        You do not have to write the unit to open this issue. Proposing one that should exist is
+        useful on its own.
+
+  - type: input
+    id: concept
+    attributes:
+      label: Concept
+      description: The single concept this unit covers. One file, one concept.
+      placeholder: "Transactional outbox"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: domain
+    attributes:
+      label: Domain
+      options:
+        - fundamentals
+        - databases
+        - caching
+        - messaging
+        - reliability
+        - cost
+        - "other (say which in the description)"
+    validations:
+      required: true
+
+  - type: textarea
+    id: why
+    attributes:
+      label: Why this matters
+      description: >-
+        What decision does this concept change? OAB knowledge exists to change an architecture
+        decision — if it does not, it is documentation, not knowledge.
+      placeholder: >-
+        Teams reach for a message broker to avoid the dual-write problem, then reintroduce it by
+        publishing outside the transaction. This unit gives the condition under which an outbox is
+        needed and the cheaper alternative when it is not.
+    validations:
+      required: true
+
+  - type: textarea
+    id: thresholds
+    attributes:
+      label: Thresholds
+      description: >-
+        The numbers that make this concept apply. OAB's value is that its advice is quantified —
+        "use it when traffic is high" is not usable. If you do not know the numbers yet, say so.
+      placeholder: >-
+        Applies when a write must be atomically visible to both the database and a downstream
+        consumer, and the consumer cannot tolerate the message being lost or duplicated silently.
+    validations:
+      required: true
+
+  - type: textarea
+    id: not_applicable
+    attributes:
+      label: When it does NOT apply
+      description: >-
+        **Required.** This is the section reviewers scrutinise hardest. A knowledge base that only
+        says when to use things is a machine for producing overengineering.
+      placeholder: >-
+        Not needed when the consumer can poll the database directly, or when losing the event is
+        acceptable and detectable by reconciliation.
+    validations:
+      required: true
+
+  - type: textarea
+    id: sources
+    attributes:
+      label: Sources
+      description: >-
+        At least one attributable source. Papers, RFCs, official documentation, or reputable
+        engineering writing. Summarise in your own words — **do not paste copyrighted text.**
+    validations:
+      required: true
+
+  - type: dropdown
+    id: stages
+    attributes:
+      label: Which maturity stages does this apply to?
+      description: >-
+        0 Prototype · 1 MVP · 2 Early production · 3 Growth · 4 Scale · 5 Global. This field is
+        OAB's primary overengineering guard — a stage-4 concept must not surface in a stage-1 design.
+      multiple: true
+      options: ["0", "1", "2", "3", "4", "5"]
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: confirm
+    attributes:
+      label: Confirmation
+      options:
+        - label: I will summarise concepts in my own words and will not paste copyrighted text
+          required: true
+        - label: I have read [docs/contributing/knowledge.md](../blob/main/docs/contributing/knowledge.md) or will before opening a pull request
+          required: false

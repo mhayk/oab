@@ -1,0 +1,43 @@
+name: 🐛 Bug report
+description: Something in OAB does not work as documented
+labels: ["bug"]
+body:
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: What you expected
+      description: Quote the documentation or design section that says it should behave differently.
+    validations:
+      required: true
+  - type: textarea
+    id: repro
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. Run `/oab:capacity "..."`
+        2. ...
+    validations:
+      required: true
+  - type: textarea
+    id: env
+    attributes:
+      label: Environment
+      value: |
+        - OAB version:
+        - Agent / client and version:
+        - OS:
+        - Python version (`python3 --version`):
+    validations:
+      required: true
+  - type: markdown
+    attributes:
+      value: |
+        **Architecture advice you disagree with is not a bug** — open a
+        `framework change` issue instead, or a knowledge contribution. Advice that is
+        actively dangerous should go to [SECURITY.md](../blob/main/SECURITY.md).
