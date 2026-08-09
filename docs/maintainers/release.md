@@ -35,6 +35,10 @@ Confirmed during the first live run: a fix pushed to `main` was invisible to the
 until the version changed. **A release without a version bump does not reach anyone**, however
 green CI is.
 
+The cache is frozen **per version**, not per commit: 0.1.1 was fetched between two commits and
+kept the earlier content, so a later fix pushed under the same version never arrived. Bump on every
+change that must reach users, or the release is a no-op.
+
 To force a local refresh while developing, use `claude --plugin-dir ./` rather than the installed
 copy.
 
