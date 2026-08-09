@@ -68,6 +68,33 @@ partitioning, multi-region, or streaming section. Executive summary first, ~1 pa
 
 Include one Mermaid diagram, capped at ~12 nodes.
 
+## Before you finish — validate your own artifact
+
+The procedure has more steps than fit in working memory, and the failure mode is skipping one
+silently. Check the artifact rather than trusting the process:
+
+```bash
+python3 ${CLAUDE_PLUGIN_ROOT}/tools/validate_artifacts.py .oab/design.json
+```
+
+If that cannot run, check by hand that every one of these is present:
+
+| Field | Rule |
+| :-- | :-- |
+| `assumptions` | non-empty, each with a confidence |
+| `options` | at least 2, at least one `rejected` |
+| `rejected_components[*].revisit_when` | on every rejection |
+| `triggers` | at least 1, each with source, threshold, unit, window, action, owner |
+| `complexity.available` / `.spent` | both set; `override` written if spent exceeds available |
+| **`cost.stated_budget`** | the budget the user gave, or `null` if none |
+| **`cost.within_budget`** | `false` if the estimate's HIGH end exceeds a stated budget |
+| **`cost.budget_note`** | required when `within_budget` is false |
+| `availability.consistent` | `false` if the stated target exceeds what this design delivers |
+
+The last four are how a **hard stated constraint** gets surfaced. Reasoning about the budget in
+prose is not enough — if it is not a field, nothing can check it, and the reader has to notice by
+comparing two numbers.
+
 ## Report the budget plainly
 
 ```

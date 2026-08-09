@@ -16,15 +16,55 @@
       "Edit and delete own recipes and comments"
     ],
     "non_functional": [
-      { "name": "registered users", "value": 100, "unit": "users", "quantified": true },
-      { "name": "engineers operating the system", "value": 2, "unit": "engineers", "quantified": true },
-      { "name": "monthly infrastructure budget", "value": 50, "unit": "GBP/month", "quantified": true },
-      { "name": "peak request rate", "value": 0.28, "unit": "requests/second", "quantified": true },
-      { "name": "availability target", "value": null, "quantified": false },
-      { "name": "page latency p95", "value": null, "quantified": false },
-      { "name": "recovery point objective (RPO)", "value": "unstated; design targets 5 minutes or better via point-in-time recovery", "quantified": false },
-      { "name": "recovery time objective (RTO)", "value": "unstated; must be established by a measured restore test, not assumed", "quantified": false },
-      { "name": "compliance, residency, data-sensitivity constraints", "value": "none stated", "quantified": false }
+      {
+        "name": "registered users",
+        "value": 100,
+        "unit": "users",
+        "quantified": true
+      },
+      {
+        "name": "engineers operating the system",
+        "value": 2,
+        "unit": "engineers",
+        "quantified": true
+      },
+      {
+        "name": "monthly infrastructure budget",
+        "value": 50,
+        "unit": "GBP/month",
+        "quantified": true
+      },
+      {
+        "name": "peak request rate",
+        "value": 0.28,
+        "unit": "requests/second",
+        "quantified": true
+      },
+      {
+        "name": "availability target",
+        "value": null,
+        "quantified": false
+      },
+      {
+        "name": "page latency p95",
+        "value": null,
+        "quantified": false
+      },
+      {
+        "name": "recovery point objective (RPO)",
+        "value": "unstated; design targets 5 minutes or better via point-in-time recovery",
+        "quantified": false
+      },
+      {
+        "name": "recovery time objective (RTO)",
+        "value": "unstated; must be established by a measured restore test, not assumed",
+        "quantified": false
+      },
+      {
+        "name": "compliance, residency, data-sensitivity constraints",
+        "value": "none stated",
+        "quantified": false
+      }
     ]
   },
   "assumptions": [
@@ -111,18 +151,51 @@
       {
         "calculator": "rps",
         "assumptions": [
-          { "name": "users", "value": 100, "unit": "users", "source": "stated", "confidence": "high" },
-          { "name": "dau_share", "value": 0.3, "source": "assumed", "confidence": "low", "impact_if_wrong": "+/-3x on RPS" },
-          { "name": "sessions_per_day", "value": 2, "source": "assumed", "confidence": "low", "impact_if_wrong": "linear on RPS" },
-          { "name": "requests_per_session", "value": 40, "source": "assumed", "confidence": "low", "impact_if_wrong": "linear on RPS" },
-          { "name": "peak_factor", "value": 10, "source": "assumed", "confidence": "medium", "impact_if_wrong": "direct multiplier on the provisioning number only" }
+          {
+            "name": "users",
+            "value": 100,
+            "unit": "users",
+            "source": "stated",
+            "confidence": "high"
+          },
+          {
+            "name": "dau_share",
+            "value": 0.3,
+            "source": "assumed",
+            "confidence": "low",
+            "impact_if_wrong": "+/-3x on RPS"
+          },
+          {
+            "name": "sessions_per_day",
+            "value": 2,
+            "source": "assumed",
+            "confidence": "low",
+            "impact_if_wrong": "linear on RPS"
+          },
+          {
+            "name": "requests_per_session",
+            "value": 40,
+            "source": "assumed",
+            "confidence": "low",
+            "impact_if_wrong": "linear on RPS"
+          },
+          {
+            "name": "peak_factor",
+            "value": 10,
+            "source": "assumed",
+            "confidence": "medium",
+            "impact_if_wrong": "direct multiplier on the provisioning number only"
+          }
         ],
         "formula": "requests_per_day = users * dau_share * sessions_per_day * requests_per_session ; avg_rps = requests_per_day / 86400 ; peak_rps = avg_rps * peak_factor",
         "calculation": "requests_per_day = 100 * 0.30 * 2 * 40 = 2400 ; avg_rps = 2400 / 86400 = 0.028 ; peak_rps = 0.028 * 10 = 0.28",
         "result": {
           "value": 0.28,
           "unit": "requests/second at peak",
-          "range": { "low": 0.0093, "high": 4.2 },
+          "range": {
+            "low": 0.0093,
+            "high": 4.2
+          },
           "significant_figures": 2
         },
         "safety_margin": {
@@ -143,31 +216,89 @@
       {
         "calculator": "storage",
         "assumptions": [
-          { "name": "photos_per_day", "value": 20, "unit": "photos/day", "source": "assumed", "confidence": "low", "impact_if_wrong": "linear on object storage growth" },
-          { "name": "bytes_per_photo_retained", "value": 3.23, "unit": "MB", "source": "assumed", "confidence": "medium", "impact_if_wrong": "linear; dominated by the 3 MB original" },
-          { "name": "index_overhead", "value": 1.0, "source": "assumed", "confidence": "high", "impact_if_wrong": "none - object storage has no index or page overhead, so the relational default of 2.5 does not apply here" }
+          {
+            "name": "photos_per_day",
+            "value": 20,
+            "unit": "photos/day",
+            "source": "assumed",
+            "confidence": "low",
+            "impact_if_wrong": "linear on object storage growth"
+          },
+          {
+            "name": "bytes_per_photo_retained",
+            "value": 3.23,
+            "unit": "MB",
+            "source": "assumed",
+            "confidence": "medium",
+            "impact_if_wrong": "linear; dominated by the 3 MB original"
+          },
+          {
+            "name": "index_overhead",
+            "value": 1.0,
+            "source": "assumed",
+            "confidence": "high",
+            "impact_if_wrong": "none - object storage has no index or page overhead, so the relational default of 2.5 does not apply here"
+          }
         ],
         "formula": "bytes_per_day = photos_per_day * bytes_per_photo * index_overhead ; bytes_per_year = bytes_per_day * 365",
         "calculation": "bytes_per_day = 20 * 3.23 MB * 1.0 = 64.6 MB ; bytes_per_year = 64.6 * 365 = 23579 MB = 23 GB",
-        "result": { "value": 23, "unit": "GB/year of object storage", "range": { "low": 2.3, "high": 230 }, "significant_figures": 2 },
+        "result": {
+          "value": 23,
+          "unit": "GB/year of object storage",
+          "range": {
+            "low": 2.3,
+            "high": 230
+          },
+          "significant_figures": 2
+        },
         "confidence": "low",
         "sensitivity": {
           "dominant_input": "photos_per_day",
           "explanation": "At 10x the assumed publishing rate this is 230 GB/year, costing GBP 3.45-5.75/month. At 1/10th it is 2.3 GB/year. Object storage does not become a budget line anywhere in this range, and the decision to retain originals holds throughout.",
           "decision_is_insensitive": true
         },
-        "notes": ["Retains the 3 MB original plus a 200 KB web-size and a 30 KB thumbnail. Discarding originals would cut this to 1.7 GB/year but makes larger derivatives permanently unrecoverable."]
+        "notes": [
+          "Retains the 3 MB original plus a 200 KB web-size and a 30 KB thumbnail. Discarding originals would cut this to 1.7 GB/year but makes larger derivatives permanently unrecoverable."
+        ]
       },
       {
         "calculator": "storage",
         "assumptions": [
-          { "name": "inserts_per_day", "value": 200, "unit": "rows/day", "source": "assumed", "confidence": "low", "impact_if_wrong": "linear on database growth" },
-          { "name": "avg_record_bytes", "value": 2048, "unit": "bytes", "source": "assumed", "confidence": "low", "impact_if_wrong": "linear; recipes at ~4 KB dominate comments at ~0.5 KB" },
-          { "name": "index_overhead", "value": 2.5, "source": "assumed", "confidence": "medium", "impact_if_wrong": "indexes, tuple headers, page fill factor and dead-tuple slack" }
+          {
+            "name": "inserts_per_day",
+            "value": 200,
+            "unit": "rows/day",
+            "source": "assumed",
+            "confidence": "low",
+            "impact_if_wrong": "linear on database growth"
+          },
+          {
+            "name": "avg_record_bytes",
+            "value": 2048,
+            "unit": "bytes",
+            "source": "assumed",
+            "confidence": "low",
+            "impact_if_wrong": "linear; recipes at ~4 KB dominate comments at ~0.5 KB"
+          },
+          {
+            "name": "index_overhead",
+            "value": 2.5,
+            "source": "assumed",
+            "confidence": "medium",
+            "impact_if_wrong": "indexes, tuple headers, page fill factor and dead-tuple slack"
+          }
         ],
         "formula": "bytes_per_day = inserts_per_day * avg_record_bytes * index_overhead ; bytes_per_year = bytes_per_day * 365",
         "calculation": "bytes_per_day = 200 * 2048 * 2.5 = 1024000 bytes = 1.0 MB ; bytes_per_year = 1.0 * 365 = 365 MB = 0.37 GB",
-        "result": { "value": 0.37, "unit": "GB/year of relational storage", "range": { "low": 0.037, "high": 3.7 }, "significant_figures": 2 },
+        "result": {
+          "value": 0.37,
+          "unit": "GB/year of relational storage",
+          "range": {
+            "low": 0.037,
+            "high": 3.7
+          },
+          "significant_figures": 2
+        },
         "confidence": "low",
         "sensitivity": {
           "dominant_input": "inserts_per_day",
@@ -178,31 +309,90 @@
       {
         "calculator": "bandwidth",
         "assumptions": [
-          { "name": "avg_rps", "value": 0.028, "unit": "requests/second", "source": "calculated", "confidence": "low", "impact_if_wrong": "linear on egress" },
-          { "name": "avg_payload_bytes", "value": 54000, "unit": "bytes", "source": "assumed", "confidence": "low", "impact_if_wrong": "linear; blended from 60% image requests at ~80 KB and 40% HTML/JSON at ~15 KB" },
-          { "name": "origin_egress_price", "value": "0.04-0.09", "unit": "GBP/GB", "source": "stated", "confidence": "medium", "impact_if_wrong": "linear on cost; price table dated 2026-08-09" }
+          {
+            "name": "avg_rps",
+            "value": 0.028,
+            "unit": "requests/second",
+            "source": "calculated",
+            "confidence": "low",
+            "impact_if_wrong": "linear on egress"
+          },
+          {
+            "name": "avg_payload_bytes",
+            "value": 54000,
+            "unit": "bytes",
+            "source": "assumed",
+            "confidence": "low",
+            "impact_if_wrong": "linear; blended from 60% image requests at ~80 KB and 40% HTML/JSON at ~15 KB"
+          },
+          {
+            "name": "origin_egress_price",
+            "value": "0.04-0.09",
+            "unit": "GBP/GB",
+            "source": "stated",
+            "confidence": "medium",
+            "impact_if_wrong": "linear on cost; price table dated 2026-08-09"
+          }
         ],
         "formula": "egress_per_month = avg_rps * avg_payload_bytes * 2592000 ; cost = origin_gb * origin_price",
         "calculation": "egress_per_month = 0.028 * 54000 * 2592000 = 3.92e9 bytes = 3.9 GB ; cost = 3.9 * 0.04..0.09 = GBP 0.16..0.35",
-        "result": { "value": 3.9, "unit": "GB/month of origin egress", "range": { "low": 0.39, "high": 78 }, "significant_figures": 2 },
+        "result": {
+          "value": 3.9,
+          "unit": "GB/month of origin egress",
+          "range": {
+            "low": 0.39,
+            "high": 78
+          },
+          "significant_figures": 2
+        },
         "confidence": "low",
         "sensitivity": {
           "dominant_input": "avg_payload_bytes",
           "explanation": "This is the number that decides whether a CDN is justified, and it is the one a photo-sharing brief makes people assume is large. 3.9 GB/month is 0.4% of the ~1 TB/month threshold at which edge offload repays its complexity point. Even at 20x - 78 GB/month, GBP 3-7 - a CDN saves single-digit pounds and costs a component. The decision does not change anywhere in the plausible range.",
           "decision_is_insensitive": true
         },
-        "notes": ["Uses average RPS, not peak: egress is billed on volume. Billing at peak would overstate this by 10x."]
+        "notes": [
+          "Uses average RPS, not peak: egress is billed on volume. Billing at peak would overstate this by 10x."
+        ]
       },
       {
         "calculator": "concurrency",
         "assumptions": [
-          { "name": "arrival_rate", "value": 0.28, "unit": "requests/second", "source": "calculated", "confidence": "low", "impact_if_wrong": "linear on concurrency" },
-          { "name": "service_time_ms", "value": 120, "unit": "milliseconds", "source": "assumed", "confidence": "low", "impact_if_wrong": "linear; a rendered recipe page with a small number of indexed queries" },
-          { "name": "target_utilisation", "value": 0.65, "source": "assumed", "confidence": "high", "impact_if_wrong": "operating point, not conservatism: waiting time grows non-linearly above ~0.7" }
+          {
+            "name": "arrival_rate",
+            "value": 0.28,
+            "unit": "requests/second",
+            "source": "calculated",
+            "confidence": "low",
+            "impact_if_wrong": "linear on concurrency"
+          },
+          {
+            "name": "service_time_ms",
+            "value": 120,
+            "unit": "milliseconds",
+            "source": "assumed",
+            "confidence": "low",
+            "impact_if_wrong": "linear; a rendered recipe page with a small number of indexed queries"
+          },
+          {
+            "name": "target_utilisation",
+            "value": 0.65,
+            "source": "assumed",
+            "confidence": "high",
+            "impact_if_wrong": "operating point, not conservatism: waiting time grows non-linearly above ~0.7"
+          }
         ],
         "formula": "L = arrival_rate * service_time_seconds ; provisioned = L / target_utilisation",
         "calculation": "L = 0.28 * 0.120 = 0.034 ; provisioned = 0.034 / 0.65 = 0.052",
-        "result": { "value": 0.034, "unit": "mean concurrent in-flight requests at peak", "range": { "low": 0.0011, "high": 0.50 }, "significant_figures": 2 },
+        "result": {
+          "value": 0.034,
+          "unit": "mean concurrent in-flight requests at peak",
+          "range": {
+            "low": 0.0011,
+            "high": 0.5
+          },
+          "significant_figures": 2
+        },
         "safety_margin": {
           "factor": 1.54,
           "rationale": "Sized to 65% utilisation rather than 100%. At rho=0.9 waiting time is roughly 10x service time and at rho=0.95 roughly 20x, so the headroom is an operating point rather than caution."
@@ -217,15 +407,50 @@
       {
         "calculator": "connections",
         "assumptions": [
-          { "name": "queries_per_request", "value": 5, "source": "assumed", "confidence": "low", "impact_if_wrong": "linear on concurrent queries; irrelevant because the pool floor dominates" },
-          { "name": "query_time_ms", "value": 4, "unit": "milliseconds", "source": "assumed", "confidence": "low", "impact_if_wrong": "linear" },
-          { "name": "instances", "value": 2, "source": "calculated", "confidence": "high", "impact_if_wrong": "one web process plus one scheduled task process" },
-          { "name": "safety", "value": 4, "source": "assumed", "confidence": "high", "impact_if_wrong": "Little's Law gives the mean; pools must absorb the tail" },
-          { "name": "min_pool", "value": 5, "source": "assumed", "confidence": "high", "impact_if_wrong": "a pool sized to the mean queues on acquisition during any burst" }
+          {
+            "name": "queries_per_request",
+            "value": 5,
+            "source": "assumed",
+            "confidence": "low",
+            "impact_if_wrong": "linear on concurrent queries; irrelevant because the pool floor dominates"
+          },
+          {
+            "name": "query_time_ms",
+            "value": 4,
+            "unit": "milliseconds",
+            "source": "assumed",
+            "confidence": "low",
+            "impact_if_wrong": "linear"
+          },
+          {
+            "name": "instances",
+            "value": 2,
+            "source": "calculated",
+            "confidence": "high",
+            "impact_if_wrong": "one web process plus one scheduled task process"
+          },
+          {
+            "name": "safety",
+            "value": 4,
+            "source": "assumed",
+            "confidence": "high",
+            "impact_if_wrong": "Little's Law gives the mean; pools must absorb the tail"
+          },
+          {
+            "name": "min_pool",
+            "value": 5,
+            "source": "assumed",
+            "confidence": "high",
+            "impact_if_wrong": "a pool sized to the mean queues on acquisition during any burst"
+          }
         ],
         "formula": "concurrent = query_rate * query_time_seconds ; pool_per_instance = max(min_pool, ceil(concurrent / instances * safety)) ; total = instances * pool_per_instance",
         "calculation": "query_rate = 0.28 * 5 = 1.4 queries/s ; concurrent = 1.4 * 0.004 = 0.0056 ; pool_per_instance = max(5, ceil(0.0056 / 2 * 4)) = max(5, 1) = 5 ; total = 2 * 5 = 10",
-        "result": { "value": 10, "unit": "database connections", "significant_figures": 2 },
+        "result": {
+          "value": 10,
+          "unit": "database connections",
+          "significant_figures": 2
+        },
         "confidence": "low",
         "sensitivity": {
           "dominant_input": "the database plan's max_connections, not any traffic input",
@@ -236,13 +461,40 @@
       {
         "calculator": "cache",
         "assumptions": [
-          { "name": "read_rate", "value": 0.27, "unit": "reads/second at peak", "source": "calculated", "confidence": "low", "impact_if_wrong": "linear on what a cache would relieve" },
-          { "name": "hottest_key_share", "value": 0.3, "source": "assumed", "confidence": "low", "impact_if_wrong": "the browse/home listing is the single most-requested view" },
-          { "name": "hit_rate", "value": 0.5, "source": "assumed", "confidence": "low", "impact_if_wrong": "generous for a listing that changes whenever anyone publishes" }
+          {
+            "name": "read_rate",
+            "value": 0.27,
+            "unit": "reads/second at peak",
+            "source": "calculated",
+            "confidence": "low",
+            "impact_if_wrong": "linear on what a cache would relieve"
+          },
+          {
+            "name": "hottest_key_share",
+            "value": 0.3,
+            "source": "assumed",
+            "confidence": "low",
+            "impact_if_wrong": "the browse/home listing is the single most-requested view"
+          },
+          {
+            "name": "hit_rate",
+            "value": 0.5,
+            "source": "assumed",
+            "confidence": "low",
+            "impact_if_wrong": "generous for a listing that changes whenever anyone publishes"
+          }
         ],
         "formula": "hottest_key_rate = read_rate * hottest_key_share ; relieved = hottest_key_rate * hit_rate",
         "calculation": "hottest_key_rate = 0.27 * 0.3 = 0.081 req/s ; relieved = 0.081 * 0.5 = 0.041 queries/s removed from a database serving 1.4 queries/s",
-        "result": { "value": 0.041, "unit": "queries/second relieved", "range": { "low": 0.0014, "high": 0.62 }, "significant_figures": 2 },
+        "result": {
+          "value": 0.041,
+          "unit": "queries/second relieved",
+          "range": {
+            "low": 0.0014,
+            "high": 0.62
+          },
+          "significant_figures": 2
+        },
         "confidence": "low",
         "sensitivity": {
           "dominant_input": "hottest_key_share",
@@ -253,13 +505,37 @@
       {
         "calculator": "queue",
         "assumptions": [
-          { "name": "arrival_rate", "value": 0.00023, "unit": "jobs/second", "source": "calculated", "confidence": "low", "impact_if_wrong": "20 photos/day plus a handful of notification emails" },
-          { "name": "service_time_seconds", "value": 3, "unit": "seconds", "source": "assumed", "confidence": "medium", "impact_if_wrong": "decode and resize a 3 MB photo twice" },
-          { "name": "target_utilisation", "value": 0.7, "source": "assumed", "confidence": "high", "impact_if_wrong": "queue depth grows without bound as utilisation approaches 1" }
+          {
+            "name": "arrival_rate",
+            "value": 0.00023,
+            "unit": "jobs/second",
+            "source": "calculated",
+            "confidence": "low",
+            "impact_if_wrong": "20 photos/day plus a handful of notification emails"
+          },
+          {
+            "name": "service_time_seconds",
+            "value": 3,
+            "unit": "seconds",
+            "source": "assumed",
+            "confidence": "medium",
+            "impact_if_wrong": "decode and resize a 3 MB photo twice"
+          },
+          {
+            "name": "target_utilisation",
+            "value": 0.7,
+            "source": "assumed",
+            "confidence": "high",
+            "impact_if_wrong": "queue depth grows without bound as utilisation approaches 1"
+          }
         ],
         "formula": "workers = ceil(arrival_rate * service_time_seconds / target_utilisation) ; capacity = workers / service_time_seconds ; drain_time = backlog / (capacity - arrival_rate)",
         "calculation": "workers = ceil(0.00023 * 3 / 0.7) = ceil(0.00099) = 1 ; capacity = 1 / 3 = 0.33 jobs/s ; drain_time(100 jobs) = 100 / (0.33 - 0.00023) = 303 s = 5.1 minutes",
-        "result": { "value": 1, "unit": "worker", "significant_figures": 1 },
+        "result": {
+          "value": 1,
+          "unit": "worker",
+          "significant_figures": 1
+        },
         "confidence": "low",
         "sensitivity": {
           "dominant_input": "arrival_rate",
@@ -377,9 +653,18 @@
     {
       "id": "opt-single-app-server-side-resize",
       "description": "The simplest viable option. One managed application instance, one managed relational database, one object storage bucket, managed error tracking. Photos are uploaded to the application, resized server-side inside the request, and written to object storage. No worker, no queue, no CDN, no cache.",
-      "components": ["application-runtime", "relational-database", "object-storage", "observability"],
+      "components": [
+        "application-runtime",
+        "relational-database",
+        "object-storage",
+        "observability"
+      ],
       "complexity_cost": 4,
-      "monthly_cost": { "currency": "GBP", "low": 16, "high": 56 },
+      "monthly_cost": {
+        "currency": "GBP",
+        "low": 16,
+        "high": 56
+      },
       "reversibility": "easy",
       "verdict": "rejected",
       "reason": "Rejected on the resize duration, not on capacity - the capacity case for it is sound. A 3 MB phone photo decoded and resized twice is roughly 3 seconds inside a request the user is waiting on, on a shared-CPU instance, with image decoding of untrusted input running in the web process. The measurement that would change the answer: if p95 server-side resize time for representative phone photos is under ~300 ms, the synchronous path is comfortably within a normal request budget and this becomes the correct answer, since it is otherwise identical to the selected option and involves less client code.",
@@ -394,9 +679,18 @@
     {
       "id": "opt-client-resize-direct-upload",
       "description": "Selected. Same four components. Photos are resized in the browser and PUT directly to object storage via a short-lived pre-signed URL, so image bytes never traverse the application. The original is uploaded alongside the derivatives by the same mechanism. A jobs table in the existing database, drained by a scheduled task on the same application, handles notification email and orphaned-upload cleanup. Full-text search uses the database's own index.",
-      "components": ["application-runtime", "relational-database", "object-storage", "observability"],
+      "components": [
+        "application-runtime",
+        "relational-database",
+        "object-storage",
+        "observability"
+      ],
       "complexity_cost": 4,
-      "monthly_cost": { "currency": "GBP", "low": 16, "high": 56 },
+      "monthly_cost": {
+        "currency": "GBP",
+        "low": 16,
+        "high": 56
+      },
       "reversibility": "easy",
       "verdict": "selected",
       "trade_offs": [
@@ -411,9 +705,19 @@
     {
       "id": "opt-dedicated-worker",
       "description": "The selected components plus a dedicated always-on worker process consuming the jobs table, generating image derivatives server-side after the upload returns.",
-      "components": ["application-runtime", "worker", "relational-database", "object-storage", "observability"],
+      "components": [
+        "application-runtime",
+        "worker",
+        "relational-database",
+        "object-storage",
+        "observability"
+      ],
       "complexity_cost": 5,
-      "monthly_cost": { "currency": "GBP", "low": 21, "high": 71 },
+      "monthly_cost": {
+        "currency": "GBP",
+        "low": 21,
+        "high": 71
+      },
       "reversibility": "easy",
       "verdict": "rejected",
       "reason": "Over budget at 5/4, to serve a job arrival rate of 0.00023/second - one worker would be roughly 1400x over-provisioned. The measurement that would change the answer: sustained async job arrival above roughly 0.23 jobs/second, or oldest pending job age above 15 minutes twice in a month. Both are armed as triggers, and the second one fires before users notice.",
@@ -427,9 +731,22 @@
     {
       "id": "opt-managed-services-full",
       "description": "The reflex architecture for a photo-sharing app: application instance, dedicated worker, managed relational database, object storage, CDN in front of media, managed queue, managed key-value cache, error tracking.",
-      "components": ["application-runtime", "worker", "relational-database", "object-storage", "cdn", "queue", "cache", "observability"],
+      "components": [
+        "application-runtime",
+        "worker",
+        "relational-database",
+        "object-storage",
+        "cdn",
+        "queue",
+        "cache",
+        "observability"
+      ],
       "complexity_cost": 9,
-      "monthly_cost": { "currency": "GBP", "low": 56, "high": 141 },
+      "monthly_cost": {
+        "currency": "GBP",
+        "low": 56,
+        "high": 141
+      },
       "reversibility": "moderate",
       "verdict": "rejected",
       "reason": "225% of the complexity budget and over the stated infrastructure budget before operational cost is counted - 9 points is roughly GBP 2,160/month of engineering attention against GBP 960 for the selected option. Every added component is below its own justification threshold by two to three orders of magnitude: egress 3.9 GB/month against ~1 TB for a CDN, hottest key 0.081 req/s against ~10 req/s for a cache, job arrival 0.00023/s against ~500/s for a broker. The measurement that would change the answer is any one of those three thresholds being crossed; each is armed as a separate trigger, so the components can be added individually when their own numbers justify them, rather than together on intuition.",
@@ -443,9 +760,18 @@
     {
       "id": "opt-self-hosted-vm",
       "description": "A single small virtual machine running the application, a self-hosted relational database, and photos on local block storage, with managed error tracking. The cheapest invoice available. Scored 8: self-hosted stateless runtime 2, self-hosted stateful database 3, self-hosted media serving and its backups 2, managed error tracking 1.",
-      "components": ["application-runtime", "relational-database", "object-storage", "observability"],
+      "components": [
+        "application-runtime",
+        "relational-database",
+        "object-storage",
+        "observability"
+      ],
       "complexity_cost": 8,
-      "monthly_cost": { "currency": "GBP", "low": 15, "high": 30 },
+      "monthly_cost": {
+        "currency": "GBP",
+        "low": 15,
+        "high": 30
+      },
       "reversibility": "moderate",
       "verdict": "rejected",
       "reason": "The cheapest invoice and the most expensive architecture. 8 points is roughly GBP 1,920/month of engineering attention against GBP 960 for the selected option, to save GBP 10-25/month on the invoice - a net cost of about GBP 950/month. Backup, point-in-time recovery, patching and restore testing become the team's responsibility, and backups on the same machine as the primary fail the one test that matters. The measurement that would change the answer: managed database cost exceeding roughly GBP 1,000/month, at which point the 3-point self-hosting premium starts to be repaid. Current managed cost is GBP 10-20/month.",
@@ -459,10 +785,21 @@
   ],
   "cost": {
     "currency": "GBP",
-    "monthly_infrastructure": { "low": 16, "high": 56 },
-    "monthly_operational": { "low": 720, "high": 1200 },
-    "monthly_total": { "low": 736, "high": 1256 },
-    "price_table_date": "2026-08-09"
+    "monthly_infrastructure": {
+      "low": 16,
+      "high": 56
+    },
+    "monthly_operational": {
+      "low": 720,
+      "high": 1200
+    },
+    "monthly_total": {
+      "low": 736,
+      "high": 1256
+    },
+    "price_table_date": "2026-08-09",
+    "stated_budget": null,
+    "within_budget": true
   },
   "availability": {
     "target": null,

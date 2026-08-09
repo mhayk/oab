@@ -318,7 +318,9 @@
       "type": "object",
       "additionalProperties": false,
       "required": [
-        "currency"
+        "currency",
+        "stated_budget",
+        "within_budget"
       ],
       "properties": {
         "currency": {
@@ -372,11 +374,11 @@
             "number",
             "null"
           ],
-          "description": "The budget the user stated, if any. Recording it here is what makes within_budget checkable."
+          "description": "The budget the user stated, or null if none was. Required so that within_budget is checkable and so that 'no budget was stated' is an explicit answer rather than an omission."
         },
         "within_budget": {
           "type": "boolean",
-          "description": "False when the HIGH end of the estimate exceeds a stated budget. A hard constraint that the design might exceed must be surfaced, not left for the reader to notice by comparing two numbers \u2014 the same rule availability.consistent applies to an unreachable target."
+          "description": "False when the HIGH end of the estimate exceeds a stated budget; vacuously true when no budget was stated. Required, because a hard constraint the design might breach must be surfaced rather than left for the reader to notice by comparing two numbers \u2014 the same rule availability.consistent applies to an unreachable target."
         },
         "budget_note": {
           "type": "string",

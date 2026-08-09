@@ -11,7 +11,7 @@
       "name": "oab",
       "source": "./",
       "description": "Architecture intelligence: sizing, design, review, and ADRs \u2014 proportional to your actual scale",
-      "version": "0.1.2",
+      "version": "0.1.3",
       "license": "Apache-2.0",
       "homepage": "https://oab.run",
       "repository": "https://github.com/mhayk/oab",
