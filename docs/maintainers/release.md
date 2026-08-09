@@ -28,16 +28,21 @@ Then, and this is the part that cannot be automated:
 
 ## Version pinning — verified behaviour
 
-`version` **pins** the plugin. `claude plugin marketplace update oab` refreshes the catalogue but
-`claude plugin install oab@oab` then reports *"already installed"* and users keep the old code.
+`version` **pins** the plugin, and the cache is frozen **per version, not per commit**.
 
-Confirmed during the first live run: a fix pushed to `main` was invisible to the installed plugin
-until the version changed. **A release without a version bump does not reach anyone**, however
-green CI is.
+- `claude plugin marketplace update <name>` is what fetches new content — and only when `version`
+  changed.
+- `claude plugin install` reports *"already installed"* either way. That message is about
+  enablement, not content, so it is not a signal that the update did or did not arrive.
+- Verify by reading the cache, not the message:
+  `grep <a-string-from-your-change> ~/.claude/plugins/cache/<mkt>/<plugin>/<version>/...`
 
-The cache is frozen **per version**, not per commit: 0.1.1 was fetched between two commits and
-kept the earlier content, so a later fix pushed under the same version never arrived. Bump on every
-change that must reach users, or the release is a no-op.
+Both failure modes were observed in one session. A fix pushed to `main` under an unchanged version
+never reached the installed plugin; and 0.1.1, fetched between two commits, froze the earlier
+content so a later fix under the same version never arrived either.
+
+**Bump the version on every change that must reach users, and confirm against the cache.** A
+release without a bump is a no-op, however green CI is.
 
 To force a local refresh while developing, use `claude --plugin-dir ./` rather than the installed
 copy.
