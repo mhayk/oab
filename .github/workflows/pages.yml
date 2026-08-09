@@ -29,6 +29,16 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: actions/configure-pages@v5
+
+      # Cache-bust every asset with the commit SHA. Cloudflare fronts oab.run and caches
+      # static assets for four hours, so without this a deploy ships new HTML against a
+      # stale stylesheet — which broke the layout for every visitor after one release.
+      - name: Stamp asset versions
+        run: |
+          find website -name '*.html' -print0 \
+            | xargs -0 sed -i "s/__ASSET_VER__/${GITHUB_SHA::8}/g"
+          grep -c "${GITHUB_SHA::8}" website/index.html
+
       - uses: actions/upload-pages-artifact@v3
         with:
           path: website
