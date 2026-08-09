@@ -1,0 +1,14 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-plugin-manifest.json",
+  "name": "oab",
+  "displayName": "OAB — Open Architecture Brain",
+  "version": "0.1.0",
+  "description": "Architecture intelligence: capacity planning, proportional system design, architecture review, and ADRs with measurable revisit triggers.",
+  "author": { "name": "OAB Maintainers", "url": "https://oab.run" },
+  "homepage": "https://oab.run",
+  "repository": "https://github.com/mhayk/oab",
+  "license": "Apache-2.0",
+  "keywords": ["architecture", "system-design", "capacity-planning", "scalability", "adr", "sre"],
+  "skills": ["./integrations/claude-code/skills"],
+  "agents": ["./integrations/claude-code/agents"]
+}

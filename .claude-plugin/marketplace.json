@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-marketplace.json",
+  "name": "oab",
+  "owner": { "name": "OAB Maintainers", "url": "https://oab.run" },
+  "description": "Open Architecture Brain — architecture intelligence for AI coding agents",
+  "plugins": [
+    {
+      "name": "oab",
+      "source": "./",
+      "description": "Architecture intelligence: sizing, design, review, and ADRs — proportional to your actual scale",
+      "version": "0.1.0",
+      "license": "Apache-2.0",
+      "homepage": "https://oab.run",
+      "repository": "https://github.com/mhayk/oab",
+      "category": "development",
+      "keywords": ["architecture", "system-design", "capacity-planning", "adr", "scalability"],
+      "skills": ["./integrations/claude-code/skills"],
+      "agents": ["./integrations/claude-code/agents"]
+    }
+  ]
+}
