@@ -57,6 +57,13 @@
   gsap.set(rejects, { opacity: 0, x: 14 });
   gsap.set(caption, { opacity: 0, y: 10 });
 
+  // Blocks that only arrive at the end must not reserve their height from the start, or the
+  // scene is a mostly-empty panel for two thirds of the scroll. Collapse them to zero height and
+  // let GSAP animate back to auto when the refuse phase begins.
+  var rejectsBlock = q(".bp-rejects");
+  var lateBlocks = [rejectsBlock, caption].filter(Boolean);
+  gsap.set(lateBlocks, { height: 0, marginTop: 0, paddingTop: 0, borderTopWidth: 0 });
+
   // Counters must be TWEENS IN THE TIMELINE, not tweens fired from a callback. A tween created
   // inside .add(fn) runs on its own clock: it plays once, ignores the scrub, and never reverses
   // when you scroll back — so the number simply appears at its final value. Returning the tween
@@ -112,8 +119,10 @@
 
   // REFUSE: the rejected components ghost in with their triggers; the caption lands
   tl.add(function () { activateStep(4); })
-    .to(rejects, { opacity: 1, x: 0, duration: 0.4, stagger: 0.12 })
-    .to(caption, { opacity: 1, y: 0, duration: 0.5 }, "-=0.2");
+    .to(lateBlocks, { height: "auto", marginTop: "", paddingTop: "", borderTopWidth: "",
+                      duration: 0.45, ease: "power2.out" }, "refuse")
+    .to(rejects, { opacity: 1, x: 0, duration: 0.4, stagger: 0.12 }, "refuse+=0.15")
+    .to(caption, { opacity: 1, y: 0, duration: 0.5 }, "refuse+=0.5");
 
   // keep ScrollTrigger honest if fonts/images shift layout after load
   window.addEventListener("load", function () { ScrollTrigger.refresh(); });

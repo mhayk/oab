@@ -58,12 +58,15 @@
 @media (max-width: 720px) { .bp-track.is-live { min-height: 220vh; } }
 
 .bp-stage {
-  display: grid; grid-template-columns: 200px 1fr; gap: 32px; align-items: start;
-  padding: 24px 0;
+  display: grid; grid-template-columns: 132px minmax(0, 1fr); gap: 24px; align-items: start;
+  padding: 20px 0;
 }
 /* Only the live scrubbed version pins and reserves a viewport; no-JS and reduced-motion get a
    compact static section with no dead space (the min-height:100vh was the gap). */
-.is-live .bp-stage { position: sticky; top: 0; min-height: 100vh; align-items: center; }
+.is-live .bp-stage { position: sticky; top: 0; min-height: 100vh; align-items: center; align-content: center; }
+/* Keep the pinned scene inside the viewport: at 768px tall in an 860px window it nearly touched
+   both edges, which reads as cramped and can clip on shorter laptops. */
+.is-live .bp-scene { max-height: calc(100vh - 72px); overflow: hidden; align-self: center; }
 @media (max-width: 720px) {
   .bp-stage { grid-template-columns: 1fr; gap: 20px; }
   .is-live .bp-stage { min-height: 100svh; align-content: center; }
@@ -74,7 +77,7 @@
 @media (max-width: 720px) { .bp-steps { flex-direction: row; flex-wrap: wrap; gap: 10px; } }
 .bp-step {
   font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
-  font-size: .8rem; color: var(--muted); display: flex; gap: 10px; align-items: baseline;
+  font-size: .76rem; color: var(--muted); display: flex; gap: 8px; align-items: baseline;
   opacity: .5; transition: opacity .3s, color .3s;
 }
 .bp-step .bp-step-n { color: var(--line); font-variant-numeric: tabular-nums; transition: color .3s; }
@@ -84,7 +87,7 @@
 /* the scene */
 .bp-scene {
   position: relative; background: var(--raised); border: 1px solid var(--line); border-radius: 14px;
-  padding: 28px; min-height: 460px;
+  padding: 24px 26px;
   background-image:
     linear-gradient(var(--line) 1px, transparent 1px),
     linear-gradient(90deg, var(--line) 1px, transparent 1px);
@@ -119,9 +122,9 @@
 .bp-gate-fill { height: 100%; width: 100%; background: linear-gradient(90deg, var(--accent), var(--brightCyan, #2AE7F3)); }
 
 /* cube + built components, side by side */
-.bp-build { display: grid; grid-template-columns: auto 1fr; gap: 24px; align-items: center; }
+.bp-build { display: grid; grid-template-columns: auto 1fr; gap: 20px; align-items: center; }
 @media (max-width: 520px) { .bp-build { grid-template-columns: 1fr; } }
-.bp-cube { width: 150px; height: 150px; display: block; }
+.bp-cube { width: 128px; height: 128px; display: block; }
 .bp-cube [data-draw] { fill: none; stroke: var(--fg); stroke-width: 6; stroke-linejoin: round; stroke-linecap: round; }
 .bp-cube [data-axis] { fill: none; stroke: var(--accent); stroke-width: 5; stroke-linecap: round; stroke-dasharray: 0.5 12; }
 .bp-cube [data-accent] { fill: var(--accent); }
@@ -135,7 +138,12 @@
 .bp-built .bp-tick { color: var(--accent); }
 
 /* refused components */
-.bp-rejects { margin-top: 22px; border-top: 1px dashed var(--line); padding-top: 16px; }
+.bp-rejects { margin-top: 18px; border-top: 1px dashed var(--line); padding-top: 14px; }
+/* The rejected block and the caption only arrive at the end. Under .is-live they start with no
+   height at all — GSAP animates height from 0 to auto when the refuse phase begins — so the box
+   is sized by what is VISIBLE, not by its final content. Without this the scene reserves its full
+   height from the first frame and reads as a mostly empty panel for two thirds of the scroll. */
+.is-live .bp-rejects, .is-live .bp-caption { overflow: hidden; }
 .bp-rejects-head { font-family: ui-monospace, monospace; font-size: .72rem; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); margin: 0 0 10px; }
 .bp-reject { color: var(--muted); flex-wrap: wrap; }
 .bp-reject .bp-x { color: var(--muted); opacity: .7; }
@@ -143,7 +151,7 @@
 .bp-reject .bp-trigger { flex-basis: 100%; padding-left: 22px; color: var(--muted); font-size: .74rem; opacity: .85; }
 .bp-reject .bp-trigger em { color: var(--accent); font-style: normal; }
 
-.bp-caption { margin: 22px 0 0; color: var(--fg); font-size: 1rem; max-width: 62ch; }
+.bp-caption { margin: 18px 0 0; color: var(--fg); font-size: .95rem; max-width: 62ch; }
 .bp-caption b { color: var(--bright); }
 
 /* reduced motion needs no special rule: oab-blueprint.js returns before adding .is-live, so the
