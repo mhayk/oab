@@ -63,15 +63,11 @@ Write `.oab/design.json` **first** — conforming to
 
 Writing the artifact first makes a skipped step detectable as a missing field.
 
-**Adaptive output.** Emit only sections with content for this system. A stage-1 design has no
-partitioning, multi-region, or streaming section. Executive summary first, ~1 page.
+### Validate it immediately, before writing any prose
 
-Include one Mermaid diagram, capped at ~12 nodes.
-
-## Before you finish — validate your own artifact
-
-The procedure has more steps than fit in working memory, and the failure mode is skipping one
-silently. Check the artifact rather than trusting the process:
+**Do this before the prose, not after.** The procedure is long, and a run that exhausts its turn
+budget stops somewhere — if the check is at the end, it is the first thing lost, and what survives
+is an unvalidated artifact. Three live runs failed exactly this way.
 
 ```bash
 python3 ${CLAUDE_PLUGIN_ROOT}/tools/validate_artifacts.py .oab/design.json
@@ -94,6 +90,12 @@ If that cannot run, check by hand that every one of these is present:
 The last four are how a **hard stated constraint** gets surfaced. Reasoning about the budget in
 prose is not enough — if it is not a field, nothing can check it, and the reader has to notice by
 comparing two numbers.
+
+
+**Adaptive output.** Emit only sections with content for this system. A stage-1 design has no
+partitioning, multi-region, or streaming section. Executive summary first, ~1 page.
+
+Include one Mermaid diagram, capped at ~12 nodes.
 
 ## Report the budget plainly
 
