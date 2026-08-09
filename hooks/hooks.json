@@ -7,7 +7,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python3 \"${CLAUDE_PLUGIN_ROOT}/tools/hook_validate_artifact.py\"",
+            "command": "${CLAUDE_PLUGIN_ROOT}/tools/hook_validate_artifact.py",
             "timeout": 15,
             "statusMessage": "Validating OAB artifact…"
           }

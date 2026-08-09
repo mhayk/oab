@@ -160,6 +160,8 @@ def main():
 
 
 def emit(message):
+    print("oab hook_validate_artifact: contract violations found, feeding back to the agent",
+          file=sys.stderr)
     json.dump({
         "hookSpecificOutput": {
             "hookEventName": "PostToolUse",
@@ -173,5 +175,10 @@ if __name__ == "__main__":
     try:
         sys.exit(main())
     except Exception:
-        # A hook must never break the session it is trying to help.
+        # A hook must never break the session it is trying to help — but a silent
+        # failure is indistinguishable from a pass, which made issue #44 undiagnosable.
+        # stderr is logged by the harness and never reaches the model, so this is free.
+        import traceback
+        print("oab hook_validate_artifact crashed:", file=sys.stderr)
+        traceback.print_exc(file=sys.stderr)
         sys.exit(0)
