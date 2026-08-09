@@ -30,8 +30,8 @@
     <source media="(prefers-color-scheme: light)" srcset="../oab-logo-on-light.png">
     <img src="../oab-logo-on-dark.png" alt="OAB — Open Architecture Brain">
   </picture>
-  <h1>Tu agente sabe cómo son los grandes sistemas.<br>No lo que el tuyo necesita.</h1>
-  <p class="hero-sub">OAB da a los agentes de código los números — tráfico, almacenamiento, presupuesto, tamaño del equipo — para dimensionar la arquitectura al sistema que realmente estás construyendo, y justificar cada componente.</p>
+  <h1>Tu agente sabe cómo son los grandes sistemas.<br>No sabe lo que necesita el tuyo.</h1>
+  <p class="hero-sub">OAB da a los agentes de código los números que les faltan — tráfico, almacenamiento, presupuesto, tamaño del equipo — para dimensionar la arquitectura al sistema que de verdad estás construyendo, y justificar cada pieza.</p>
   <div class="cta">
     <a class="btn solid" href="#install">Instalar OAB</a>
     <a class="btn" href="https://github.com/mhayk/oab/tree/main/examples/live-run">Ver una decisión real</a>
@@ -42,8 +42,8 @@
 <section class="blueprint" data-blueprint aria-label="El mismo brief, dos respuestas">
   <div class="bp-intro">
     <p class="bp-eyebrow">El mismo brief, dos respuestas</p>
-    <h2>Pediste una arquitectura. Recibiste el trabajo de un equipo de plataforma.</h2>
-    <p>Sois dos personas con £50 al mes. Mira lo que entrega un agente de código — y lo que nunca dice: si algo de eso se justifica, o qué lo justificaría.</p>
+    <h2>Pediste una arquitectura. Recibiste trabajo para un equipo de plataforma.</h2>
+    <p>Dos desarrolladores. £50 al mes. Mira lo que entrega un agente de código — y lo que nunca dice: si todo eso hace falta, y qué número cambiaría la respuesta.</p>
   </div>
 
   <div class="bp-track">
@@ -70,7 +70,7 @@
             <div class="bp-meter">
               <dt>complejidad</dt>
               <dd><span class="bp-count bp-over" data-to="18" data-dp="0">18</span>
-                  <span class="bp-vs">/ 4 que vuestro equipo puede llevar</span></dd>
+                  <span class="bp-vs">/ 4 que tu equipo puede llevar</span></dd>
             </div>
             <div class="bp-meter">
               <dt>coste</dt>
@@ -78,7 +78,7 @@
                   <span class="bp-vs">/ £50 de presupuesto</span></dd>
             </div>
           </dl>
-          <p class="bp-punch">Operado por: <b>vosotros dos</b>. Nadie dijo si necesitáis algo de esto.</p>
+          <p class="bp-punch">Quién lo va a operar: <b>los dos</b>. Y nadie dijo si necesitas algo de esto.</p>
         </div>
 
         <div class="bp-panel bp-panel-oab">
@@ -118,7 +118,7 @@
 
       </div>
 
-      <p class="bp-caption"><b>Esa es toda la diferencia.</b> No una lista más corta — una lista con un motivo para cada elemento, y un número que cambiaría la respuesta. Puedes discrepar de un umbral. No puedes discrepar de una intuición.</p>
+      <p class="bp-caption"><b>La diferencia es esa.</b> No es una lista más corta — es una lista con un motivo para cada elemento y un número que cambiaría la respuesta. Puedes discrepar de un umbral. No puedes discrepar de una corazonada.</p>
 
     </div>
   </div>
@@ -131,10 +131,10 @@
     <div class="cmp-col">
       <p class="cmp-head">Un agente de código por su cuenta</p>
       <ul class="cmp-list">
-        <li>Recurre a los patrones que más ha visto</li>
-        <li>Dimensiona para una escala que quizá alcances algún día</li>
-        <li>Rara vez pone precio a lo que cuesta operarlo</li>
-        <li>No ofrece ninguna condición que le haría cambiar de opinión</li>
+        <li>Repite los patrones que más ha visto</li>
+        <li>Dimensiona para una escala que quizá nunca alcances</li>
+        <li>Casi nunca calcula lo que cuesta operarlo</li>
+        <li>No dice qué le haría cambiar de opinión</li>
       </ul>
     </div>
     <div class="cmp-col cmp-col-oab">
@@ -142,8 +142,8 @@
       <ul class="cmp-list">
         <li>Calcula la demanda antes de elegir nada</li>
         <li>Ajusta la arquitectura al equipo y al presupuesto</li>
-        <li>Nombra lo que rechazó, y con qué número</li>
-        <li>Adjunta la métrica que revertiría cada decisión</li>
+        <li>Dice lo que rechazó, y con qué número</li>
+        <li>Adjunta la métrica que haría revisar cada decisión</li>
       </ul>
     </div>
   </div>
@@ -157,13 +157,13 @@
       <span class="steps-n">01</span>
       <div>
         <h3>Dale tu contexto</h3>
-        <p>Usuarios, tráfico, datos, tamaño del equipo, presupuesto, y lo que no puedes permitirte perder. Hace como mucho cinco preguntas — solo las que cambian la arquitectura.</p>
+        <p>Usuarios, tráfico, datos, tamaño del equipo, presupuesto y lo que no puedes permitirte perder. Hace como mucho cinco preguntas — solo las que cambian la arquitectura.</p>
       </div>
     </li>
     <li>
       <span class="steps-n">02</span>
       <div>
-        <h3>Calcula el sobre</h3>
+        <h3>Calcula la capacidad</h3>
         <p>Peticiones por segundo, crecimiento de almacenamiento, egress, demanda de conexiones, coste. Aritmética reproducible de calculadoras probadas — con la fórmula impresa para comprobarla a mano.</p>
       </div>
     </li>
@@ -171,14 +171,14 @@
       <span class="steps-n">03</span>
       <div>
         <h3>Gasta complejidad a propósito</h3>
-        <p>Cada componente tiene un precio operativo, no solo una factura. Un equipo de dos puede llevar unos cuatro componentes antes de que la infraestructura se coma el producto. Pasado ese límite, algo tiene que salir — o hay que contratar a alguien, y dice a quién.</p>
+        <p>Cada componente tiene un precio operativo, no solo una factura. Un equipo de dos puede llevar unos cuatro componentes antes de que la infraestructura se coma el producto. Pasado ese límite, algo tiene que salir — o hay que contratar a alguien, y te dice cuál de las dos.</p>
       </div>
     </li>
     <li>
       <span class="steps-n">04</span>
       <div>
         <h3>Las decisiones vienen con salida</h3>
-        <p>Cada rechazo lleva la medición que lo revertiría. Un “no” se convierte en un plan con umbral en lugar de una opinión que hay que creer.</p>
+        <p>Cada rechazo viene con la medición que lo tumbaría. Un “no” se convierte en un plan con umbral, en lugar de una opinión que tienes que aceptar.</p>
       </div>
     </li>
   </ol>
@@ -265,19 +265,19 @@
   <div class="cmds">
     <div class="cmd">
       <code>/oab:design</code>
-      <p>Describe lo que estás construyendo. Obtén una arquitectura con los números detrás, los componentes rechazados y los umbrales que cambiarían cada respuesta.</p>
+      <p>Describe lo que estás construyendo. Obtén una arquitectura con los números detrás, los componentes rechazados y el umbral que cambiaría cada respuesta.</p>
     </div>
     <div class="cmd">
       <code>/oab:review</code>
-      <p>Apúntalo a un repositorio. Obtén hallazgos ponderados por la escala a la que realmente opera — no una lista prestada de un sistema mil veces mayor.</p>
+      <p>Apúntalo a un repositorio. Obtén hallazgos calibrados por la escala a la que realmente funciona — no una lista prestada de un sistema mil veces mayor.</p>
     </div>
     <div class="cmd">
       <code>/oab:capacity</code>
-      <p>Pregunta cuánto cuesta un cambio antes de hacerlo. Peticiones por segundo, crecimiento de almacenamiento, egress y coste, con la fórmula y los valores sustituidos impresos.</p>
+      <p>Averigua cuánto cuesta un cambio antes de hacerlo. Peticiones por segundo, crecimiento de almacenamiento, egress y coste — con la fórmula y los valores impresos para que los compruebes.</p>
     </div>
     <div class="cmd">
       <code>/oab:adr</code>
-      <p>Registra una decisión con las opciones que sopesaste, los trade-offs que aceptaste y la métrica que te haría volver a ella.</p>
+      <p>Registra una decisión con las opciones que sopesaste, los trade-offs que aceptaste y la métrica que te haría revisarla.</p>
     </div>
   </div>
   <p class="note">Una skill de fondo también se carga automáticamente, así que la conversación cotidiana sobre arquitectura recibe la misma proporcionalidad — no solo estos cuatro comandos.</p>

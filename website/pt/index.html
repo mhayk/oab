@@ -30,8 +30,8 @@
     <source media="(prefers-color-scheme: light)" srcset="../oab-logo-on-light.png">
     <img src="../oab-logo-on-dark.png" alt="OAB — Open Architecture Brain">
   </picture>
-  <h1>Seu agente sabe como grandes sistemas são.<br>Não o que o seu precisa.</h1>
-  <p class="hero-sub">O OAB dá aos agentes de código os números — tráfego, armazenamento, orçamento, tamanho do time — para dimensionar a arquitetura ao sistema que você está realmente construindo, e justificar cada componente dela.</p>
+  <h1>Seu agente sabe como são os grandes sistemas.<br>Não sabe o que o seu precisa.</h1>
+  <p class="hero-sub">O OAB dá aos agentes de código os números que faltam — tráfego, armazenamento, orçamento, tamanho do time — para dimensionar a arquitetura ao sistema que você está construindo de verdade, e justificar cada peça dela.</p>
   <div class="cta">
     <a class="btn solid" href="#install">Instalar o OAB</a>
     <a class="btn" href="https://github.com/mhayk/oab/tree/main/examples/live-run">Ver uma decisão real</a>
@@ -42,8 +42,8 @@
 <section class="blueprint" data-blueprint aria-label="O mesmo pedido, duas respostas">
   <div class="bp-intro">
     <p class="bp-eyebrow">O mesmo pedido, duas respostas</p>
-    <h2>Você pediu uma arquitetura. Recebeu o trabalho de um time de plataforma.</h2>
-    <p>Vocês são duas pessoas com £50 por mês. Veja o que um agente de código entrega — e o que ele nunca diz: se algo daquilo se justifica, ou o que faria justificar.</p>
+    <h2>Você pediu uma arquitetura. Recebeu trabalho para um time de plataforma.</h2>
+    <p>Dois desenvolvedores. £50 por mês. Veja o que um agente de código entrega — e o que ele nunca diz: se aquilo tudo é necessário, e qual número mudaria a resposta.</p>
   </div>
 
   <div class="bp-track">
@@ -78,7 +78,7 @@
                   <span class="bp-vs">/ £50 de orçamento</span></dd>
             </div>
           </dl>
-          <p class="bp-punch">Operado por: <b>vocês dois</b>. Ninguém disse se você precisa de algo disso.</p>
+          <p class="bp-punch">Quem vai operar isso: <b>vocês dois</b>. E ninguém disse se vocês precisam de algo disso.</p>
         </div>
 
         <div class="bp-panel bp-panel-oab">
@@ -118,7 +118,7 @@
 
       </div>
 
-      <p class="bp-caption"><b>É essa a diferença inteira.</b> Não uma lista menor — uma lista com um motivo para cada item, e um número que mudaria a resposta. Dá para discordar de um limiar. Não dá para discordar de um achismo.</p>
+      <p class="bp-caption"><b>A diferença é essa.</b> Não é uma lista menor — é uma lista com um motivo para cada item e um número que mudaria a resposta. Dá para discordar de um limiar. Não dá para discordar de um achismo.</p>
 
     </div>
   </div>
@@ -131,10 +131,10 @@
     <div class="cmp-col">
       <p class="cmp-head">Um agente de código sozinho</p>
       <ul class="cmp-list">
-        <li>Recorre aos padrões que mais viu</li>
-        <li>Dimensiona para uma escala que talvez você alcance um dia</li>
-        <li>Raramente precifica o custo de operar aquilo</li>
-        <li>Não oferece condição alguma que o faria mudar de ideia</li>
+        <li>Repete os padrões que mais viu</li>
+        <li>Dimensiona para uma escala que talvez você nunca alcance</li>
+        <li>Quase nunca calcula o custo de operar aquilo</li>
+        <li>Não diz o que o faria mudar de ideia</li>
       </ul>
     </div>
     <div class="cmp-col cmp-col-oab">
@@ -142,8 +142,8 @@
       <ul class="cmp-list">
         <li>Calcula a demanda antes de escolher qualquer coisa</li>
         <li>Ajusta a arquitetura ao time e ao orçamento</li>
-        <li>Nomeia o que rejeitou, e com base em que número</li>
-        <li>Anexa a métrica que reverteria cada decisão</li>
+        <li>Diz o que rejeitou, e com base em qual número</li>
+        <li>Anexa a métrica que faria rever cada decisão</li>
       </ul>
     </div>
   </div>
@@ -157,13 +157,13 @@
       <span class="steps-n">01</span>
       <div>
         <h3>Dê o seu contexto</h3>
-        <p>Usuários, tráfego, dados, tamanho do time, orçamento, e o que você não pode perder. Ele faz no máximo cinco perguntas — só as que mudam a arquitetura.</p>
+        <p>Usuários, tráfego, dados, tamanho do time, orçamento e o que você não pode perder. Ele faz no máximo cinco perguntas — só as que mudam a arquitetura.</p>
       </div>
     </li>
     <li>
       <span class="steps-n">02</span>
       <div>
-        <h3>Ele calcula o envelope</h3>
+        <h3>Ele calcula a capacidade</h3>
         <p>Requisições por segundo, crescimento de storage, egress, demanda de conexões, custo. Aritmética reproduzível de calculadoras testadas — com a fórmula impressa para você conferir à mão.</p>
       </div>
     </li>
@@ -171,14 +171,14 @@
       <span class="steps-n">03</span>
       <div>
         <h3>Ele gasta complexidade de propósito</h3>
-        <p>Todo componente tem um preço operacional, não só uma fatura. Um time de dois carrega cerca de quatro componentes antes de a infraestrutura comer o produto. Passando disso, algo tem que sair — ou alguém tem que ser contratado, e ele diz qual.</p>
+        <p>Todo componente tem um preço operacional, não só uma fatura. Um time de dois carrega cerca de quatro componentes antes de a infraestrutura comer o produto. Passando disso, algo tem que sair — ou alguém precisa ser contratado, e ele diz qual das duas coisas.</p>
       </div>
     </li>
     <li>
       <span class="steps-n">04</span>
       <div>
         <h3>Decisões vêm com saída</h3>
-        <p>Toda recusa carrega a medição que a reverteria. Um “não” vira um plano com limiar, em vez de uma opinião em que você tem que confiar.</p>
+        <p>Toda recusa vem com a medição que a derrubaria. Um “não” vira um plano com limiar, em vez de uma opinião que você tem que aceitar.</p>
       </div>
     </li>
   </ol>
@@ -190,7 +190,7 @@
   <p class="lead">Kubernetes, Kafka e Redis são a resposta certa para muitos sistemas. A pergunta que o OAB faz é se são a resposta certa para <em>este</em> — e ele falha nos próprios testes se errar em qualquer das duas direções.</p>
 
   <div class="scale-up">
-    <p class="scale-head">A 50.000 requisições/segundo em três regiões, a suíte de testes do OAB <strong>falha</strong> se ele não recomendar:</p>
+    <p class="scale-head">A 50.000 requisições por segundo em três regiões, a suíte de testes do OAB <strong>falha</strong> se ele não recomendar:</p>
     <ul class="scale-list">
       <li><b>event streaming</b> — 7.500 eventos/segundo com três grupos de consumidores independentes que precisam reprocessar o mesmo stream</li>
       <li><b>um cache distribuído</b> — 67.500 leituras/segundo não podem chegar ao banco; com 95% de acerto, 3.375 chegam a cinco réplicas</li>
@@ -265,19 +265,19 @@
   <div class="cmds">
     <div class="cmd">
       <code>/oab:design</code>
-      <p>Descreva o que está construindo. Receba uma arquitetura com os números por trás, os componentes recusados e os limiares que mudariam cada resposta.</p>
+      <p>Descreva o que você está construindo. Receba uma arquitetura com os números por trás, os componentes recusados e o limiar que mudaria cada resposta.</p>
     </div>
     <div class="cmd">
       <code>/oab:review</code>
-      <p>Aponte para um repositório. Receba achados ponderados pela escala em que ele realmente opera — não um checklist emprestado de um sistema mil vezes maior.</p>
+      <p>Aponte para um repositório. Receba achados calibrados pela escala em que ele realmente roda — não um checklist emprestado de um sistema mil vezes maior.</p>
     </div>
     <div class="cmd">
       <code>/oab:capacity</code>
-      <p>Pergunte quanto custa uma mudança antes de fazê-la. Requisições por segundo, crescimento de storage, egress e custo, com a fórmula e os valores substituídos impressos.</p>
+      <p>Descubra quanto custa uma mudança antes de fazê-la. Requisições por segundo, crescimento de armazenamento, egress e custo — com a fórmula e os valores impressos para você conferir.</p>
     </div>
     <div class="cmd">
       <code>/oab:adr</code>
-      <p>Registre uma decisão com as opções que pesou, os trade-offs que aceitou e a métrica que o traria de volta a ela.</p>
+      <p>Registre uma decisão com as opções que você pesou, os trade-offs que aceitou e a métrica que faria você revisitá-la.</p>
     </div>
   </div>
   <p class="note">Uma skill de fundo também carrega automaticamente, então a conversa comum sobre arquitetura recebe a mesma proporcionalidade — não só estes quatro comandos.</p>
