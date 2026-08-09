@@ -26,6 +26,18 @@ Then, and this is the part that cannot be automated:
 3. **Run `/oab:review` on a real third-party repository** and read every finding. Any
    scale-inappropriate finding blocks the release.
 
+## Version pinning — verified behaviour
+
+`version` **pins** the plugin. `claude plugin marketplace update oab` refreshes the catalogue but
+`claude plugin install oab@oab` then reports *"already installed"* and users keep the old code.
+
+Confirmed during the first live run: a fix pushed to `main` was invisible to the installed plugin
+until the version changed. **A release without a version bump does not reach anyone**, however
+green CI is.
+
+To force a local refresh while developing, use `claude --plugin-dir ./` rather than the installed
+copy.
+
 ## Tagging
 
 1. Bump `version` in `.claude-plugin/plugin.json` **and** the marketplace entry — they must match.

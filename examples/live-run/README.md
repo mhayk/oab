@@ -45,3 +45,16 @@ Fixed in the same commit as this file:
 This artifact therefore **fails** the current scenario, on exactly one assertion:
 `cost.within_budget is missing`. It is kept as-is rather than patched, because a corrected
 sample would hide the finding that produced the fix.
+
+Note that the *prose* did reason about the budget — it states that reaching 99.9% would cost
+"three to five times the stated budget". The gap was that nothing in the **artifact** recorded it,
+so no assertion could check it. That is the whole argument for the structured output contract in
+one example.
+
+## Also verified
+
+- `version` pins the plugin: the fix above was invisible to the installed copy until the version
+  was bumped. Recorded in `docs/maintainers/release.md`.
+- `claude plugin details` reports `Agents (0)` for an agent declared through a manifest path, but
+  the agent **does** load — `oab:repo-scanner` is available as an agent type. A reporting quirk,
+  not a defect in the plugin.
