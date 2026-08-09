@@ -58,3 +58,33 @@ one example.
 - `claude plugin details` reports `Agents (0)` for an agent declared through a manifest path, but
   the agent **does** load — `oab:repo-scanner` is available as an agent type. A reporting quirk,
   not a defect in the plugin.
+
+---
+
+## Four runs, one unfixed defect
+
+`cost.within_budget` was absent from **every** live run, under escalating enforcement:
+
+| Version | Enforcement added | Result |
+| :-- | :-- | :-- |
+| 0.1.0 | none — the field did not exist | missing |
+| 0.1.2 | required by the framework procedure | missing |
+| 0.1.3 | added to the skill; schema made it required | missing — run exhausted its turns before validating |
+| 0.1.4 | validation moved **before** the prose; 80 turns | **missing**, with turns to spare |
+
+Run 5 wrote both files and was not truncated. The instruction was in the framework, in the skill,
+ahead of the prose, and the schema rejects the artifact without it. The agent still did not emit it.
+
+**Prompt-level instruction does not reliably guarantee a field appears in an artifact.** That is
+risk T9 from the design — "the agent ignores the procedure under context pressure" — now measured
+rather than hypothesised, and it is the single most important thing learned from installing this
+plugin.
+
+The design deliberately excluded hooks from M1: *"Deliberately not used in M1: hooks, MCP servers,
+LSP servers…  None solves an M1 problem."* That judgement was wrong. A `PostToolUse` hook that
+validates `.oab/design.json` on write and returns the schema error to the agent is a **mechanism**
+rather than more words, and it is the only approach tried or proposed that could close this. See
+[#44](https://github.com/mhayk/oab/issues/44).
+
+Until then, treat schema-required fields as **aspirational for agent output** and enforced only in
+CI. The artifacts here are committed unpatched so the gap stays visible.
