@@ -137,6 +137,12 @@ codebase** — copy a template, fill it in, open a pull request.
 
 Engine, integrations and evaluation: [CONTRIBUTING.md](CONTRIBUTING.md).
 
+## Support
+
+OAB is free, local-first, and has no hosted service to monetise. If it earns a place in your
+workflow, [sponsoring](https://github.com/sponsors/mhayk) funds the unglamorous part: keeping 37
+knowledge units reviewed and current, evaluation runs, and the domain.
+
 ## Licence
 
 [Apache-2.0](LICENSE). The OAB name and logo are trademarks and are not covered by that licence —
