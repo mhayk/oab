@@ -1,0 +1,48 @@
+OAB — Open Architecture Brain
+Copyright 2026 OAB Contributors
+
+This product includes software and knowledge developed by the OAB project
+(https://oab.run).
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-------------------------------------------------------------------------------
+TRADEMARKS
+-------------------------------------------------------------------------------
+
+The OAB name, the "Open Architecture Brain" name, and the OAB logo and mark
+(the "Marks") are not licensed under the Apache License, Version 2.0.
+
+You may use the code, knowledge, schemas, and documentation in this repository
+freely under the terms of that licence, including in derivative and commercial
+works. You may refer to the OAB project by name for the purpose of accurate
+description, comparison, or attribution.
+
+You may not use the Marks in a way that suggests your fork, product, or service
+is endorsed by, affiliated with, or an official distribution of the OAB project.
+If you distribute a modified version, please use a different name and mark.
+
+Brand assets are in assets/logo/ with their own terms recorded in
+assets/logo/README.md.
+
+-------------------------------------------------------------------------------
+THIRD-PARTY MATERIAL
+-------------------------------------------------------------------------------
+
+Knowledge units in knowledge/ summarise concepts from published sources and
+attribute them in their `references` frontmatter. No verbatim copyrighted text
+is reproduced. If you believe a knowledge unit reproduces protected expression,
+please open an issue or contact the maintainers per SECURITY.md.
+
+The OAB wordmark was set in Sora (https://github.com/googlefonts/sora), licensed
+under the SIL Open Font License 1.1, and converted to outlines. The font file
+itself is not redistributed in this repository.
