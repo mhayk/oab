@@ -9,7 +9,7 @@
 
 [![License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](LICENSE)
 [![Scenarios](https://img.shields.io/badge/scenarios-5%2F5%20passing-brightgreen.svg)](evaluations/)
-[![Status](https://img.shields.io/badge/status-pre--release-orange.svg)](ROADMAP.md)
+[![Release](https://img.shields.io/badge/release-v0.1.7%20·%20M1-brightgreen.svg)](https://github.com/mhayk/oab/releases/tag/v0.1.7)
 
 ---
 
@@ -39,13 +39,17 @@ commands.
 
 ## Install
 
-> ⚠️ **Pre-release.** Everything below is built and the manifest validates, but a clean-machine
-> install has not been verified yet — [#43](https://github.com/mhayk/oab/issues/43).
-
 ```
 /plugin marketplace add mhayk/oab
 /plugin install oab@oab
 ```
+
+Verified end to end: fresh clone 0.8 s / 8.1 MB, and the committed examples include a live
+`/oab:design` run that passes every scenario assertion and a live third-party review with all
+evidence citations checked ([`examples/live-run/`](examples/live-run/),
+[`examples/live-review/`](examples/live-review/)). One caveat: artifact-validation hooks did not
+fire for marketplace-installed plugins in headless sessions ([#45](https://github.com/mhayk/oab/issues/45));
+skill-level validation is the fallback until that is resolved.
 
 ## What the output looks like
 

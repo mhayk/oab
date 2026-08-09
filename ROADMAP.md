@@ -19,15 +19,11 @@ The reasoning behind this sequencing is in [`docs/design/07-roadmap-and-risks.md
 | Agent integration | ✅ Built — manifest validates |
 | Evaluation suite | ✅ Complete — 5 scenarios passing |
 | Docs, examples, website | ✅ Complete |
-| **v0.1.0 release** | 🚧 **Held on manual verification** |
+| **M1 release** | ✅ **[v0.1.7](https://github.com/mhayk/oab/releases/tag/v0.1.7)** — all three manual verifications passed with live evidence |
 
-**42 of 43 M1 issues are closed.** What remains cannot be automated: a clean-machine install, a
-real `/oab:design` run asserted against the scenario, and a real `/oab:review` of a third-party
-repository. See [#43](https://github.com/mhayk/oab/issues/43) and
-`docs/maintainers/release.md`.
-
-Until those pass, treat the committed examples as **reference artifacts** rather than as evidence
-of live behaviour.
+`examples/live-run/` and `examples/live-review/` hold unedited output from the verification runs.
+One open follow-up: installed-plugin hooks in interactive sessions
+([#45](https://github.com/mhayk/oab/issues/45)).
 
 ## M1 — Prove the idea
 

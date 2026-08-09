@@ -1,8 +1,10 @@
 # Getting started
 
-> ⚠️ **Pre-release.** The plugin manifest validates and every component is built, but a
-> clean-machine install has not yet been verified — that is condition 1 of the M1 definition of
-> done ([#43](https://github.com/mhayk/oab/issues/43)). Expect rough edges.
+> Released as [v0.1.7](https://github.com/mhayk/oab/releases/tag/v0.1.7) — the M1 milestone,
+> install and both commands verified with live evidence (see `examples/live-run/` and
+> `examples/live-review/`). One caveat: artifact-validation hooks currently fire via
+> `--plugin-dir` but not for marketplace installs in headless sessions
+> ([#45](https://github.com/mhayk/oab/issues/45)).
 
 ## Install
 

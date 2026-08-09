@@ -10,10 +10,28 @@ the architecture OAB recommends is treated as a **breaking change**, the same as
 
 ## [Unreleased]
 
-Everything below is built and green in CI. The release is held pending the three manual
-verification steps in `docs/maintainers/release.md` that cannot be automated — a clean-machine
-install, a real `/oab:design` run asserted with the evaluation runner, and a real `/oab:review`
-of a third-party repository.
+Nothing yet.
+
+## [0.1.7] — 2026-08-09
+
+**The M1 release.** Planned as v0.1.0; the version counter was consumed by live-run iterations
+(0.1.0 → 0.1.7), each bump required to reach the installed plugin — the per-version cache freeze
+documented in `docs/maintainers/release.md`. Reusing an earlier string would collide with stale
+caches, so the milestone ships under the number it reached.
+
+All three manual verification steps passed with live, unedited evidence:
+
+- **Install**: marketplace add + install from GitHub on this machine; fresh clone 0.8 s, 8.1 MB —
+  well inside the ADR-0003 thresholds (5 s, 50 MB).
+- **`/oab:design`**: run 7 passes every scenario-01 assertion and full schema validation
+  (`examples/live-run/`). Six earlier runs without an executing hook all failed the same
+  assertion; the mechanism, not more instructions, closed it.
+- **`/oab:review`**: linkding reviewed; all 8 evidence citations verified against the code, zero
+  scale-inappropriate findings, SQLite praised as the correct choice (`examples/live-review/`).
+
+Known caveat: hooks from **marketplace-installed** plugins did not execute in headless sessions,
+while the identical hook via `--plugin-dir` did (#45). The evaluation harness uses `--plugin-dir`;
+skill-level validation instructions remain as the fallback layer for installed plugins.
 
 ### Added
 
@@ -65,4 +83,5 @@ of a third-party repository.
   calculators, price staleness, link resolution, and index freshness.
 - One static landing page for oab.run, with no build step and no runtime external request.
 
-[Unreleased]: https://github.com/mhayk/oab/commits/main
+[Unreleased]: https://github.com/mhayk/oab/compare/v0.1.7...HEAD
+[0.1.7]: https://github.com/mhayk/oab/releases/tag/v0.1.7
