@@ -54,8 +54,8 @@
 /* scroll track: tall enough to scrub the whole timeline */
 /* height comes from JS (.is-live) so no-JS and reduced-motion users get a compact section with
    no dead scroll gap; only the live scrubbed version reserves the tall track. */
-.bp-track.is-live { min-height: 420vh; }
-@media (max-width: 720px) { .bp-track.is-live { min-height: 300vh; } }
+.bp-track.is-live { min-height: 280vh; }
+@media (max-width: 720px) { .bp-track.is-live { min-height: 220vh; } }
 
 .bp-stage {
   display: grid; grid-template-columns: 200px 1fr; gap: 32px; align-items: start;

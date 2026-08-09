@@ -57,14 +57,18 @@
   gsap.set(rejects, { opacity: 0, x: 14 });
   gsap.set(caption, { opacity: 0, y: 10 });
 
-  // counter helper: tween a number and write it with the element's declared precision
-  function countTo(el, end) {
+  // Counters must be TWEENS IN THE TIMELINE, not tweens fired from a callback. A tween created
+  // inside .add(fn) runs on its own clock: it plays once, ignores the scrub, and never reverses
+  // when you scroll back — so the number simply appears at its final value. Returning the tween
+  // and adding it to the timeline is what makes it count with the scroll, both ways.
+  function counterTween(el) {
+    var end = parseFloat(el.getAttribute("data-to"));
     var dp = parseInt(el.getAttribute("data-dp") || "0", 10);
     var suffix = el.getAttribute("data-suffix") || "";
     var obj = { v: 0 };
     return gsap.to(obj, {
-      v: end, duration: 0.6, ease: "power1.out",
-      onUpdate: function () { el.firstChild.nodeValue = obj.v.toFixed(dp) + suffix; }
+      v: end, duration: 0.55, ease: "power1.out",
+      onUpdate: function () { el.textContent = obj.v.toFixed(dp) + suffix; }
     });
   }
 
@@ -73,26 +77,27 @@
   }
 
   // --- the timeline, scrubbed by scroll ------------------------------------------------------
+  // Trigger on the TRACK, not the whole section: the track is exactly the span over which the
+  // stage is stuck, so the timeline maps 1:1 to the pinned duration. Triggering on the section
+  // (which includes the intro block) burned the first ~17% of the timeline before the scene was
+  // ever pinned, so the brief resolved off-screen.
   var tl = gsap.timeline({
     scrollTrigger: {
-      trigger: root,
+      trigger: track || root,
       start: "top top",
       end: "bottom bottom",
       scrub: 0.6
     }
   });
 
-  // FRAME → QUANTIFY: the vague brief resolves, numbers appear and count up
+  // FRAME → QUANTIFY: the vague brief resolves, numbers appear and count up with the scroll
   tl.add(function () { activateStep(0); })
     .to(brief, { opacity: 1, filter: "blur(0px)", letterSpacing: "0em", duration: 0.5 })
     .add(function () { activateStep(1); })
-    .to(numbers, { opacity: 1, y: 0, duration: 0.4, stagger: 0.12 }, "quant")
-    .add(function () {
-      numbers.forEach(function (el) {
-        var target = parseFloat(el.getAttribute("data-to"));
-        countTo(el, target);
-      });
-    }, "quant");
+    .to(numbers, { opacity: 1, y: 0, duration: 0.4, stagger: 0.12 }, "quant");
+  numbers.forEach(function (el, i) {
+    tl.add(counterTween(el), "quant+=" + (i * 0.12));
+  });
 
   // BUDGET: the gate fills and locks
   tl.add(function () { activateStep(2); })
@@ -101,9 +106,9 @@
 
   // BUILD: the isometric cube draws itself, components label in
   tl.add(function () { activateStep(3); })
-    .to(cubePaths, { strokeDashoffset: 0, duration: 1.1, stagger: 0.12, ease: "power1.inOut" }, "build")
-    .to(cubeAccents, { opacity: 1, scale: 1, duration: 0.4, stagger: 0.15 }, "build+=0.7")
-    .to(built, { opacity: 1, x: 0, duration: 0.4, stagger: 0.12 }, "build+=0.4");
+    .to(cubePaths, { strokeDashoffset: 0, duration: 0.85, stagger: 0.1, ease: "power1.inOut" }, "build")
+    .to(cubeAccents, { opacity: 1, scale: 1, duration: 0.35, stagger: 0.12 }, "build+=0.75")
+    .to(built, { opacity: 1, x: 0, duration: 0.35, stagger: 0.12 }, "build+=0.55");
 
   // REFUSE: the rejected components ghost in with their triggers; the caption lands
   tl.add(function () { activateStep(4); })
