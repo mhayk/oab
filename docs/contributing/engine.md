@@ -23,7 +23,18 @@ If a change would break that test, it is in the wrong directory. Architecture kn
 reasoning live in `knowledge/` and `frameworks/`; `integrations/` contains only the mapping onto a
 specific client's extension model.
 
-CI enforces the weaker mechanical form of this: no AI vendor or model name outside `integrations/`.
+CI enforces the mechanical form of this with `tools/check_neutrality.py`: no AI vendor or model
+name inside the client-agnostic core — `knowledge/`, `frameworks/`, `calculators/`, `schemas/`,
+`templates/`, `evaluations/`.
+
+It deliberately does not police project documentation. A README that cannot say which agents OAB
+works with is not neutral, it is unhelpful.
+
+A line containing `neutrality-ok` is exempt. Use it with a stated reason so every exemption is
+visible in review.
+
+`tools/check_stdlib_only.py` enforces the other half: `calculators/` imports nothing outside the
+standard library, because those calculators run on a user's machine through their agent.
 
 ## Integrations
 
