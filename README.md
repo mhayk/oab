@@ -11,6 +11,8 @@
 [![Scenarios](https://img.shields.io/badge/scenarios-5%2F5%20passing-brightgreen.svg)](evaluations/)
 [![Release](https://img.shields.io/badge/release-v0.1.7%20·%20M1-brightgreen.svg)](https://github.com/mhayk/oab/releases/tag/v0.1.7)
 
+**English** · [Português (BR)](README.pt-BR.md) · [Español](README.es.md)
+
 ---
 
 ## The problem
@@ -130,9 +132,9 @@ inconsistent"*. Those are the answers an eager assistant never gives.
 
 ## What is not built yet
 
-Honest list: no live-agent example output · no MCP server · no knowledge graph generation · no
-second integration · `/oab:evolve` and the other nine commands are M2 · no website beyond a landing
-page · 6 knowledge domains, not 18.
+Honest list: no MCP server · no knowledge graph generation · no second integration ·
+`/oab:evolve` and the other nine commands are M2 · no website beyond a landing page · 6 knowledge
+domains, not 18.
 
 See [ROADMAP.md](ROADMAP.md), and [§32 of the design](docs/design/07-roadmap-and-risks.md#32-overengineering-review)
 for a critique of our own founding brief.

@@ -1,0 +1,134 @@
+<!doctype html>
+<!-- Tradução de ../index.html, sincronizada em 2026-08-09. O inglês é o canônico. -->
+<html lang="pt-BR" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>OAB — Open Architecture Brain</title>
+<meta name="description" content="Inteligência de arquitetura open-source para agentes de código com IA. Planejamento de capacidade, design proporcional de sistemas, revisão de arquitetura e ADRs com gatilhos de revisão mensuráveis.">
+<meta property="og:title" content="OAB — Open Architecture Brain">
+<meta property="og:description" content="Inteligência de arquitetura para agentes de código com IA.">
+<meta property="og:image" content="https://oab.run/oab-social-card.png">
+<meta property="og:url" content="https://oab.run/pt/">
+<meta name="twitter:card" content="summary_large_image">
+<meta property="og:locale" content="pt_BR">
+<link rel="canonical" href="https://oab.run/pt/">
+<link rel="alternate" hreflang="en" href="https://oab.run/">
+<link rel="alternate" hreflang="pt-BR" href="https://oab.run/pt/">
+<link rel="alternate" hreflang="es" href="https://oab.run/es/">
+<link rel="alternate" hreflang="x-default" href="https://oab.run/">
+<link rel="icon" href="../oab-icon.png">
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<div class="wrap">
+
+<nav class="lang" aria-label="Idioma"><a href="../">EN</a> · <strong>PT</strong> · <a href="../es/">ES</a></nav>
+
+<header>
+  <picture>
+    <source media="(prefers-color-scheme: light)" srcset="../oab-logo-on-light.png">
+    <img src="../oab-logo-on-dark.png" alt="OAB — Open Architecture Brain">
+  </picture>
+  <h1>Inteligência de arquitetura para agentes de código com IA</h1>
+  <p class="manifesto">Open knowledge. Open reasoning. Open architecture.</p>
+  <div class="cta">
+    <a class="btn solid" href="https://github.com/mhayk/oab">GitHub</a>
+    <a class="btn" href="https://github.com/mhayk/oab/tree/main/examples">Veja a saída</a>
+  </div>
+</header>
+
+<section>
+  <h2>O problema</h2>
+  <p class="lead">Peça a um agente de código para “projetar uma API escalável” e você geralmente
+  recebe Kubernetes, Kafka, Redis e três microsserviços — para um produto com 100&nbsp;usuários e
+  um desenvolvedor.</p>
+  <p>O agente aprendeu a <em>estética</em> de system design em material extraído quase inteiramente
+  do 0,1% maior dos sistemas. Ele não aprendeu a <em>economia</em>.</p>
+  <p class="big">100 usuários a 40 requisições por sessão são 0,28 requisições por segundo.</p>
+  <p>Uma única instância tem quatro ordens de grandeza de folga. O OAB calcula isso, diz isso, e
+  nomeia a medição exata que mudaria a resposta.</p>
+</section>
+
+<section>
+  <h2>Mesmas entradas, mesmos números</h2>
+  <p>Aritmética é código, não saída de modelo — toda afirmação de capacidade imprime suas
+  premissas, a fórmula literal, o cálculo substituído e qual entrada medir primeiro.</p>
+  <video autoplay loop muted playsinline
+         style="width:100%;border:1px solid var(--line);border-radius:10px;display:block;margin:0 0 16px"
+         aria-label="Calculadora de capacidade do OAB produzindo o envelope completo">
+    <source src="../calculator.webm" type="video/webm">
+  </video>
+  <p class="note">Gravado a partir de um <a href="https://github.com/mhayk/oab/tree/main/demo">tape VHS</a>
+  commitado — a demo também é código, e nada nela é encenado.</p>
+</section>
+
+<section>
+  <h2>O que foi rejeitado, e quando revisitar</h2>
+  <p>A parte que um assistente genérico nunca produz. Do exemplo tiny-startup:</p>
+  <blockquote><strong><code>cache</code></strong> — A 0,24 leituras/segundo no pico, não há pressão
+  de leitura medida para aliviar.<br><em>Revisitar quando: uma única query exceder 10
+  requisições/segundo acima de 50&nbsp;ms, ou a CPU do banco ficar sustentada acima de 60% por 3
+  dias.</em></blockquote>
+  <blockquote><strong><code>orchestration-platform</code></strong> — Três vezes o orçamento de
+  complexidade e quatro vezes o orçamento financeiro.<br><em>Revisitar quando: existirem mais de 4
+  serviços implantáveis de forma independente e houver um engenheiro de operações dedicado no
+  time.</em></blockquote>
+  <p>Um “não” com limiar é um plano. Um “não” sem limiar é uma opinião.</p>
+</section>
+
+<section>
+  <h2>Complexidade é aritmética, não conselho</h2>
+  <pre><code>available = 4 + 1.5 × (engineers − 2) + 4 × dedicated_ops</code></pre>
+  <p>Dois desenvolvedores têm 4 pontos. Um banco gerenciado custa 1; uma plataforma de orquestração
+  autogerenciada custa 4. Acima do orçamento é rejeitado por padrão, e uma exceção precisa nomear o
+  que será removido ou quem vai operar o excesso.</p>
+  <p>A cerca de <span class="accent">£240 por ponto por mês</span> em atenção de engenharia,
+  hospedar o próprio banco para economizar £250/mês custa aproximadamente £720/mês. O serviço
+  gerenciado é mais barato — dito com aritmética, não com preferência.</p>
+</section>
+
+<section>
+  <h2>Prova, não promessa</h2>
+  <p>Afirmação de comportamento sem teste é marketing.</p>
+  <table>
+    <tr><th>Medida</th><th style="text-align:right">Valor</th></tr>
+    <tr><td>Cenários passando</td><td class="n">5 / 5</td></tr>
+    <tr><td>— guardas de overengineering</td><td class="n">3 / 3</td></tr>
+    <tr><td>— guardas de underengineering</td><td class="n">2 / 2</td></tr>
+    <tr><td>Testes das calculadoras</td><td class="n">43</td></tr>
+    <tr><td>Fixtures de schema, nos dois sentidos</td><td class="n">33</td></tr>
+    <tr><td>Unidades de conhecimento</td><td class="n">37</td></tr>
+  </table>
+  <p>As assertions rodam contra campos do artefato, nunca contra prosa. Os cenários são perturbados
+  em 100× e 0,01× para provar que respondem à magnitude em vez de reconhecer números específicos.</p>
+  <p>O cenário 07 é <em>“nada precisa mudar”</em>. O cenário 08 é <em>“esses requisitos são
+  inconsistentes”</em>. São as respostas que um assistente ansioso nunca dá.</p>
+</section>
+
+<section>
+  <h2>Instalação</h2>
+  <pre><code>/plugin marketplace add mhayk/oab
+/plugin install oab@oab</code></pre>
+  <p class="note"><strong>v0.1.7 — a release M1.</strong> Instalação e os dois comandos principais
+  verificados com evidência viva e sem edição: uma execução real de design passando em todas as
+  assertions de cenário, e uma revisão real de terceiros com as oito citações de evidência
+  conferidas no código.
+  <a href="https://github.com/mhayk/oab/releases/tag/v0.1.7">Notas da release</a>.</p>
+</section>
+
+<footer>
+  <p>Apache-2.0 · 100% open source · sem serviço hospedado, sem contas, sem telemetria</p>
+  <p>
+    <a href="https://github.com/mhayk/oab">GitHub</a>
+    <a href="https://github.com/mhayk/oab/tree/main/docs">Docs</a>
+    <a href="https://github.com/mhayk/oab/tree/main/knowledge">Conhecimento</a>
+    <a href="https://github.com/mhayk/oab/tree/main/examples">Exemplos</a>
+    <a href="https://github.com/mhayk/oab/blob/main/CONTRIBUTING.md">Contribua</a>
+    <a href="https://github.com/sponsors/mhayk">Patrocine</a>
+  </p>
+</footer>
+
+</div>
+</body>
+</html>

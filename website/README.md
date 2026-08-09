@@ -1,7 +1,13 @@
 # oab.run
 
-One static page. No build step, no framework, no external requests at runtime — which is the
+Three static pages — English at `/`, Brazilian Portuguese at `/pt/`, Spanish at `/es/` — sharing
+one stylesheet. No build step, no framework, no external requests at runtime — which is the
 project's own principle applied to itself.
+
+**English is canonical.** Each translation carries a sync-date comment at the top; when
+`index.html` changes, update `pt/index.html` and `es/index.html` in the same change (same rule as
+`README.md` and its `README.pt-BR.md` / `README.es.md` siblings). `hreflang` alternates are
+declared in all three heads.
 
 ```bash
 python3 -m http.server -d website 8000
