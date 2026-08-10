@@ -28,10 +28,10 @@
 <nav class="lang" aria-label="Idioma"><a href="../">EN</a> · <strong>PT</strong> · <a href="../es/">ES</a></nav>
 
 <header>
-  <picture>
-    <source media="(prefers-color-scheme: light)" srcset="../oab-logo-on-light.png">
-    <img src="../oab-logo-on-dark.png" alt="OAB — Open Architecture Brain">
-  </picture>
+  <!-- The page is pinned dark via data-theme, so the logo is always the on-dark
+       variant. A prefers-color-scheme source here served the dark-ink logo onto the
+       dark background for anyone whose OS is in light mode. -->
+  <img src="../oab-logo-on-dark.png" alt="OAB — Open Architecture Brain">
   <h1>Seu agente sabe como são os grandes sistemas.<br>Não sabe o que o seu precisa.</h1>
   <p class="hero-sub">O OAB dá aos agentes de código os números que faltam — tráfego, armazenamento, orçamento, tamanho do time — para dimensionar a arquitetura ao sistema que você está construindo de verdade, e justificar cada peça dela.</p>
   <div class="cta">
