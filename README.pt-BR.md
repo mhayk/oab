@@ -141,6 +141,14 @@ economiza cerca de $35.000/mês, a maior alavanca de custo daquele desenho.
 **Dois dos cinco cenários protegem contra construir de menos; três contra construir demais.** Uma
 ferramenta que só evitasse excesso seria uma ferramenta que manda não fazer nada.
 
+## Ao lado de outros plugins
+
+O OAB não é uma metodologia de desenvolvimento e não compete com nenhuma. Plugins de processo como
+o [obra/superpowers](https://github.com/obra/superpowers) governam *como* o agente trabalha — TDD,
+debugging sistemático, planejamento, review. O OAB governa uma decisão dentro desse fluxo: o que
+*este* sistema realmente precisa, com a aritmética impressa. Eles se compõem: `/oab:design` antes
+de escrever um plano de implementação, `/oab:review` dentro de uma etapa de review.
+
 ## Prova, não promessa
 
 Toda afirmação do OAB é sobre comportamento, e afirmação de comportamento sem teste é marketing.

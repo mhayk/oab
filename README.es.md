@@ -143,6 +143,14 @@ offload ahorra unos $35.000/mes, la mayor palanca de coste de ese diseño.
 **Dos de los cinco escenarios protegen contra construir de menos; tres contra construir de más.**
 Una herramienta que solo evitara el exceso sería una que te dice que no hagas nada.
 
+## Junto a otros plugins
+
+OAB no es una metodología de desarrollo y no compite con ninguna. Los plugins de proceso como
+[obra/superpowers](https://github.com/obra/superpowers) gobiernan *cómo* trabaja el agente — TDD,
+debugging sistemático, planificación, review. OAB gobierna una decisión dentro de ese flujo: qué
+necesita realmente *este* sistema, con la aritmética impresa. Se componen: `/oab:design` antes de
+escribir un plan de implementación, `/oab:review` dentro de una pasada de revisión.
+
 ## Pruebas, no promesas
 
 Toda afirmación de OAB es sobre comportamiento, y las afirmaciones de comportamiento sin pruebas

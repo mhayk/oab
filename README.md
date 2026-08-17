@@ -136,6 +136,14 @@ $35,000/month, the largest single cost lever in that design.
 **Two of the five scenarios guard against under-building; three against over-building.** A tool
 that only prevented over-building would be a tool that tells you to do nothing.
 
+## Alongside other plugins
+
+OAB is not a development methodology and does not compete with one. Process plugins such as
+[obra/superpowers](https://github.com/obra/superpowers) govern *how* an agent works — TDD,
+systematic debugging, planning, review. OAB governs one decision inside that flow: what *this*
+system actually needs, with the arithmetic printed. They compose: `/oab:design` before writing an
+implementation plan, `/oab:review` inside a review pass.
+
 ## Proof, not claims
 
 Every claim OAB makes is about behaviour, and behaviour claims without tests are marketing.
