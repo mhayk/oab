@@ -28,8 +28,7 @@
       ],
       "agents": [
         "./integrations/claude-code/agents/repo-scanner.md"
-      ],
-      "hooks": "./hooks/hooks.json"
+      ]
     }
   ]
 }
