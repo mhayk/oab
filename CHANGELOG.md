@@ -12,6 +12,21 @@ the architecture OAB recommends is treated as a **breaking change**, the same as
 
 Nothing yet.
 
+## [0.1.8] — 2026-10-15
+
+A patch release, needed so existing marketplace installs actually receive the fix below — the
+cache is frozen per version (`docs/maintainers/release.md`).
+
+### Fixed
+
+- **Marketplace installs no longer report "The plugin couldn't be loaded".** The marketplace entry
+  declared `hooks` as a file path, a form Claude Code rejects there; `plugin.json` already declares
+  the same hooks file, so the key was redundant as well as fatal to a clean install. Reported and
+  fixed by [@gabrielevanger](https://github.com/gabrielevanger) — the project's first external
+  contribution (#46, #47).
+- **`plugin validate --strict` passes again.** The hook command now quotes
+  `${CLAUDE_PLUGIN_ROOT}`, so an install path containing a space no longer splits the command.
+
 ## [0.1.7] — 2026-08-09
 
 **The M1 release.** Planned as v0.1.0; the version counter was consumed by live-run iterations
@@ -83,5 +98,6 @@ skill-level validation instructions remain as the fallback layer for installed p
   calculators, price staleness, link resolution, and index freshness.
 - One static landing page for oab.run, with no build step and no runtime external request.
 
-[Unreleased]: https://github.com/mhayk/oab/compare/v0.1.7...HEAD
+[Unreleased]: https://github.com/mhayk/oab/compare/v0.1.8...HEAD
+[0.1.8]: https://github.com/mhayk/oab/compare/v0.1.7...v0.1.8
 [0.1.7]: https://github.com/mhayk/oab/releases/tag/v0.1.7
