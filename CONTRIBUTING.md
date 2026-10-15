@@ -175,8 +175,8 @@ claude --plugin-dir ./     # loads this working tree, not the installed copy
 ```
 
 Use `--plugin-dir` rather than the marketplace-installed copy while developing: it tests what you
-have actually changed, and it is also the only path where the artifact-validation hook currently
-runs ([#45](https://github.com/mhayk/oab/issues/45)).
+have actually changed, and it is the only path where the artifact-validation hook runs headless
+([#45](https://github.com/mhayk/oab/issues/45)).
 
 ### Demos
 

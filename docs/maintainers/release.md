@@ -63,8 +63,11 @@ headless.
 Consequences:
 - The evaluation harness uses `--plugin-dir`, which is unaffected — and also tests the working
   tree rather than a cached copy.
-- Interactive users: the hook should fire after the one-time workspace-trust prompt is accepted.
-  Not yet confirmed from within this tooling, because it needs a genuine interactive TTY.
+- Interactive users: the hook fires once the one-time workspace-trust prompt is accepted, with no
+  separate hook-approval prompt. Confirmed in a real interactive session on 0.1.7 (#45): the
+  transcript shows "1 PostToolUse hook ran" under the `Write` call, and the feedback names the
+  missing fields. The matcher is `Write|Edit`, so a file written through `Bash` is not validated —
+  ask for the `Write` tool explicitly when repeating this check.
 - Headless/CI users of the *installed* plugin: the hook will not fire. Skill-level validation
   remains the fallback, and `tools/hook_validate_artifact.py` can be wired as a project-settings
   hook (which is trusted implicitly and does fire headless) where enforcement is required.

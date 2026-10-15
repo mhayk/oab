@@ -59,9 +59,10 @@ Verificado de ponta a ponta: clone limpo em 0,8 s / 8,1 MB, e os exemplos commit
 execução real de `/oab:design` que passa em todas as assertions de cenário e uma revisão real de um
 repositório de terceiros com todas as citações de evidência conferidas
 ([`examples/live-run/`](examples/live-run/), [`examples/live-review/`](examples/live-review/)).
-Uma ressalva: os hooks de validação de artefato não dispararam para plugins instalados via
-marketplace em sessões headless ([#45](https://github.com/mhayk/oab/issues/45)); a validação no
-nível da skill é o fallback até isso ser resolvido.
+O hook de validação de artefato dispara depois que você aceita o prompt de confiança do
+workspace do Claude Code; em sessões headless esse prompt é pulado, então o hook não roda em
+instalações via marketplace ([#45](https://github.com/mhayk/oab/issues/45)) e a validação no nível
+da skill é o fallback.
 
 ## Como é a saída
 

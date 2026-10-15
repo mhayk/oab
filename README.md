@@ -55,9 +55,10 @@ end to end — the brief, the numbers, and what gets refused.
 Verified end to end: fresh clone 0.8 s / 8.1 MB, and the committed examples include a live
 `/oab:design` run that passes every scenario assertion and a live third-party review with all
 evidence citations checked ([`examples/live-run/`](examples/live-run/),
-[`examples/live-review/`](examples/live-review/)). One caveat: artifact-validation hooks did not
-fire for marketplace-installed plugins in headless sessions ([#45](https://github.com/mhayk/oab/issues/45));
-skill-level validation is the fallback until that is resolved.
+[`examples/live-review/`](examples/live-review/)). The artifact-validation hook runs once you
+accept Claude Code's workspace-trust prompt; in headless sessions that prompt is skipped, so the
+hook does not run for marketplace installs ([#45](https://github.com/mhayk/oab/issues/45)) and
+skill-level validation is the fallback.
 
 ## What the output looks like
 

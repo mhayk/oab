@@ -2,9 +2,10 @@
 
 > Released as [v0.1.7](https://github.com/mhayk/oab/releases/tag/v0.1.7) — the M1 milestone,
 > install and both commands verified with live evidence (see `examples/live-run/` and
-> `examples/live-review/`). One caveat: artifact-validation hooks currently fire via
-> `--plugin-dir` but not for marketplace installs in headless sessions
-> ([#45](https://github.com/mhayk/oab/issues/45)).
+> `examples/live-review/`). Current release:
+> [v0.1.8](https://github.com/mhayk/oab/releases/tag/v0.1.8). One caveat: the artifact-validation
+> hook does not run for marketplace installs in headless sessions
+> ([#45](https://github.com/mhayk/oab/issues/45)) — see below.
 
 ## Install
 
@@ -13,12 +14,29 @@
 /plugin install oab@oab
 ```
 
-Or from a checkout, which is the reliable path today:
+Or from a checkout, which loads your working tree instead of an installed copy:
 
 ```bash
 git clone https://github.com/mhayk/oab && cd oab
 claude --plugin-dir ./
 ```
+
+### Accept the workspace-trust prompt
+
+OAB ships a hook that validates every artifact it writes (`.oab/design.json` and friends) and
+tells the agent exactly which fields are missing. Claude Code only loads a plugin's hooks in a
+trusted workspace, so the first time you start `claude` in a project, **accept the
+workspace-trust dialog**. There is no separate approval for the hook itself — once the workspace
+is trusted, it runs ([#45](https://github.com/mhayk/oab/issues/45), verified in an interactive
+session).
+
+Two things to know:
+
+- The hook watches the `Write` and `Edit` tools. A file the agent creates through `Bash`
+  (`printf > file`) is not validated.
+- In headless runs (`claude -p`, or stdout not a TTY) the trust dialog is skipped, so a
+  marketplace-installed plugin's hook never loads. Use `claude --plugin-dir`, or register
+  `tools/hook_validate_artifact.py` as a project-settings hook, where enforcement matters in CI.
 
 ## Your first run
 
