@@ -59,10 +59,10 @@ Verificado de extremo a extremo: clon limpio en 0,8 s / 8,1 MB, y los ejemplos i
 repositorio contienen una ejecución real de `/oab:design` que pasa todas las aserciones de
 escenario y una revisión real de un repositorio de terceros con todas las citas de evidencia
 comprobadas ([`examples/live-run/`](examples/live-run/),
-[`examples/live-review/`](examples/live-review/)). Una salvedad: los hooks de validación de
-artefactos no se ejecutaron para plugins instalados desde el marketplace en sesiones headless
-([#45](https://github.com/mhayk/oab/issues/45)); la validación a nivel de skill es el respaldo
-hasta que eso se resuelva.
+[`examples/live-review/`](examples/live-review/)). El hook de validación de artefactos se
+ejecuta una vez que aceptas el aviso de confianza del workspace de Claude Code; en sesiones
+headless ese aviso se omite, así que el hook no se ejecuta en instalaciones desde el marketplace
+([#45](https://github.com/mhayk/oab/issues/45)) y la validación a nivel de skill es el respaldo.
 
 ## Cómo se ve la salida
 

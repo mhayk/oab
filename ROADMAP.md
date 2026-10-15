@@ -22,8 +22,8 @@ The reasoning behind this sequencing is in [`docs/design/07-roadmap-and-risks.md
 | **M1 release** | ✅ **[v0.1.7](https://github.com/mhayk/oab/releases/tag/v0.1.7)** — all three manual verifications passed with live evidence |
 
 `examples/live-run/` and `examples/live-review/` hold unedited output from the verification runs.
-One open follow-up: installed-plugin hooks in interactive sessions
-([#45](https://github.com/mhayk/oab/issues/45)).
+Installed-plugin hooks are confirmed to fire in interactive sessions once the workspace is trusted;
+headless sessions skip that trust, so they do not ([#45](https://github.com/mhayk/oab/issues/45)).
 
 ## M1 — Prove the idea
 
