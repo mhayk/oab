@@ -13,7 +13,7 @@
 [![Website](https://img.shields.io/badge/oab.run-live-00D1FF?style=flat&labelColor=0B0F14)](https://oab.run/pt/)
 [![License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](LICENSE)
 [![Scenarios](https://img.shields.io/badge/scenarios-5%2F5%20passing-brightgreen.svg)](evaluations/)
-[![Release](https://img.shields.io/badge/release-v0.1.7%20·%20M1-brightgreen.svg)](https://github.com/mhayk/oab/releases/tag/v0.1.7)
+[![Release](https://img.shields.io/badge/release-v0.1.8-brightgreen.svg)](https://github.com/mhayk/oab/releases/tag/v0.1.8)
 
 [English](README.md) · **Português (BR)** · [Español](README.es.md)
 
